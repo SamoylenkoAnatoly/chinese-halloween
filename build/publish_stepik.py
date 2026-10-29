@@ -131,17 +131,18 @@ def frame_step(base, path, h, accent=KOKO, subtitle=None):
                 'border-radius:14px;font-size:13px;color:%s;"><b>%s</b></span></p>'
                 % (accent, PANEL, subtitle))
     frame = (
-        '<div style="border:6px solid %s;background-color:%s;">'
-        '<img alt="" src="%s/shared/frame/top.svg" style="display:block;width:100%%;border:0;">'
+        '<div style="border-left:32px solid %s;border-right:32px solid %s;'
+        'background-color:%s;">'
+        '<img alt="" src="%s/shared/frame/top.svg?v=2" style="display:block;width:100%%;border:0;">'
         '<iframe height="%d" src="%s" width="100%%" '
         'style="width:100%%;height:%dpx;border:0;background-color:%s;">'
         "Ваш браузер не поддерживает iframe — открой урок по ссылке под рамкой.</iframe>"
-        '<img alt="" src="%s/shared/frame/bottom.svg" style="display:block;width:100%%;border:0;">'
+        '<img alt="" src="%s/shared/frame/bottom.svg?v=2" style="display:block;width:100%%;border:0;">'
         "</div>"
         '<p style="margin:8px 0 0;text-align:center;"><a href="%s" target="_blank" '
         'rel="noopener noreferrer" style="color:#5d4a86;font-size:12px;">'
         "↗ открыть урок на отдельной странице</a></p>"
-    ) % (accent, NIGHT, b, h, url, h, NIGHT, b, url)
+    ) % (LINE, LINE, NIGHT, b, h, url, h, NIGHT, b, url)
     return {"block": {"name": "text", "text": pill + frame}}
 
 

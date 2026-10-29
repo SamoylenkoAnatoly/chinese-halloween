@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
-"""Пиксельные баннеры хэллоуин-рамки для iframe-шагов Stepik.
+"""Пиксельные хэллоуинские ВОРОТА для iframe-шагов Stepik.
 
-Рисует top.svg (забор с тыквами, небо, летучие мыши) и bottom.svg
-(кладбищенская земля, надгробия, конфеты) в технике персонажей:
-shape-rendering="crispEdges", <path> из квадратов сетки.
-Сетка 240x16, показ 960x64 (клетка = 4px).
+top.svg (240x44 -> 960x176): каменные столбы с тыквами-фонарями,
+кованая арка с шипами, серп луны, летучие мыши, призрак, фонарь.
+bottom.svg (240x20 -> 960x80): постаменты столбов, земля, надгробия, конфеты.
+Боковые створки ворот — border-left/right 32px цвета L в frame_step
+(publish_stepik.py), клетка = 4px.
 """
+import math
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -14,9 +16,9 @@ OUT.mkdir(parents=True, exist_ok=True)
 
 PALETTE = {
     "N": "#120b24",  # ночь
-    "P": "#241744",  # панели / тыквенные столбики
-    "L": "#3a2a5e",  # контуры / перекладины
-    "K": "#8a5fd6",  # фиолет Коко
+    "P": "#241744",  # панели / камень-тень
+    "L": "#3a2a5e",  # камень / контуры
+    "K": "#8a5fd6",  # фиолет Коко (ковка)
     "O": "#ff8c2b",  # тыква
     "G": "#ffd54f",  # золото
     "I": "#efe9dc",  # светлая кость
@@ -76,9 +78,9 @@ class Grid:
                 paths.append('<path fill="{0}" d="{1}"/>'.format(hexcol, "".join(cells)))
         svg = (
             '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {0} {1}" '
-            'width="960" height="64" shape-rendering="crispEdges" role="img" '
-            'aria-label="{2}">\n{3}\n</svg>\n'
-        ).format(self.w, self.h, desc, "\n".join(paths))
+            'width="{2}" height="{3}" shape-rendering="crispEdges" role="img" '
+            'aria-label="{4}">\n{5}\n</svg>\n'
+        ).format(self.w, self.h, self.w * 4, self.h * 4, desc, "\n".join(paths))
         (OUT / name).write_text(svg, encoding="utf-8")
         print(name, "OK", self.w, "x", self.h, len(svg), "bytes")
 
@@ -95,99 +97,158 @@ def pumpkin(g, cx, top_y=5):
     g.px(cx - 3, top_y + 1, "R"); g.px(cx + 3, top_y + 2, "R")  # бока
 
 
+def brick(g, x0, y0, w, h):
+    # каменная кладка: горизонтальные швы P каждые 6 рядов, вертикальные вразбежку
+    for y in range(y0 + 5, y0 + h, 6):
+        g.hline(x0, y, w, "P")
+    c = 0
+    for y0c in range(y0, y0 + h, 6):
+        yend = min(y0c + 5, y0 + h)
+        off = 5 if c % 2 == 0 else 2
+        for x in range(x0 + off, x0 + w, 6):
+            if x0 < x < x0 + w - 1:
+                for y in range(y0c, yend):
+                    g.px(x, y, "P")
+        c += 1
+
+
+def pillar(g, x0, w=10):
+    pumpkin(g, x0 + w // 2, top_y=2)      # тыква-фонарь на макушке
+    g.hline(x0, 7, w, "L")                # капитель
+    g.hline(x0, 8, w, "P")
+    g.rect(x0, 9, w, 35, "L")             # ствол до низа баннера
+    brick(g, x0, 9, w, 35)
+
+
+def arch_ring(g, cx, cy, rx, ry, col="K"):
+    # кольцо-арка толщиной ~3 клетки
+    for j in range(g.h):
+        for i in range(g.w):
+            o = ((i - cx) / rx) ** 2 + ((j - cy) / ry) ** 2
+            inn = ((i - cx) / (rx - 3)) ** 2 + ((j - cy) / (ry - 3)) ** 2
+            if o <= 1.0 and inn >= 1.0:
+                g.px(i, j, col)
+
+
+def spikes(g, cx, cy, rx, ry, col="K", n=9):
+    # шипы по нормали к арке
+    for k in range(n):
+        th = math.pi * (k + 0.5) / n
+        ex, ey = rx * math.cos(th), -ry * math.sin(th)
+        x, y = cx + ex, cy + ey
+        nx, ny = ex / rx ** 2, ey / ry ** 2
+        ln = math.hypot(nx, ny) or 1.0
+        nx, ny = nx / ln, ny / ln
+        for s in (1, 2):
+            g.px(int(round(x + nx * s)), int(round(y + ny * s)), col)
+
+
 def make_top():
-    g = Grid(240, 16)
-    g.rect(0, 0, 240, 16, "N")
-    # луна-серп
-    g.ellipse(12, 5, 3.6, 3.6, "G")
-    g.ellipse(14, 5, 2.6, 2.6, "N")
+    g = Grid(240, 44)
+    g.rect(0, 0, 240, 44, "N")
+    # серп луны (слева от арки, над ней)
+    g.ellipse(40, 7, 3.6, 3.6, "G")
+    g.ellipse(42, 7, 2.6, 2.6, "N")
     # звёзды
-    for x, y, c in [(30, 2, "I"), (55, 1, "D"), (90, 3, "I"), (122, 1, "G"),
-                    (150, 3, "D"), (178, 2, "I"), (212, 6, "D"), (60, 6, "D"),
-                    (100, 6, "D"), (140, 6, "D")]:
+    for x, y, c in [(26, 3, "I"), (70, 3, "D"), (95, 2, "I"), (140, 2, "G"),
+                    (165, 4, "D"), (205, 3, "I"), (120, 3, "D"), (85, 4, "D"),
+                    (175, 8, "D"), (60, 10, "D"), (200, 16, "I"), (150, 20, "D"),
+                    (100, 22, "D"), (30, 30, "D"), (210, 28, "D")]:
         g.px(x, y, c)
-    # паутина в правом верхнем углу
-    for i in range(8):
-        g.px(239 - i, i, "D")
-        g.px(239, i, "D")
-        g.px(239 - i, 0, "D")
-    for i in range(8):
-        g.px(239 - i, 2 if i in (2, 5) else (4 if i in (4, 6) else i), "D")
-    # летучие мыши
-    g.bat(70, 3, "K"); g.bat(110, 2, "K"); g.bat(160, 4, "K")
-    # штакетник
-    for x0 in range(2, 238, 9):
-        g.px(x0 + 2, 7, "K")
-        g.hline(x0 + 1, 8, 3, "P")
-        for y in range(9, 16):
-            g.hline(x0, y, 5, "P")
-    g.hline(0, 11, 240, "L"); g.hline(0, 12, 240, "L")
-    g.hline(0, 14, 240, "L"); g.hline(0, 15, 240, "L")
-    # тыквы на заборе
-    pumpkin(g, 35); pumpkin(g, 205)
-    # призрак выглядывает
-    g.hline(149, 7, 2, "W"); g.hline(148, 8, 4, "W"); g.hline(148, 9, 4, "W")
-    g.px(148, 8, "K"); g.px(151, 8, "K")
-    g.render("top.svg", "Хэллоуинский забор с тыквами и летучими мышами")
+    # летучие мыши в проёме и у арки
+    g.bat(100, 13, "K"); g.bat(150, 17, "K"); g.bat(75, 21, "K")
+    # кованая арка-полукруг с шипами между столбами
+    arch_ring(g, 120, 44, 110, 38, "K")
+    spikes(g, 120, 44, 110, 38, "K", 9)
+    # фонарь на нити из вершины арки
+    for y in range(10, 14):
+        g.px(120, y, "D")
+    g.hline(118, 14, 5, "O")
+    g.hline(118, 15, 5, "O")
+    g.hline(119, 16, 3, "O")
+    g.px(120, 15, "G")
+    # паук на нити из арки
+    for y in range(11, 16):
+        g.px(90, y, "D")
+    g.px(90, 16, "P"); g.px(89, 17, "P"); g.px(91, 17, "P")
+    g.px(90, 17, "P"); g.px(90, 18, "P")
+    # призрак выглядывает в проёме
+    g.hline(18, 37, 2, "W")
+    g.hline(17, 38, 4, "W")
+    g.hline(17, 39, 4, "W")
+    g.hline(17, 40, 4, "W")
+    g.px(18, 38, "K"); g.px(20, 38, "K")
+    # каменные столбы с тыквами
+    pillar(g, 0)
+    pillar(g, 230)
+    g.render("top.svg", "Хэллоуинские ворота: каменные столбы, тыквы-фонари, кованая арка с шипами")
 
 
 def make_bottom():
-    g = Grid(240, 16)
-    g.rect(0, 0, 240, 16, "N")
+    g = Grid(240, 20)
+    g.rect(0, 0, 240, 20, "N")
     # звёзды/туман вверху
-    for x, y, c in [(40, 1, "D"), (95, 2, "I"), (170, 1, "D"), (220, 2, "D")]:
+    for x, y, c in [(40, 1, "D"), (95, 2, "I"), (170, 1, "D"), (220, 2, "D"), (60, 3, "D")]:
         g.px(x, y, c)
     g.bat(125, 2)
     # земля
-    g.hline(0, 8, 240, "E")
-    g.hline(0, 9, 240, "E")
-    for y in range(10, 16):
-        g.hline(0, y, 240, "e" if y >= 12 else "E")
-    for x in range(4, 238, 13):
-        g.px(x, 9 + (x // 13) % 4, "e")
-        g.px(x + 5, 11 + (x // 13) % 3, "e")
+    g.hline(0, 12, 240, "E")
+    g.hline(0, 13, 240, "E")
+    for y in range(14, 20):
+        g.hline(0, y, 240, "e" if y >= 16 else "E")
+    for x in range(4, 230, 13):
+        g.px(x, 13 + (x // 13) % 4, "e")
+        g.px(x + 5, 15 + (x // 13) % 3, "e")
+    # постаменты столбов
+    for x0 in (0, 230):
+        g.rect(x0, 0, 10, 3, "L")            # низ ствола
+        g.hline(x0, 1, 10, "P")
+        g.rect(x0, 3, 10, 9, "L")            # постамент до земли
+        g.hline(x0, 3, 10, "P")
+        g.vline(x0, 4, 7, "P")
+        g.vline(x0 + 9, 4, 7, "P")
+        g.hline(x0, 11, 10, "P")
     # надгробие 1
-    g.hline(29, 3, 3, "L")
-    for y in range(4, 8):
+    g.hline(29, 5, 3, "L")
+    for y in range(6, 10):
         g.hline(27, y, 7, "P")
-    g.hline(29, 3, 3, "L")
-    g.px(27, 4, "L"); g.px(33, 4, "L")
-    for y in range(5, 8):
+    g.px(27, 6, "L"); g.px(33, 6, "L")
+    for y in range(7, 10):
         g.px(27, y, "L"); g.px(33, y, "L")
-    g.px(30, 4, "L"); g.hline(29, 5, 3, "L")
-    g.hline(26, 8, 9, "L")
+    g.px(30, 6, "L"); g.hline(29, 7, 3, "L")
+    g.hline(26, 10, 9, "L")
     # надгробие 2 (шире)
-    g.hline(148, 3, 5, "L")
-    for y in range(4, 8):
+    g.hline(148, 5, 5, "L")
+    for y in range(6, 10):
         g.hline(146, y, 9, "P")
-    g.px(150, 2, "L"); g.px(148, 3, "L"); g.px(152, 3, "L")
-    for y in range(4, 8):
+    g.px(150, 4, "L"); g.px(148, 5, "L"); g.px(152, 5, "L")
+    for y in range(6, 10):
         g.px(146, y, "L"); g.px(154, y, "L")
-    g.px(149, 5, "L"); g.px(151, 5, "L")
-    g.hline(145, 8, 11, "L")
+    g.px(149, 7, "L"); g.px(151, 7, "L")
+    g.hline(145, 10, 11, "L")
     # конфеты на земле
-    g.px(68, 6, "I"); g.hline(69, 6, 3, "R"); g.px(70, 6, "G"); g.px(72, 6, "I")
-    g.hline(69, 7, 3, "R")
-    g.px(183, 6, "I"); g.hline(184, 6, 3, "O"); g.px(185, 6, "G"); g.px(187, 6, "I")
+    g.px(68, 10, "I"); g.hline(69, 10, 3, "R"); g.px(70, 10, "G"); g.px(72, 10, "I")
+    g.hline(69, 11, 3, "R")
+    g.px(183, 10, "I"); g.hline(184, 10, 3, "O"); g.px(185, 10, "G"); g.px(187, 10, "I")
     # чупа-чупс
-    g.vline(110, 6, 2, "I")
-    g.hline(109, 4, 3, "R"); g.hline(109, 5, 3, "R"); g.px(110, 5, "G")
+    g.hline(109, 7, 3, "R"); g.hline(109, 8, 3, "R"); g.px(110, 8, "G")
+    g.vline(110, 9, 3, "I")
     # косточка
-    g.hline(128, 6, 5, "I")
-    g.px(127, 5, "I"); g.px(133, 5, "I"); g.px(127, 7, "I"); g.px(133, 7, "I")
+    g.hline(128, 10, 5, "I")
+    g.px(127, 9, "I"); g.px(133, 9, "I"); g.px(127, 11, "I"); g.px(133, 11, "I")
     # тыквочка
-    pumpkin(g, 215, top_y=4)
+    pumpkin(g, 215, top_y=8)
     # травинки
     for x in (45, 90, 120, 165, 200):
-        g.px(x, 7, "E"); g.px(x + 1, 7, "E"); g.px(x, 6, "E")
+        g.px(x, 11, "E"); g.px(x + 1, 11, "E"); g.px(x, 10, "E")
     # туман у земли
     for x in range(50, 56):
-        g.px(x, 7, "D")
+        g.px(x, 11, "D")
     for x in range(96, 102):
-        g.px(x, 7, "D")
+        g.px(x, 11, "D")
     for x in range(172, 178):
-        g.px(x, 7, "D")
-    g.render("bottom.svg", "Кладбищенская земля с надгробиями и конфетами")
+        g.px(x, 11, "D")
+    g.render("bottom.svg", "Основания ворот, кладбищенская земля с надгробиями и конфетами")
 
 
 if __name__ == "__main__":
