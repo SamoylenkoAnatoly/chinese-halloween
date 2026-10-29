@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Праздник Тыквенной Луны · Двор Тихой Луны</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/spooky.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>🎃</text></svg>">
+</head>
+<body>
+<header class="topbar">
+  <div class="logo">Двор Тихой Луны <span class="hanzi">月</span></div>
+  <div class="spacer"></div>
+  <a class="back" href="../index.html">⟵ Карта двора</a>
+</header>
+
+<section class="hero">
+  <h1>🏮 Праздник Тыквенной Луны</h1>
+  <p class="sub" id="status-line"></p>
+</section>
+
+<div class="phase" style="padding-bottom:40px">
+  <div class="panel" style="text-align:center">
+    <div id="parade" style="display:flex;gap:18px;justify-content:center;align-items:flex-end;flex-wrap:wrap;margin-bottom:18px"></div>
+    <div id="lanterns" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;font-size:26px"></div>
+  </div>
+
+  <div class="panel" style="margin-top:22px">
+    <h2>Эпилог <span class="tag">рассказывает Люми</span></h2>
+    <div id="epilogue" style="line-height:1.7;color:#efe9dc;margin-top:10px"></div>
+  </div>
+
+  <div class="panel" id="cert" style="margin-top:22px;text-align:center">
+    <div style="font-size:44px">📜</div>
+    <h2>Грамота двора</h2>
+    <p style="color:#b3a8d4;margin-bottom:14px">Впиши имя, как в журнал каллиграфии Костика:</p>
+    <input id="name-input" type="text" placeholder="Имя студента" maxlength="30"
+      style="font-family:inherit;font-size:17px;padding:12px 16px;border-radius:12px;border:3px solid #3a2a5e;background:#120b24;color:#efe9dc;width:min(340px,90%)">
+    <div id="cert-card" style="display:none;margin-top:20px;border:3px dashed #ffb347;border-radius:14px;padding:26px">
+      <div style="color:#b3a8d4;font-size:14px;letter-spacing:2px">ДВОР ТИХОЙ ЛУНЫ УДОСТОВЕРЯЕТ</div>
+      <div id="cert-name" style="font-size:28px;font-weight:800;color:#ffd54f;margin:10px 0"></div>
+      <div style="color:#efe9dc">званием</div>
+      <div style="font-size:20px;font-weight:700;color:#ff8c2b;margin:6px 0">«Фонарщик Двора Тихой Луны»</div>
+      <div id="cert-fans" style="color:#b3a8d4;font-size:14px;margin-top:8px"></div>
+    </div>
+    <button class="btn" id="make-cert" style="margin-top:16px">Составить грамоту</button>
+  </div>
+
+  <div style="display:flex;gap:12px;justify-content:center;margin-top:24px;flex-wrap:wrap">
+    <a class="btn violet" href="../bonus-siege/index.html">🍬 Бонус: Осада домика</a>
+    <a class="btn ghosty" href="../index.html">⟵ На карту двора</a>
+  </div>
+</div>
+
+<div class="companion" id="companion"></div>
+<div class="footer-note">Двор Тихой Луны · финал</div>
+
+<script src="../shared/spooky.js"></script>
+<script src="../shared/lesson-data.js"></script>
+<script>
+(function () {
+  "use strict";
+  var QM = window.QM, D = window.QM_LESSONS;
+  var n = QM.progress.litCount();
+  var all = n >= 25;
+  document.getElementById("status-line").textContent = all
+    ? "Все 25 фонарей горят! Коко объявляет праздник Тыквенной Луны."
+    : "Зажжено фонарей: " + n + " из 25. Финал можно читать уже сейчас, а праздник случится, когда зажгутся все.";
+
+  var parade = document.getElementById("parade");
+  [["wizard.svg", 92], ["kostik.svg", 84], ["lumi.svg", 84], ["echo.svg", 80],
+   ["ghost.svg", 64], ["pumpkin.svg", 64], ["bat.svg", 60]].forEach(function (p) {
+    var img = document.createElement("img");
+    img.src = "../shared/characters/" + p[0];
+    img.style.width = p[1] + "px";
+    img.style.imageRendering = "pixelated";
+    parade.appendChild(img);
+  });
+
+  var row = document.getElementById("lanterns");
+  D.glyphs.concat(D.words).forEach(function (it) {
+    var lit = it.char ? QM.progress.lit(it.char) : QM.progress.word(it.word);
+    var s = document.createElement("span");
+    s.textContent = lit ? "🏮" : "▫️";
+    s.title = lit ? it.char + " " + it.pinyin + " · " + it.meaning : "ещё туман";
+    row.appendChild(s);
+  });
+
+  var EPILOGUE = [
+    "Каждый фонарь горит. Двор Тихой Луны сияет, как маленькое небо на земле. Коко сварил зелье заново — на этот раз правильным тоном, и пахло оно карамелью, а не тревогой.",
+    "Люми прошёл с парадом вдоль всех фонарей и впервые не прятался за надгробием. Эхо повторила все двадцать пять звуков подряд — без единой ошибки. Мышь-рекордсменка!",
+    "А потом случилось самое тихое чудо: последний фонарь — 心, «сердце» — мягко засветился и опустился Костикану прямо в грудную клетку. Пустота внутри заполнилась тёплым светом. «Ну вот, — сказал Костик, — теперь я слышу, как стучит костяное сердце. Быстро стучит — надо больше слов!»",
+    "Сладость или гадость? В нашем дворе всегда — сладость. Спасибо, что зажёг все фонари, студент. Двери Двора Тихой Луны открыты для тебя в любой Хэллоуин — и не только.",
+  ];
+  document.getElementById("epilogue").innerHTML = EPILOGUE.map(function (p) { return "<p style='margin-bottom:12px'>" + p + "</p>"; }).join("");
+
+  if (all) {
+    QM.sfx.finish();
+    QM.sparks(window.innerWidth / 2, window.innerHeight / 3);
+    QM.say("koko", "Хе-хе-е... Ты слышал? Это хруст карамельной тыквы. Праздник начался!");
+  } else {
+    QM.say("kostik", "Заглянул заранее? Хорошая идея. Каждый зажжённый фонарь — уже маленький праздник.");
+  }
+
+  document.getElementById("make-cert").onclick = function () {
+    var name = document.getElementById("name-input").value.trim();
+    if (!name) { document.getElementById("name-input").focus(); return; }
+    QM.sfx.good();
+    document.getElementById("cert-name").textContent = name;
+    document.getElementById("cert-fans").textContent =
+      "Подписано: Коко (звуки), Костик (черты), Люми (фонари, " + n + " шт.), Эхо (тоны)";
+    document.getElementById("cert-card").style.display = "";
+    try { localStorage.setItem("quiet-moon-name", name); } catch (e) {}
+    QM.sparks(window.innerWidth / 2, window.innerHeight / 2);
+  };
+  try {
+    var saved = localStorage.getItem("quiet-moon-name");
+    if (saved) document.getElementById("name-input").value = saved;
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>

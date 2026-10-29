@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Карта двора · Двор Тихой Луны</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared/spooky.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>🎃</text></svg>">
+</head>
+<body>
+<header class="topbar">
+  <div class="logo">Двор Тихой Луны <span class="hanzi">月</span></div>
+  <div class="spacer"></div>
+  <a class="back" href="story/index.html">📖 Сказка Коко</a>
+  <a class="back" href="finale/index.html">🏮 Праздник</a>
+</header>
+
+<section class="hero">
+  <h1>Двор Тихой Луны</h1>
+  <p class="sub">Магистр Коко чихнул с неправильным тоном — и обитатели старого кладбища проснулись.
+  Помоги им вернуть память: зажги все 25 Фонариков Памяти китайскими знаками до рассвета.</p>
+  <div class="progress-bar" style="max-width:640px;margin:0 auto">
+    <span style="font-size:22px">🏮</span>
+    <div class="track"><div class="fill" id="prog-fill" style="width:0%"></div></div>
+    <span class="lbl" id="prog-lbl">0 / 25</span>
+  </div>
+</section>
+
+<div class="map-wrap">
+  <svg id="map" class="map-svg" viewBox="0 0 1000 640" role="img" aria-label="Карта двора Тихой Луны"></svg>
+  <div class="map-note">Нажми на надгробие или фонарь — откроется урок. Костик стоит у следующего неосвещённого фонаря.</div>
+</div>
+
+<div class="map-wrap">
+  <div class="panel" style="margin-top:26px">
+    <h2>Обитатели двора <span class="tag">нажми на карточку</span></h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:14px">
+      <div class="char-card clickable" data-char="koko" style="cursor:pointer">
+        <img src="shared/characters/wizard.svg" alt="Магистр Коко">
+        <div><div class="nm">Магистр Коко</div><div class="ds">Хитрый маг. Автор слишком доброго заклинания. Отвечает за звуки и тоны.</div></div>
+      </div>
+      <div class="char-card clickable" data-char="kostik" style="cursor:pointer">
+        <img src="shared/characters/kostik-portrait.svg" alt="Скелетик Костик">
+        <div><div class="nm">Скелетик Костик</div><div class="ds">Первый воскрешённый. Бывший учитель каллиграфии. Ваш гид по двору.</div></div>
+      </div>
+      <div class="char-card clickable" data-char="lumi" style="cursor:pointer">
+        <img src="shared/characters/lumi-portrait.svg" alt="Призрак Люми">
+        <div><div class="nm">Призрак Люми</div><div class="ds">Смотритель фонарей. Единственный, кто помнит, где висят Фонарики Памяти.</div></div>
+      </div>
+      <div class="char-card clickable" data-char="echo" style="cursor:pointer">
+        <img src="shared/characters/echo-portrait.svg" alt="Мышь Эхо">
+        <div><div class="nm">Мышь Эхо</div><div class="ds">Жительница колокольни. Сто лет слушала звуки — и помнит их все.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<img class="float-bat" src="shared/characters/bat.svg" alt="" aria-hidden="true">
+
+<div class="modal-back" id="modal-back">
+  <div class="modal">
+    <button class="close-x" id="modal-close" title="Закрыть">✕</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<div class="footer-note">Двор Тихой Луны · добрый хэллоуин-курс китайского · для начинающих</div>
+
+<script src="shared/spooky.js"></script>
+<script src="shared/lesson-data.js"></script>
+<script>
+(function () {
+  "use strict";
+  var QM = window.QM, D = window.QM_LESSONS;
+  var svg = document.getElementById("map");
+  var NS = "http://www.w3.org/2000/svg";
+  var TONE_COLORS = { 1: "#e64533", 2: "#ff8c2b", 3: "#29b6f6", 4: "#86c232", 0: "#bfe8e0" };
+
+  function el(tag, attrs, parent) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function txt(parent, x, y, s, size, fill, opts) {
+    var t = el("text", { x: x, y: y, "text-anchor": "middle", "font-size": size, fill: fill }, parent);
+    if (opts && opts.font) t.setAttribute("font-family", opts.font);
+    if (opts && opts.weight) t.setAttribute("font-weight", opts.weight);
+    t.textContent = s;
+    return t;
+  }
+  function clickable(g, onClick) {
+    g.style.cursor = "pointer";
+    g.addEventListener("click", onClick);
+    g.addEventListener("keydown", function (e) { if (e.key === "Enter") onClick(); });
+    g.setAttribute("tabindex", "0");
+    g.setAttribute("role", "button");
+  }
+
+  /* ---------- фон ---------- */
+  var defs = el("defs", {}, svg);
+  defs.innerHTML = '<radialGradient id="moonGlow"><stop offset="0%" stop-color="#e8e2c4" stop-opacity=".35"/><stop offset="100%" stop-color="#e8e2c4" stop-opacity="0"/></radialGradient>';
+
+  el("rect", { x: 0, y: 0, width: 1000, height: 640, fill: "#120b24" }, svg);
+  el("rect", { x: 0, y: 170, width: 1000, height: 470, fill: "#171030" }, svg);
+  el("rect", { x: 0, y: 505, width: 1000, height: 135, fill: "#141027" }, svg);
+  [[140, 26], [220, 48], [305, 20], [410, 40], [620, 30], [700, 55], [780, 24], [860, 44],
+   [60, 90], [180, 110], [280, 95], [360, 115], [450, 95], [540, 118], [660, 100], [740, 118],
+   [830, 96], [920, 115], [70, 200], [940, 210], [50, 320], [952, 330]].forEach(function (p) {
+    el("rect", { x: p[0], y: p[1], width: 3, height: 3, fill: "#e8e2c4", opacity: .65 }, svg);
+  });
+  el("circle", { cx: 500, cy: 62, r: 72, fill: "url(#moonGlow)" }, svg);
+  el("circle", { cx: 500, cy: 62, r: 40, fill: "#e8e2c4" }, svg);
+  el("circle", { cx: 486, cy: 54, r: 8, fill: "#d0c9a8" }, svg);
+  el("circle", { cx: 512, cy: 72, r: 6, fill: "#d0c9a8" }, svg);
+  el("circle", { cx: 494, cy: 78, r: 4, fill: "#d0c9a8" }, svg);
+  var clouds = el("g", { opacity: .5 }, svg);
+  el("ellipse", { cx: 240, cy: 70, rx: 90, ry: 16, fill: "#241744" }, clouds);
+  el("ellipse", { cx: 760, cy: 95, rx: 110, ry: 14, fill: "#1c1233" }, clouds);
+  [[210, 168, 90, 40], [500, 176, 130, 40], [810, 168, 90, 40]].forEach(function (f) {
+    el("ellipse", { cx: f[0], cy: f[1], rx: f[2], ry: f[3], fill: "#e8e2c4", opacity: .05 }, svg);
+  });
+  txt(svg, 500, 140, "Д В О Р   Т И Х О Й   Л У Н Ы", 15, "#b3a8d4");
+
+  /* ---------- могилы-уроки (иероглифы) ---------- */
+  function tombstone(g) {
+    var lit = QM.progress.lit(g.char);
+    var grp = el("g", { class: "tomb", transform: "translate(" + g.map[0] + "," + g.map[1] + ")" }, svg);
+    el("ellipse", { cx: 0, cy: 4, rx: 34, ry: 6, fill: "#0b0716", opacity: .55 }, grp);
+    el("path", { class: "stone", d: "M-26 2 L-26 -34 Q-26 -48 0 -48 Q26 -48 26 -34 L26 2 Z", fill: "#514e73", stroke: "#2e2240", "stroke-width": 3 }, grp);
+    el("rect", { x: -32, y: 2, width: 64, height: 6, rx: 2, fill: "#3a3757", stroke: "#2e2240", "stroke-width": 2 }, grp);
+    if (lit) el("circle", { class: "lit-glow", cx: 40, cy: -32, r: 26, fill: "#ff8c2b", opacity: .2 }, grp);
+    el("line", { x1: 26, y1: -46, x2: 40, y2: -46, stroke: "#2e2240", "stroke-width": 3 }, grp);
+    el("line", { x1: 40, y1: -46, x2: 40, y2: -38, stroke: "#2e2240", "stroke-width": 3 }, grp);
+    el("rect", { x: 35, y: -38, width: 10, height: 13, rx: 2, fill: lit ? "#ff8c2b" : "#4a3a5e", stroke: "#2e2240", "stroke-width": 2 }, grp);
+    el("rect", { x: 38.5, y: -34, width: 3, height: 6, fill: lit ? "#ffd54f" : "#3a2a5e" }, grp);
+    txt(grp, 0, -14, g.char, 26, lit ? "#ffd54f" : "#8f8bb0", { font: "Noto Sans SC, sans-serif", weight: "700" });
+    txt(grp, 0, 26, lit ? g.pinyin : "? ? ?", 12, lit ? TONE_COLORS[g.tone] : "#6a6490", { weight: "600" });
+    clickable(grp, function () { openLessonModal(g, "glyph"); });
+  }
+
+  /* ---------- фонарики-слова ---------- */
+  function wordLantern(w) {
+    var lit = QM.progress.word(w.word);
+    var grp = el("g", { class: "tomb", transform: "translate(" + w.map[0] + "," + w.map[1] + ")" }, svg);
+    el("ellipse", { cx: 0, cy: 4, rx: 30, ry: 5, fill: "#0b0716", opacity: .55 }, grp);
+    el("rect", { x: -3, y: -46, width: 6, height: 48, rx: 2, fill: "#3a3757", stroke: "#2e2240", "stroke-width": 2 }, grp);
+    if (lit) el("circle", { class: "lit-glow", cx: 0, cy: -46, r: 30, fill: "#ffb347", opacity: .22 }, grp);
+    el("line", { x1: 0, y1: -46, x2: 0, y2: -40, stroke: "#2e2240", "stroke-width": 3 }, grp);
+    el("rect", { x: -27, y: -40, width: 54, height: 24, rx: 4, fill: lit ? "#ff8c2b" : "#4a3a5e", stroke: "#2e2240", "stroke-width": 2.5 }, grp);
+    txt(grp, 0, -22, w.word, 15, lit ? "#120b24" : "#8f8bb0", { font: "Noto Sans SC, sans-serif", weight: "700" });
+    txt(grp, 0, 22, lit ? w.pinyin : "? ? ?", 11, lit ? TONE_COLORS[w.tone] : "#6a6490", { weight: "600" });
+    clickable(grp, function () { openLessonModal(w, "word"); });
+  }
+
+  /* ---------- спец-объекты ---------- */
+  function special(key, label, desc, href, doneFlag) {
+    var pt = D.special[key].map;
+    var grp = el("g", { class: "tomb", transform: "translate(" + pt[0] + "," + pt[1] + ")" }, svg);
+    return { grp: grp, label: label, desc: desc, href: href, done: doneFlag, key: key };
+  }
+
+  function drawStory(sp) {
+    var g = sp.grp;
+    el("rect", { x: -52, y: -44, width: 104, height: 46, rx: 4, fill: "#2d1e52", stroke: "#2e2240", "stroke-width": 3 }, g);
+    el("path", { d: "M-60 -44 L0 -84 L60 -44 Z", fill: "#3a2a5e", stroke: "#2e2240", "stroke-width": 3 }, g);
+    el("rect", { x: -14, y: -26, width: 28, height: 28, rx: 2, fill: "#ffd54f", stroke: "#2e2240", "stroke-width": 2, opacity: sp.done ? 1 : .55 }, g);
+    el("line", { x1: 0, y1: -26, x2: 0, y2: 2, stroke: "#2e2240", "stroke-width": 2 }, g);
+    el("image", { href: "shared/characters/wizard.svg", x: 44, y: -36, width: 52, height: 52 }, g);
+    el("circle", { class: "lit-glow", cx: 0, cy: -12, r: 26, fill: "#ffd54f", opacity: .16 }, g);
+    txt(g, 0, 24, sp.label, 13, "#e8e2c4", { weight: "600" });
+    clickable(g, function () { openSpecialModal(sp); });
+  }
+  function drawTower(sp) {
+    var g = sp.grp;
+    el("rect", { x: -30, y: -70, width: 60, height: 74, rx: 3, fill: "#2d1e52", stroke: "#2e2240", "stroke-width": 3 }, g);
+    el("path", { d: "M-40 -70 L0 -104 L40 -70 Z", fill: "#3a2a5e", stroke: "#2e2240", "stroke-width": 3 }, g);
+    el("path", { d: "M-12 -52 Q0 -70 12 -52 L12 -38 L-12 -38 Z", fill: "#141027" }, g);
+    el("circle", { cx: 0, cy: -40, r: 7, fill: "#ffd54f", stroke: "#2e2240", "stroke-width": 2 }, g);
+    el("image", { href: "shared/characters/echo.svg", x: 26, y: -100, width: 40, height: 40 }, g);
+    txt(g, 0, 24, sp.label, 13, "#e8e2c4", { weight: "600" });
+    clickable(g, function () { openSpecialModal(sp); });
+  }
+  function drawCandyHouse(sp) {
+    var g = sp.grp;
+    el("rect", { x: -48, y: -40, width: 96, height: 42, rx: 4, fill: "#3f2a12", stroke: "#2e2240", "stroke-width": 3 }, g);
+    el("path", { d: "M-56 -40 L0 -76 L56 -40 Z", fill: "#d96f9c", stroke: "#2e2240", "stroke-width": 3 }, g);
+    [[-40, -34, 8, 8], [-24, -34, 8, 8], [-8, -34, 8, 8], [8, -34, 8, 8], [24, -34, 8, 8],
+     [-40, -18, 8, 8], [-24, -18, 8, 8], [-8, -18, 8, 8], [8, -18, 8, 8], [24, -18, 8, 8]].forEach(function (r) {
+      el("rect", { x: r[0], y: r[1], width: r[2], height: r[3], fill: "#8a5fd6", opacity: .8 }, g);
+    });
+    el("rect", { x: -12, y: -18, width: 24, height: 20, rx: 2, fill: "#ffd54f", stroke: "#2e2240", "stroke-width": 2 }, g);
+    txt(g, 0, 24, sp.label, 13, "#e8e2c4", { weight: "600" });
+    clickable(g, function () { openSpecialModal(sp); });
+  }
+  function drawPavilion(sp) {
+    var g = sp.grp;
+    el("rect", { x: -54, y: -50, width: 108, height: 52, rx: 4, fill: "#2d1e52", stroke: "#2e2240", "stroke-width": 3 }, g);
+    el("path", { d: "M-64 -50 L0 -92 L64 -50 Z", fill: "#8a5fd6", stroke: "#2e2240", "stroke-width": 3 }, g);
+    el("circle", { class: "lit-glow", cx: 0, cy: -24, r: 30, fill: "#ff8c2b", opacity: .25 }, g);
+    el("rect", { x: -12, y: -40, width: 24, height: 30, rx: 3, fill: "#ff8c2b", stroke: "#2e2240", "stroke-width": 2.5 }, g);
+    el("rect", { x: -6, y: -34, width: 12, height: 16, fill: "#ffd54f" }, g);
+    el("image", { href: "shared/characters/kostik.svg", x: 40, y: -20, width: 44, height: 44 }, g);
+    txt(g, 0, 24, sp.label, 13, "#e8e2c4", { weight: "600" });
+    clickable(g, function () { openSpecialModal(sp); });
+  }
+
+  var spStory = special("story", "📖 Сказка Коко",
+    "Как всё началось: чих с неправильным тоном, четыре героя и план на ночь.",
+    "story/index.html", function () { return QM.progress.story(); });
+  var spTones = special("tones", "🔔 Тоны полуночи",
+    "Четыре чиха Коко. Выучи тона — они половина китайского произношения.",
+    "tones/index.html", function () { return QM.progress.tones(); });
+  var spBonus = special("bonus", "🍬 Осада домика",
+    "Бонус: гости идут волнами — отбей осаду знаками и словами.",
+    "bonus-siege/index.html", function () { return false; });
+  var spFinale = special("finale", "🏮 Праздник Тыквенной Луны",
+    "Финал истории: парад фонарей и сюрприз для Костика.",
+    "finale/index.html", function () { return QM.progress.litCount() >= 25; });
+  drawStory(spStory); drawTower(spTones); drawCandyHouse(spBonus); drawPavilion(spFinale);
+
+  /* ---------- Костик-маркер у следующего неосвещённого урока ---------- */
+  function placeKostik() {
+    var next = null;
+    var all = D.glyphs.concat(D.words);
+    for (var i = 0; i < all.length; i++) {
+      var it = all[i];
+      var isLit = it.char ? QM.progress.lit(it.char) : QM.progress.word(it.word);
+      if (!isLit) { next = it; break; }
+    }
+    if (!next) next = all[0];
+    var k = el("g", { transform: "translate(" + (next.map[0] - 42) + "," + (next.map[1] + 6) + ")" }, svg);
+    el("image", { href: "shared/characters/kostik.svg", x: 0, y: -44, width: 40, height: 40 }, k);
+    txt(k, 20, 18, "ты здесь", 10, "#86c232", { weight: "600" });
+  }
+
+  D.glyphs.forEach(tombstone);
+  D.words.forEach(wordLantern);
+  placeKostik();
+
+  /* ---------- прогресс ---------- */
+  function updateProgress() {
+    var n = QM.progress.litCount();
+    document.getElementById("prog-fill").style.width = (n / 25 * 100) + "%";
+    document.getElementById("prog-lbl").textContent = n + " / 25";
+  }
+  updateProgress();
+
+  /* ---------- модалка ---------- */
+  var back = document.getElementById("modal-back");
+  function openModal(html) {
+    document.getElementById("modal-body").innerHTML = html;
+    back.classList.add("open");
+  }
+  function closeModal() { back.classList.remove("open"); }
+  document.getElementById("modal-close").onclick = closeModal;
+  back.addEventListener("click", function (e) { if (e.target === back) closeModal(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeModal(); });
+
+  function openLessonModal(it, kind) {
+    QM.sfx.click();
+    var isLit = kind === "glyph" ? QM.progress.lit(it.char) : QM.progress.word(it.word);
+    var target = it.char || it.word;
+    var py = '<span style="color:' + TONE_COLORS[it.tone] + ';font-weight:700">' + it.pinyin + "</span>";
+    openModal(
+      "<h3><span class='hanzi' style='font-size:44px;color:" + (isLit ? "#ffd54f" : "#e8e2c4") + "'>" + target +
+      "</span> &nbsp;" + py + "</h3>" +
+      "<p><b style='color:#efe9dc'>" + it.meaning + "</b></p>" +
+      "<p>" + (isLit ? "🏮 Фонарь зажжён. Можешь зайти повторить — Люми не против."
+        : "Внутри туман. Пройди 4 фазы урока — и фонарь загорится.") + "</p>" +
+      "<a class='btn' href='" + "lesson/" + encodeURIComponent(target) + "/index.html'>" +
+      (isLit ? "Зайти повторить →" : "Начать урок →") + "</a>");
+  }
+  function openSpecialModal(sp) {
+    QM.sfx.click();
+    var done = sp.done();
+    openModal(
+      "<h3>" + sp.label + "</h3><p>" + sp.desc + "</p>" +
+      "<p>" + (done ? "✅ Готово!" : "Ещё не пройдено.") + "</p>" +
+      "<a class='btn " + (done ? "ghosty" : "") + "' href='" + sp.href + "'>Открыть →</a>");
+  }
+
+  /* ---------- карточки персонажей ---------- */
+  var BIOS = {
+    koko: { name: "Магистр Коко", img: "shared/characters/wizard.svg",
+      bio: "Волшебник в фиолетовой шляпе, автор зелья «Тыквенная улыбка». Один неправильный тон — и половина кладбища проснулась. Теперь учит звукам, тонам и сказкам-заклинаниям. Смеётся: «Хе-хе-е...»" },
+    kostik: { name: "Скелетик Костик", img: "shared/characters/kostik-portrait.svg",
+      bio: "Учитель каллиграфии, первым поднявшийся из-под надгробия. Ведёт студента по двору, пишет мелом по плитам и не жалеет похвал. Мечтает вернуть своё сердце — фонарь 心." },
+    lumi: { name: "Призрак Люми", img: "shared/characters/lumi-portrait.svg",
+      bio: "Смотритель кладбищенских фонарей при жизни, поэтому один помнит все Фонарики Памяти. Застенчив: говорит из-за надгробий, краснеет даже без щёк. Зажигает фонари и ведёт «Сладость или гадость»." },
+    echo: { name: "Мышь Эхо", img: "shared/characters/echo-portrait.svg",
+      bio: "Сто лет жила на колокольне и записывала в память каждый звук двора. Единственная, кто ничего не забыл. Повторяет тоны за Коко и подсказывает произношение." },
+  };
+  document.querySelectorAll(".char-card.clickable").forEach(function (card) {
+    card.addEventListener("click", function () {
+      var b = BIOS[card.getAttribute("data-char")];
+      openModal("<img src='" + b.img + "' alt=''><h3>" + b.name + "</h3><p>" + b.bio + "</p>" +
+        "<button class='btn small ghosty' id='m-close2'>Понятно!</button>");
+      document.getElementById("m-close2").onclick = closeModal;
+    });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="qm-base" content="">
+<title>白 · Двор Тихой Луны</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/spooky.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>🎃</text></svg>">
+</head>
+<body>
+<header class="topbar">
+  <div class="logo">Двор Тихой Луны <span class="hanzi">月</span></div>
+  <div class="spacer"></div>
+  <a class="back" href="../index.html">⟵ Карта двора</a>
+</header>
+<nav class="stepper" id="stepper">
+  <div class="step active" data-ph="1"><span class="dot"></span>Туман</div>
+  <div class="step" data-ph="2"><span class="dot"></span>Голос Коко</div>
+  <div class="step" data-ph="3"><span class="dot"></span>Мел и камень</div>
+  <div class="step" data-ph="4"><span class="dot"></span>Сладость или гадость</div>
+</nav>
+
+<div class="phase" id="p1">
+  <h1>Иероглиф 白 — белый</h1>
+  <div class="sub">Крыло Сердца · Фонарь 10 из 25</div>
+  <div class="glyph-hero">
+    <div class="big hanzi">白</div>
+    <div>
+      <div class="py"><span style="color:#ff8c2b">bái</span></div>
+      <div class="mn">белый</div>
+      <div class="meta">
+        <span class="badge" style="background:#ff8c2b;color:#120b24">2-й тон</span>
+        <span>черты: <b>5</b></span>
+        <span>ключ: <b>№106 «белый»</b></span>
+        <span>фонарь <b>10</b> из 25</span>
+      </div>
+      <div class="audio-row">
+        <button class="play" id="audio-main"><span class="ico">🔊</span> Послушать</button>
+        <button class="play slow" id="audio-slow">🐢 Медленно</button>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:22px;text-align:right"><button class="btn" id="go2">Дальше: голос Коко →</button></div>
+</div>
+
+<div class="phase" id="p2" style="display:none">
+  <h1>Голос Коко</h1>
+  <div class="sub">Магистр Коко отвечает за звуки. С неправильного тона всё и началось...</div>
+  <div class="panel">
+    <div class="audio-row" style="margin-top:0">
+      <button class="play" id="audio-main2"><span class="ico">🔊</span> 白 = bái</button>
+      <button class="play slow" id="audio-slow2">🐢 Медленно</button>
+      <button class="play" id="audio-echo"><span class="ico">🐭</span> Повторить за Эхо</button>
+    </div>
+    <div class="tone-line" id="tone-line"></div>
+    <div class="tone-btns" id="tone-btns"></div>
+  </div>
+  <div class="panel tale" style="margin-top:18px">
+    <h2>Сказка-заклинание <span class="tag">рассказывает Коко</span></h2>
+    <p>Луна высушила простыню Люми на ветках рощи 林: она засияла — «<b>БАЙ!</b>» — вверх, с подъёмом: второй тон. <b>白 = bái</b>.</p><p>日 с чёрточкой-бликом сверху. Белый — значит чистый и светящийся: как косточки после дождя.</p>
+  </div>
+  <div style="margin-top:22px;display:flex;justify-content:space-between">
+    <button class="btn ghosty small" id="back1">⟵ Туман</button>
+    <button class="btn" id="go3">Дальше: мел и камень →</button>
+  </div>
+</div>
+
+<div class="phase" id="p3" style="display:none">
+  <h1>Мел и камень</h1>
+  <div class="sub">Пиши как Костик: черта за чертой, мел не жалеем. Три раунда — и фонарь наш.</div>
+  <div class="writer-wrap">
+    <div id="hanzi-target"></div>
+    <div class="writer-status" id="writer-status">Обведи черты по костям — я смотрю, Костик</div>
+    <div class="skulls" id="skulls"></div>
+    <div class="writer-ctrl">
+      <button class="btn ghosty small" id="show-strokes">Показать черты</button>
+      <button class="btn small" id="reset-writer">Заново</button>
+    </div>
+  </div>
+  <div style="margin-top:22px;display:flex;justify-content:space-between">
+    <button class="btn ghosty small" id="back2">⟵ Голос Коко</button>
+    <button class="btn" id="go4" disabled>Дальше: сладость или гадость →</button>
+  </div>
+</div>
+
+<div class="phase" id="p4" style="display:none">
+  <h1>Сладость или гадость?</h1>
+  <div class="sub">Гости двора приходят за знаками. Угости правильно — получишь конфету-фонарик.</div>
+  <div class="game-scene">
+    <div class="guest-row">
+      <img class="guest-img" id="guest-img" src="../shared/characters/ghost.svg" alt="">
+      <div class="say"><span class="q" id="guest-say">Сладость или гадость?</span><div id="guest-note" style="color:#b3a8d4;font-size:13px;margin-top:4px"></div></div>
+    </div>
+    <div class="prompt" id="prompt"></div>
+    <div class="candies" id="candies"></div>
+    <div class="game-progress" id="game-progress"></div>
+  </div>
+  <div class="lantern-ceremony" id="ceremony" style="display:none">
+    <div class="flame">🏮</div>
+    <h2 id="cer-title"></h2>
+    <p style="color:#b3a8d4;margin:10px 0 20px" id="cer-text"></p>
+    <a class="btn poison" id="to-map" href="../index.html">На карту двора →</a>
+  </div>
+  <div style="margin-top:22px"><button class="btn ghosty small" id="back3">⟵ Мел и камень</button></div>
+</div>
+
+<div class="companion" id="companion"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5.0/dist/hanzi-writer.min.js"></script>
+<script src="../shared/spooky.js"></script>
+<script>window.LESSON = {"type": "glyph", "target": "白", "pinyin": "bái", "tone": 2, "meaning": "белый", "audio": "bai.mp3", "game": [{"kind": "audio2glyph", "opts": ["白", "人", "名", "自"], "ans": "白", "prompt": "audio", "audio": "bai.mp3"}, {"kind": "meaning2glyph", "opts": ["白", "想", "息", "众"], "ans": "白", "prompt": "белый"}, {"kind": "glyph2pinyin", "opts": ["bái", "bāi", "bǎi", "bài"], "ans": "bái", "prompt": "白"}, {"kind": "pinyin2glyph", "opts": ["白", "人", "名", "自"], "ans": "白", "prompt": "bái"}, {"kind": "audio2pinyin", "opts": ["bái", "bāi", "bǎi", "bài"], "ans": "bái", "prompt": "audio", "audio": "bai.mp3"}], "parts": [], "num": 10, "total": 25};</script>
+<script>
+(function () {
+  "use strict";
+  var L = window.LESSON, QM = window.QM;
+  var phases = { 1: document.getElementById("p1"), 2: document.getElementById("p2"),
+                 3: document.getElementById("p3"), 4: document.getElementById("p4") };
+  var cur = 1;
+
+  function showPh(n) {
+    Object.keys(phases).forEach(function (k) {
+      phases[k].style.display = (+k === n) ? "" : "none";
+    });
+    document.querySelectorAll("#stepper .step").forEach(function (el) {
+      var ph = +el.getAttribute("data-ph");
+      el.classList.toggle("active", ph === n);
+      el.classList.toggle("done", ph < n);
+    });
+    cur = n;
+    if (n === 2) onPhase2();
+    if (n === 3) onPhase3();
+    if (n === 4) onPhase4();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  document.getElementById("go2").onclick = function () { QM.sfx.click(); showPh(2); };
+  document.getElementById("go3").onclick = function () { QM.sfx.click(); showPh(3); };
+  document.getElementById("go4").onclick = function () { QM.sfx.click(); showPh(4); };
+  document.getElementById("back1").onclick = function () { showPh(1); };
+  document.getElementById("back2").onclick = function () { showPh(2); };
+  document.getElementById("back3").onclick = function () { showPh(3); };
+
+  QM.bindPlay(document.getElementById("audio-main"), L.audio);
+  QM.bindPlay(document.getElementById("audio-slow"), L.audio, true);
+  QM.bindPlay(document.getElementById("audio-main2"), L.audio);
+  QM.bindPlay(document.getElementById("audio-slow2"), L.audio, true);
+  document.getElementById("audio-echo").onclick = function () {
+    QM.sfx.ghost(); QM.playAudio(L.audio);
+  };
+
+  /* ---- фаза 1 ---- */
+  QM.say("kostik", [
+    "Вот наш фонарь номер " + L.num + " из " + L.total + ". Сначала — туман: знак ещё не виден.",
+    "Смотри внимательно: " + L.target + " = " + L.pinyin + ". Слышишь звук? Кликни меня, когда будешь готов.",
+  ]);
+
+  /* ---- фаза 2 ---- */
+  var kokoLines = [
+    "Хе-хе-е... Так вот как звучит «" + L.target + "». Послушай ещё раз — нормальным тоном и медленно.",
+    "Слог «" + QM.esc(L.pinyin) + "» — " + QM.TONE_NAMES[L.tone].toLowerCase() + ". А теперь послушай все четыре тона полуночи — и запомни наш.",
+  ];
+  var tonesBox = document.getElementById("tone-btns");
+  var toneNames = { 1: "рОВНО", 2: "ВВЕРХ", 3: "НЫРОК", 4: "ВНИЗ" };
+  [1, 2, 3, 4].forEach(function (t) {
+    var b = document.createElement("button");
+    b.className = "tone-btn";
+    b.style.background = QM.TONE_COLORS[t];
+    b.innerHTML = '<span class="n">' + t + '-й тон · ' + toneNames[t] + '</span>mā ' + t;
+    b.onclick = function () {
+      QM.sfx.click();
+      QM.playAudio("ma" + t + ".mp3");
+      QM.drawTone("tone-line", t);
+    };
+    tonesBox.appendChild(b);
+  });
+  function onPhase2() {
+    QM.say("koko", kokoLines, function () {
+      QM.say("koko", "Кликай «Повторить за Эхо» и тоны ниже. Потом — tale-сказка. Читай! Она работает лучше запоминания.");
+    });
+    QM.drawTone("tone-line", L.tone);
+  }
+
+  /* ---- фаза 3: hanzi-writer ---- */
+  var writer = null, round = 1, rounds = L.type === "word" ? 2 : 3;
+  var statusEl = document.getElementById("writer-status");
+  var skullsEl = document.getElementById("skulls");
+  var go4 = document.getElementById("go4");
+  var chars = L.type === "word" ? L.parts : [L.target];
+
+  function updateSkulls() {
+    var s = "";
+    for (var i = 1; i <= rounds; i++) s += i < round ? "☠️" : "💀";
+    skullsEl.textContent = s;
+  }
+  function initWriter() {
+    writer = HanziWriter.create("hanzi-target", {
+      width: 300, height: 300, padding: 10,
+      strokeColor: "#e8e2c4", radicalColor: "#ffb347",
+      outlineColor: "#3a2a5e", drawingColor: "#efe9dc",
+      highlightColor: "#ff8c2b", leniency: 1.4,
+      charDataLoader: function (ch, onComplete) {
+        var src = "https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/" + ch + ".json";
+        fetch(src).then(function (r) { return r.json(); }).then(onComplete);
+      },
+    });
+    startRound();
+  }
+  function startRound() {
+    updateSkulls();
+    writer.hideOutline();
+    writer.showOutline();
+    writer.setCharacter(chars[round - 1]);
+    statusEl.textContent = "Раунд " + round + " из " + rounds +
+      (round === 1 ? " — контур виден, просто веди мелом." :
+        round === 2 ? " — теперь по памяти! Контур скрыт." : " — финальный раунд, ты почти Костик!");
+    writer.quiz({
+      onMistake: function (data) {
+        if (data.strokeNum === data.strokesTotal - 1) { /* последняя */ }
+        statusEl.textContent = "Черта №" + (data.strokeNum + 1) + " уехала. Попробуй ещё раз — мел прощает.";
+      },
+      onCorrect: function () {
+        QM.sfx.good();
+        round++;
+        if (round > rounds) {
+          updateSkulls();
+          statusEl.textContent = "Плита выбита! Можно идти угощать гостей.";
+          go4.disabled = false;
+          QM.say("kostik", "Отлично вырезано! У меня самого каллиграфия так не ложилась. Жми «сладость или гадость»!");
+        } else {
+          setTimeout(startRound, 700);
+        }
+      },
+    });
+  }
+  function onPhase3() {
+    if (!writer) { initWriter(); }
+    QM.say("kostik", "Правило костяной руки: черта слева направо, сверху вниз. Горизонталь первой, вертикаль следом.");
+  }
+  document.getElementById("show-strokes").onclick = function () {
+    QM.sfx.click(); writer.animateCharacter();
+  };
+  document.getElementById("reset-writer").onclick = function () {
+    QM.sfx.click(); startRound();
+  };
+
+  /* ---- фаза 4: игра ---- */
+  var guests = ["ghost", "pumpkin", "bat"];
+  var guestSay = {
+    ghost: "У-у-у... сладости передумал. Принеси знак!",
+    pumpkin: "Тыква-джек слушает внимательно. Ну же!",
+    bat: "Пи-и! Эхо на связи. Повтори звук — и получишь конфету.",
+  };
+  var rIdx = 0, tries = 0, solved = 0;
+  var roundsTotal = L.game.length;
+
+  function renderProgress() {
+    var s = "";
+    for (var i = 0; i < roundsTotal; i++) s += i < solved ? "🍬" : i === rIdx ? "🔸" : "▫️";
+    document.getElementById("game-progress").textContent = s;
+  }
+  function renderRound() {
+    renderProgress();
+    if (rIdx >= roundsTotal) { ceremony(); return; }
+    var r = L.game[rIdx];
+    var guest = guests[rIdx % guests.length];
+    var img = document.getElementById("guest-img");
+    img.src = "../shared/characters/" + guest + ".svg";
+    img.className = "guest-img";
+    document.getElementById("guest-say").textContent = guestSay[guest];
+    document.getElementById("guest-note").textContent = "Вопрос " + (rIdx + 1) + " из " + roundsTotal;
+    var p = document.getElementById("prompt");
+    var isAudio = r.prompt === "audio";
+    if (isAudio) {
+      p.innerHTML = '<button class="play" id="rprompt"><span class="ico">🔊</span> Послушай</button>' +
+        (r.kind === "audio2pinyin" || r.kind === "audio2word" ? '<div style="color:#b3a8d4;font-size:14px;margin-top:6px">выбери написание звука</div>'
+          : '<div style="color:#b3a8d4;font-size:14px;margin-top:6px">выбери знак этого звука</div>');
+      p.querySelector("#rprompt").onclick = function () { QM.playAudio(r.audio); };
+      QM.playAudio(r.audio);
+    } else if (r.kind === "glyph2pinyin" || r.kind === "word2pinyin") {
+      p.innerHTML = '<span class="hanzi">' + r.prompt + "</span>";
+    } else if (r.kind === "pinyin2glyph") {
+      p.innerHTML = '<span class="py">' + r.prompt + "</span>";
+    } else {
+      p.innerHTML = "<span>" + r.prompt + "</span>";
+    }
+    var box = document.getElementById("candies");
+    box.innerHTML = "";
+    r.opts.forEach(function (opt) {
+      var c = document.createElement("div");
+      c.className = "candy";
+      var isGlyphOpt = !/[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜüa-z]/i.test(opt) || /[\u4e00-\u9fff]/.test(opt);
+      c.innerHTML = isGlyphOpt ? '<span class="hanzi">' + opt + "</span>" : opt;
+      c.onclick = function () {
+        tries++;
+        if (opt === r.ans) {
+          c.classList.add("good");
+          img.classList.add("happy");
+          QM.sfx.good();
+          solved++;
+          setTimeout(function () { rIdx++; renderRound(); }, 850);
+        } else {
+          c.classList.add("bad");
+          img.classList.add("angry");
+          QM.sfx.bad();
+          setTimeout(function () { c.classList.remove("bad"); img.classList.remove("angry"); }, 500);
+        }
+      };
+      box.appendChild(c);
+    });
+  }
+  function ceremony() {
+    document.querySelector(".game-scene").style.display = "none";
+    var cer = document.getElementById("ceremony");
+    cer.style.display = "";
+    var rect = cer.getBoundingClientRect();
+    QM.sparks(window.innerWidth / 2, window.innerHeight / 2);
+    QM.sfx.flame();
+    setTimeout(function () { QM.sfx.finish(); }, 500);
+    document.getElementById("cer-title").innerHTML =
+      "Фонарь <span class='hanzi' style='font-size:40px;color:#ffd54f'>" + L.target + "</span> зажжён!";
+    document.getElementById("cer-text").textContent =
+      L.target + " = " + L.pinyin + " · " + L.meaning + ". Люми повесил его на крюк памяти. Фонарь " +
+      L.num + " из " + L.total + " горит!";
+    if (L.type === "glyph") QM.progress.light(L.target); else QM.progress.lightWord(L.target);
+    QM.say("kostik", "Фонарь горит — значит, знак твой навсегда. Пойдём на карту, там ещё столько света нужно!");
+  }
+  function onPhase4() {
+    QM.say("lumi", "Гости уже стоят в очереди! Правило простое: отвечаешь верно — сладость, ошибаешься — попробуй ещё.");
+    renderRound();
+  }
+
+  showPh(1);
+})();
+</script>
+</body>
+</html>

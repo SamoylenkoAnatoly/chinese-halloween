@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Осада домика · Двор Тихой Луны</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/spooky.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>🎃</text></svg>">
+</head>
+<body>
+<header class="topbar">
+  <div class="logo">Двор Тихой Луны <span class="hanzi">月</span></div>
+  <div class="spacer"></div>
+  <a class="back" href="../index.html">⟵ Карта двора</a>
+</header>
+
+<section class="hero">
+  <h1>🍬 Осада домика</h1>
+  <p class="sub">Эхо раздаёт конфеты, гости идут волнами. Двенадцать волн, три костяных сердечка. Промах — теряешь сердце, таймер не ждёт.</p>
+  <div class="progress-bar" style="max-width:560px;margin:0 auto">
+    <span style="font-size:20px">☠️</span>
+    <div class="track"><div class="fill" id="wave-fill" style="width:0%;background:#8a5fd6"></div></div>
+    <span class="lbl" id="wave-lbl">0 / 12</span>
+  </div>
+</section>
+
+<div class="phase" style="padding-bottom:60px">
+  <div class="game-scene" id="scene">
+    <div class="guest-row">
+      <img class="guest-img" id="guest-img" src="../shared/characters/bat.svg" alt="">
+      <div class="say"><span class="q">Эхо:</span> <span id="wave-say">Волна первая. Готов?</span></div>
+    </div>
+    <div class="prompt" id="prompt">Нажми «Начать осаду»</div>
+    <div class="candies" id="candies"></div>
+    <div class="progress-bar" style="max-width:420px;margin:18px auto 0" id="timer-row" hidden>
+      <div class="track" style="height:12px"><div class="fill" id="timer-fill" style="background:#86c232;width:100%"></div></div>
+    </div>
+    <div style="text-align:center;margin-top:14px;font-size:22px;letter-spacing:4px" id="hearts">❤️❤️❤️</div>
+  </div>
+  <div style="text-align:center;margin-top:18px">
+    <button class="btn" id="start-btn">⚔️ Начать осаду</button>
+    <button class="btn ghosty" id="retry-btn" style="display:none">🔁 Ещё волна</button>
+  </div>
+</div>
+
+<div class="companion" id="companion"></div>
+<div class="footer-note">Двор Тихой Луны · бонус-игра</div>
+
+<script src="../shared/spooky.js"></script>
+<script src="../shared/lesson-data.js"></script>
+<script>
+(function () {
+  "use strict";
+  var QM = window.QM, D = window.QM_LESSONS;
+  var ALL = D.glyphs.concat(D.words);
+  var WAVES = 12, TIME = 18;
+  var hearts = 3, wave = 0, score = 0, timer = null, current = null, locked = false;
+
+  var WAVE_SAY = [
+    "Волна первая — осведомители!",
+    "Дальше идут слушатели колокольни.",
+    "Волна третья — друзья тыквы.",
+    "Эти пришли за словами-парами!",
+    "Волна пятая. Я подмигиваю клычком.",
+    "Шестая волна: самая тихая, слушай внимательно.",
+    "Седьмая. Не спеши — tones помнишь?",
+    "Волна восемь: у них с собой мел!",
+    "Девятая волна: Костик подглядывает в ответах.",
+    "Десятая! Люми уже греет фонарик.",
+    "Одиннадцатая: почти парад.",
+    "Финальная волна! Дальше — только конфеты.",
+  ];
+
+  function buildWave(i) {
+    var item = ALL[(i * 2 + Math.floor(i / 3)) % ALL.length];
+    var kind = item.char ? item.game[i % 5].kind : item.game[(i + 2) % 5].kind;
+    var r = null;
+    for (var k = 0; k < item.game.length; k++) if (item.game[k].kind === kind) { r = item.game[k]; break; }
+    return r;
+  }
+  function isGlyphOpt(s) { return /[\u4e00-\u9fff]/.test(s); }
+
+  function renderPrompt(r) {
+    var p = document.getElementById("prompt");
+    if (r.prompt === "audio") {
+      p.innerHTML = '<button class="play" id="wplay"><span class="ico">🔊</span> Послушай</button>' +
+        '<div style="color:#b3a8d4;font-size:13px;margin-top:6px">' +
+        (r.kind.indexOf("2pinyin") > -1 ? "выбери написание" : "выбери знак") + "</div>";
+      document.getElementById("wplay").onclick = function () { QM.playAudio(r.audio); };
+      QM.playAudio(r.audio);
+    } else if (r.kind === "glyph2pinyin" || r.kind === "word2pinyin") {
+      p.innerHTML = "<span class='hanzi' style='font-size:40px'>" + r.prompt + "</span>";
+    } else if (r.kind === "pinyin2glyph") {
+      p.innerHTML = "<span class='py' style='font-size:30px'>" + r.prompt + "</span>";
+    } else {
+      p.innerHTML = "<span style='font-size:24px;color:#e8e2c4'>" + r.prompt + "</span>";
+    }
+  }
+
+  function startTimer() {
+    var t0 = Date.now();
+    var row = document.getElementById("timer-row"), fill = document.getElementById("timer-fill");
+    row.hidden = false;
+    fill.style.width = "100%"; fill.style.background = "#86c232";
+    clearInterval(timer);
+    timer = setInterval(function () {
+      var left = TIME - (Date.now() - t0) / 1000;
+      if (left <= 0) { clearInterval(timer); hit(false, null); return; }
+      fill.style.width = (left / TIME * 100) + "%";
+      fill.style.background = left < 6 ? "#e64533" : "#86c232";
+    }, 100);
+  }
+
+  function renderWave() {
+    locked = false;
+    document.getElementById("wave-lbl").textContent = wave + " / " + WAVES;
+    document.getElementById("wave-fill").style.width = (wave / WAVES * 100) + "%";
+    document.getElementById("hearts").textContent = "❤️".repeat(hearts) + "🖤".repeat(3 - hearts);
+    document.getElementById("wave-say").textContent = WAVE_SAY[wave] || "Держись!";
+    var guests = ["ghost", "pumpkin", "bat"];
+    var img = document.getElementById("guest-img");
+    img.src = "../shared/characters/" + guests[wave % 3] + ".svg";
+    img.className = "guest-img";
+    current = buildWave(wave);
+    renderPrompt(current);
+    var box = document.getElementById("candies");
+    box.innerHTML = "";
+    current.opts.forEach(function (opt) {
+      var c = document.createElement("div");
+      c.className = "candy";
+      c.innerHTML = isGlyphOpt(opt) ? "<span class='hanzi'>" + opt + "</span>" : opt;
+      c.onclick = function () { if (!locked) hit(opt === current.ans, c); };
+      box.appendChild(c);
+    });
+    startTimer();
+  }
+
+  function hit(good, candy) {
+    locked = true;
+    clearInterval(timer);
+    document.getElementById("timer-row").hidden = true;
+    var img = document.getElementById("guest-img");
+    if (good) {
+      score++;
+      if (candy) candy.classList.add("good");
+      img.classList.add("happy");
+      QM.sfx.good();
+    } else {
+      hearts--;
+      if (candy) candy.classList.add("bad");
+      img.classList.add("angry");
+      QM.sfx.bad();
+    }
+    document.getElementById("hearts").textContent = "❤️".repeat(Math.max(hearts, 0)) + "🖤".repeat(3 - Math.max(hearts, 0));
+    setTimeout(function () {
+      if (hearts <= 0) return end(false);
+      wave++;
+      if (wave >= WAVES) return end(true);
+      renderWave();
+    }, 850);
+  }
+
+  function end(win) {
+    var p = document.getElementById("prompt");
+    document.getElementById("candies").innerHTML = "";
+    if (win) {
+      QM.sfx.finish();
+      QM.sparks(window.innerWidth / 2, window.innerHeight / 2);
+      p.innerHTML = "<span style='font-size:24px;color:#ffd54f;font-weight:700'>Осада отбита! Конфет " + score + " из " + WAVES + ".</span>";
+      QM.say("kostik", "Никто не остался без сладости и без знаков! Могу предложить ещё заход — гости любят повторы.");
+    } else {
+      p.innerHTML = "<span style='font-size:24px;color:#e64533;font-weight:700'>Сердечки кончились. Гости унесли конфеты, но не знаки — придёт ещё раз!</span>";
+      QM.say("lumi", "Ничего-ничего... Гости возвращаются. Повтори пару уроков — и они уйдут ни с чем сладким, но с уважением.");
+    }
+    document.getElementById("start-btn").style.display = "none";
+    document.getElementById("retry-btn").style.display = "";
+  }
+
+  document.getElementById("start-btn").onclick = function () {
+    QM.sfx.click();
+    hearts = 3; wave = 0; score = 0;
+    this.style.display = "none";
+    document.getElementById("retry-btn").style.display = "none";
+    renderWave();
+  };
+  document.getElementById("retry-btn").onclick = function () {
+    QM.sfx.click();
+    hearts = 3; wave = 0; score = 0;
+    this.style.display = "none";
+    renderWave();
+  };
+
+  QM.say("echo", "Пи-и! Правила простые: верный ответ — конфета, таймер тикает. Три промаха — осада сорвётся!");
+})();
+</script>
+</body>
+</html>

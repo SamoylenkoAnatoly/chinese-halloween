@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Тоны полуночи · Двор Тихой Луны</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/spooky.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>🎃</text></svg>">
+</head>
+<body>
+<header class="topbar">
+  <div class="logo">Двор Тихой Луны <span class="hanzi">月</span></div>
+  <div class="spacer"></div>
+  <a class="back" href="../index.html">⟵ Карта двора</a>
+</header>
+
+<section class="hero">
+  <h1>🔔 Тоны полуночи</h1>
+  <p class="sub" id="intro1"></p>
+  <p class="sub" id="intro2"></p>
+</section>
+
+<div class="phase" style="padding-bottom:40px">
+  <div id="tone-cards"></div>
+
+  <div class="panel quiz-card" id="quiz" style="display:none">
+    <h2>Проверка чиха <span class="tag">послушай и выбери тон</span></h2>
+    <div class="audio-row">
+      <button class="play" id="quiz-play"><span class="ico">🔊</span> Слушать чих</button>
+      <button class="play slow" id="quiz-play-slow">🐢 Медленно</button>
+    </div>
+    <div id="quiz-opts"></div>
+    <div class="score-row" id="quiz-progress"></div>
+  </div>
+
+  <div class="panel quiz-card" id="quiz-done" style="display:none;text-align:center">
+    <div style="font-size:56px">🎉</div>
+    <h2>Тоны полуночи покорены!</h2>
+    <p style="color:#b3a8d4;margin:12px 0 20px">Эхо записала твой результат в колокольную книгу. Теперь каждый фонарь двора готов звучать правильно.</p>
+    <a class="btn" href="../index.html">На карту двора →</a>
+  </div>
+</div>
+
+<div class="companion" id="companion"></div>
+<div class="footer-note">Двор Тихой Луны · тоны</div>
+
+<script src="../shared/spooky.js"></script>
+<script>
+(function () {
+  "use strict";
+  var QM = window.QM;
+  document.getElementById("intro1").textContent =
+    "Заклинание упало на кладбище с неправильным тоном — вот почему оно сработало так мощно. В китайском тон — часть слова: смени тон — смени смысл.";
+  document.getElementById("intro2").textContent =
+    "Коко чихнул четыре раза подряд (он утверждает, что специально). Слушай и повторяй за мышью: один и тот же слог «ма» в четырёх тонах.";
+
+  var CARDS = [
+    { t: 1, hint: "высокий и ровный — как нить, на которой висит колокол двора",
+      koko: "Первый тон: держи голос ровно, как нить колокола в тишине." },
+    { t: 2, hint: "поднимается вверх — как брови от удивления «а?»",
+      koko: "Второй тон: голос идёт вверх, как брови, когда ты удивился." },
+    { t: 3, hint: "нырок вниз и возврат — как качели Люми",
+      koko: "Третий тон: вниз и обратно, как Люми ныряет за фонариком в колодец." },
+    { t: 4, hint: "резко вниз — как топот костяной стопы",
+      koko: "Четвёртый тон: коротко и решительно, как чих «ЦЗЫ!»." },
+  ];
+  var QUIZ = [
+    { audio: "ma3.mp3", ans: 3 }, { audio: "ma1.mp3", ans: 1 },
+    { audio: "ma4.mp3", ans: 4 }, { audio: "ma2.mp3", ans: 2 },
+    { audio: "ma4.mp3", ans: 4 }, { audio: "ma1.mp3", ans: 1 },
+  ];
+  var NAMES4 = { 1: "мā · ровно", 2: "мá · вверх", 3: "мǎ · нырок", 4: "мà · вниз" };
+
+  var holder = document.getElementById("tone-cards");
+  CARDS.forEach(function (c) {
+    var d = document.createElement("div");
+    d.className = "panel";
+    d.style.marginBottom = "18px";
+    d.innerHTML =
+      "<h2><span class='badge' style='background:" + QM.TONE_COLORS[c.t] + ";color:#120b24'>" + c.t + "-й тон</span></h2>" +
+      '<div class="audio-row"><button class="play" data-f="ma' + c.t + '.mp3"><span class="ico">🔊</span> мā</button>' +
+      '<button class="play slow" data-f="ma' + c.t + '.mp3" data-slow="1">🐢 Медленно</button></div>' +
+      '<div class="tone-line contour"></div>' +
+      '<p style="color:#b3a8d4;margin:8px 0">' + c.hint + "</p>";
+    holder.appendChild(d);
+    QM.drawTone(d.querySelector(".contour"), c.t);
+    d.querySelectorAll(".play").forEach(function (b) {
+      b.onclick = function () {
+        QM.sfx.click();
+        QM.playAudio(b.getAttribute("data-f"), b.getAttribute("data-slow"));
+        QM.drawTone(d.querySelector(".contour"), c.t);
+      };
+    });
+  });
+
+  QM.say("koko", [
+    "Хе-хе-е... Послушай все четыре чиха. Мой любимый — четвёртый: коротко и решительно!",
+    "Потом Эхо проверит тебя: она сыграла чихи в случайном порядке. Кликни «Слушать чих» в проверке.",
+  ]);
+
+  /* ---------- проверка ---------- */
+  var qi = 0, okCount = 0;
+  var quizEl = document.getElementById("quiz");
+  var optsEl = document.getElementById("quiz-opts");
+  var progEl = document.getElementById("quiz-progress");
+  var current = null;
+
+  document.querySelectorAll("a.btn,button.btn").forEach(function () {});
+  setTimeout(function () { quizEl.style.display = ""; }, 1200);
+
+  function renderProgress() {
+    var s = "";
+    for (var i = 0; i < QUIZ.length; i++) s += i < qi ? (okCount > i ? "✅" : "✅") : i === qi ? "🔸" : "▫️";
+    progEl.textContent = s;
+  }
+  function renderQuiz() {
+    renderProgress();
+    if (qi >= QUIZ.length) {
+      quizEl.style.display = "none";
+      document.getElementById("quiz-done").style.display = "";
+      QM.progress.markTones();
+      QM.sfx.finish();
+      QM.sparks(window.innerWidth / 2, window.innerHeight / 2);
+      QM.say("kostik", "Все четыре тона как на ладони! Теперь на карту — фонари ждут правильных звуков.");
+      return;
+    }
+    current = QUIZ[qi];
+    optsEl.innerHTML = "";
+    [1, 2, 3, 4].forEach(function (t) {
+      var b = document.createElement("button");
+      b.className = "opt-btn";
+      b.innerHTML = "<span style='color:" + QM.TONE_COLORS[t] + ";font-weight:800'>" + NAMES4[t] + "</span> — " + t + "-й тон";
+      b.onclick = function () {
+        if (t === current.ans) {
+          b.classList.add("good");
+          QM.sfx.good();
+          okCount++;
+          setTimeout(function () { qi++; renderQuiz(); }, 600);
+        } else {
+          b.classList.add("bad");
+          QM.sfx.bad();
+          setTimeout(function () { b.classList.remove("bad"); }, 400);
+        }
+      };
+      optsEl.appendChild(b);
+    });
+  }
+  document.getElementById("quiz-play").onclick = function () {
+    QM.sfx.click();
+    if (current) QM.playAudio(current.audio);
+  };
+  document.getElementById("quiz-play-slow").onclick = function () {
+    if (current) QM.playAudio(current.audio, true);
+  };
+  renderQuiz();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Чих Магистра Коко · Двор Тихой Луны</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/spooky.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>🎃</text></svg>">
+</head>
+<body>
+<header class="topbar">
+  <div class="logo">Двор Тихой Луны <span class="hanzi">月</span></div>
+  <div class="spacer"></div>
+  <a class="back" href="../index.html">⟵ Карта двора</a>
+</header>
+
+<section class="hero">
+  <h1>Чих Магистра Коко</h1>
+  <p class="sub">Пролог. Как одна ошибка в тоне устроила самую добрую ночь в году.</p>
+</section>
+
+<div id="story-holder"></div>
+<div class="story-nav">
+  <button class="btn ghosty" id="prev" disabled>⟵ Назад</button>
+  <button class="btn" id="next">Дальше →</button>
+</div>
+
+<div class="companion" id="companion"></div>
+<div class="footer-note">Двор Тихой Луны · пролог</div>
+
+<script src="../shared/spooky.js"></script>
+<script>
+(function () {
+  "use strict";
+  var QM = window.QM;
+  var SPR = {
+    koko: "../shared/characters/wizard.svg",
+    kostik: "../shared/characters/kostik.svg",
+    lumi: "../shared/characters/lumi.svg",
+    echo: "../shared/characters/echo.svg",
+    ghost: "../shared/characters/ghost.svg",
+    pumpkin: "../shared/characters/pumpkin.svg",
+    bat: "../shared/characters/bat.svg",
+  };
+  var NAMES = { koko: "Коко", kostik: "Костик", lumi: "Люми", echo: "Эхо", narrator: "" };
+  var PANELS = [
+    { title: "Сцена 1. Хижина Коко", scene: [SPR.koko, SPR.pumpkin], moon: true, lines: [
+      ["koko", "Щепотка полночи... три капли луны... тыква по диагонали... Зелье «Тыквенная улыбка» почти готово!"],
+      ["koko", "Осталось прочитать заклинание. Тон второй, вверх... а на строчку в моей книге что-то накапало..."]]},
+    { title: "Сцена 2. Чих", scene: [SPR.koko, "💥", SPR.bat], moon: true, lines: [
+      ["koko", "Тыквенная улыбка... а-а... А-А... <b>ЦЗЫ-И-И-И!</b>"],
+      ["narrator", "Чих вышел с неправильным тоном. Страница гримуара выпорхнула в окно, как испуганная мышь. Над кладбищем загудел колокол."]]},
+    { title: "Сцена 3. Двор просыпается", scene: [SPR.ghost, SPR.pumpkin, SPR.bat], moon: true, lines: [
+      ["narrator", "Надгробия зашевелились, как печенья в пачке. Из-под земли поднялись тени — добрые, растерянные и очень сонные."],
+      ["narrator", "Заклинание получилось слишком добрым: никому не сделало больно, но у всех стёрло память — до последнего имени."]]},
+    { title: "Сцена 4. Костик", scene: [SPR.kostik], moon: false, lines: [
+      ["kostik", "Тихо-тихо! Никого не пугаем, никого не гоняем. Я Костик, учитель каллиграфии. Кажется, мы всё забыли... даже свои имена."],
+      ["kostik", "Но у меня есть мел, шляпа и отличный план. Студент, подай костяную руку!"]]},
+    { title: "Сцена 5. Люми", scene: [SPR.lumi, "🏮"], moon: false, lines: [
+      ["lumi", "Я... я Люми. Я смотритель фонарей. Я один помню, где висят Фонарики Памяти!"],
+      ["lumi", "Каждый зажигается от китайского знака. Зажжёте все до рассвета — память вернётся всем, и никто не рассыплется в искры!"]]},
+    { title: "Сцена 6. Эхо и план", scene: [SPR.echo, SPR.koko, SPR.kostik], moon: true, lines: [
+      ["echo", "Пи-и! Я Эхо, с колокольни. Сто лет слушала звуки двора и помню их все — даже четыре ваших чиха, Магистр!"],
+      ["koko", "Хе-хе-е... Договорились: я учу звукам, Костик — письму, Люми зажигает фонари, Эхо повторяет. Урок начинается. Пойдём зажигать фонари!"]]},
+  ];
+
+  var i = 0;
+  var holder = document.getElementById("story-holder");
+  var prevBtn = document.getElementById("prev"), nextBtn = document.getElementById("next");
+
+  function render() {
+    var p = PANELS[i];
+    var scene = p.scene.map(function (s) {
+      return /^</.test(s) ? '<span style="font-size:56px">' + s + "</span>"
+        : '<img src="' + s + '" alt="">';
+    }).join("");
+    var lines = p.lines.map(function (l) {
+      return '<div class="line">' + (NAMES[l[0]] ? '<span class="who">' + NAMES[l[0]] + ":</span>" : "") + l[1] + "</div>";
+    }).join("");
+    holder.innerHTML =
+      '<div class="story-panel enter">' +
+      '<div class="scene">' + (p.moon ? '<span class="moon-big">🌙</span>' : "") + scene + "</div>" +
+      "<h2>" + p.title + "</h2>" + lines + "</div>";
+    prevBtn.disabled = i === 0;
+    nextBtn.textContent = i === PANELS.length - 1 ? "🏮 Пойдём зажигать фонари!" : "Дальше →";
+    if (i === PANELS.length - 1) {
+      QM.progress.markStory();
+      QM.say("kostik", "План такой: сначала — тоны полуночи, потом фонари по крыльям. Кликни «Пойдём зажигать» — и вперёд!");
+    }
+  }
+  prevBtn.onclick = function () { if (i > 0) { i--; QM.sfx.click(); render(); } };
+  nextBtn.onclick = function () {
+    QM.sfx.click();
+    if (i === PANELS.length - 1) { location.href = "../tones/index.html"; return; }
+    i++; render();
+  };
+  render();
+})();
+</script>
+</body>
+</html>
