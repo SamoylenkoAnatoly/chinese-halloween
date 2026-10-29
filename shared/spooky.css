@@ -372,7 +372,7 @@ body.with-ground { display: flex; flex-direction: column; }
   .companion { padding: 0 12px; }
 }
 
-/* ---------- Мел и камень: Костик с холстом ---------- */
+/* ---------- Мел и камень: холст держат костяные руки ---------- */
 .writer-wrap {
   display: flex; flex-wrap: wrap; gap: 16px;
   align-items: flex-start; justify-content: center;
@@ -380,16 +380,19 @@ body.with-ground { display: flex; flex-direction: column; }
 .writer-wrap > .writer-status,
 .writer-wrap > .skulls,
 .writer-wrap > .writer-ctrl { flex: 1 1 100%; }
-.kostik-board {
-  width: 124px; height: 124px; flex-shrink: 0; margin-top: 4px;
-  image-rendering: pixelated;
+.bone-hand {
+  height: 132px; width: auto; flex-shrink: 0; align-self: center;
+  image-rendering: pixelated; position: relative; z-index: 2;
   filter: drop-shadow(0 5px 0 rgba(0, 0, 0, .35));
 }
-.kostik-board.joy { animation: kostik-joy .75s ease-in-out 3; }
-@keyframes kostik-joy {
+.hand-l { margin-right: -12px; }
+.hand-r { margin-left: -12px; }
+.bone-hand.joy { animation: hands-joy .7s ease-in-out 3; }
+.hand-r.joy { animation-delay: .12s; }
+@keyframes hands-joy {
   0%, 100% { transform: translateY(0) rotate(0deg); }
-  30% { transform: translateY(-16px) rotate(-7deg); }
-  60% { transform: translateY(-4px) rotate(6deg); }
+  30% { transform: translateY(-16px) rotate(-6deg); }
+  60% { transform: translateY(-4px) rotate(5deg); }
 }
 
 /* ---------- Сладость или гадость: Люми и мешок вопросов ---------- */
@@ -410,7 +413,9 @@ body.with-ground { display: flex; flex-direction: column; }
   80% { transform: rotate(-6deg) translateY(-2px); }
 }
 @media (max-width: 700px) {
-  .kostik-board { width: 92px; height: 92px; }
+  .bone-hand { height: 92px; }
+  .hand-l { margin-right: -8px; }
+  .hand-r { margin-left: -8px; }
   .lumi-host { width: 52px; height: 52px; }
   .sack-img { width: 42px; height: 42px; }
   .guest-row img.guest-img { width: 64px; height: 64px; }

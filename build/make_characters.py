@@ -522,49 +522,43 @@ def bat_guest():
     return g, p, "Мышь-гость"
 
 
-def kostik_board():
-    """Костик с меловым холстом на костяной рамке — учитель у плиты фазы 3."""
-    g = Grid(40, 40)
-    p = dict(H="#241744", h="#3a2a5e", b="#ff8c2b", S="#f4efe2", s="#d8d1bd",
-             K="#0b0716", F="#ffb347", G="#86c232", t="#5f9420", C="#b3a8d4")
-    # цилиндр
-    g.rect(14, 1, 12, 3, "H")
-    g.vline(14, 1, 3, "h")
-    g.rect(13, 4, 14, 2, "b")
-    g.rect(11, 6, 18, 2, "H")
-    g.hline(11, 6, 18, "h")
-    # череп
-    g.rect(13, 8, 14, 2, "S")
-    g.rect(12, 10, 16, 6, "S")
-    g.rect(14, 16, 12, 2, "S")
-    g.vline(27, 10, 6, "s")
-    g.hline(14, 17, 12, "s")
-    g.rect(14, 11, 3, 3, "K")
-    g.rect(23, 11, 3, 3, "K")
-    g.px(15, 12, "F"); g.px(24, 12, "F")
-    g.px(18, 14, "K"); g.px(19, 14, "K")
-    g.hline(15, 15, 10, "K")
-    g.px(16, 15, "S"); g.px(17, 15, "S"); g.px(22, 15, "S"); g.px(23, 15, "S")
-    # шарф
-    g.rect(12, 18, 16, 2, "G")
-    g.px(15, 19, "t"); g.px(24, 19, "t")
-    # холст на костяной рамке: рамка + тёмное полотно
-    g.rect(9, 21, 22, 15, "S")
-    g.rect(11, 23, 18, 11, "H")
-    g.px(10, 22, "s"); g.px(29, 22, "s")
-    g.px(10, 34, "s"); g.px(29, 34, "s")
-    # меловой знак 天: горизонталь, вертикаль, расходящиеся ноги
-    g.hline(14, 26, 12, "C")
-    g.vline(19, 27, 6, "C")
-    g.px(17, 30, "C"); g.px(16, 31, "C")
-    g.px(21, 30, "C"); g.px(22, 31, "C")
-    # руки-кости держат рамку
-    g.vline(7, 23, 4, "S"); g.vline(32, 23, 4, "S")
-    g.px(7, 27, "S"); g.px(32, 27, "S")
-    # ноги
-    g.vline(14, 36, 3, "S"); g.vline(25, 36, 3, "S")
-    g.px(13, 39, "S"); g.px(26, 39, "S")
-    return g, p, "Костик с холстом на костях"
+def bone_hand():
+    """Костяная рука, держащая холст сбоку: рукав, предплечье, ладонь,
+    пальцы с суставами тянутся вправо (к холсту)."""
+    g = Grid(44, 92)
+    p = dict(H="#241744", h="#3a2a5e", b="#ff8c2b", S="#f4efe2", s="#d8d1bd", K="#0b0716")
+    # тёмный рукав с манжетой
+    g.rect(0, 32, 10, 28, "H")
+    g.hline(0, 32, 10, "h")
+    g.vline(0, 33, 27, "h")
+    g.px(4, 46, "b")
+    # предплечье: две кости с тёмными суставами
+    g.rect(10, 37, 12, 3, "S")
+    g.rect(10, 45, 12, 3, "S")
+    g.vline(16, 37, 3, "K"); g.vline(16, 45, 3, "K")
+    g.px(11, 36, "s"); g.px(11, 44, "s")
+    # запястье
+    g.rect(22, 34, 6, 18, "S")
+    g.vline(27, 34, 18, "s")
+    # ладонь
+    g.rect(28, 24, 8, 42, "S")
+    g.vline(35, 24, 42, "s")
+    g.px(31, 28, "s"); g.px(31, 38, "s"); g.px(31, 48, "s"); g.px(31, 58, "s")
+    # четыре пальца с суставами тянутся к холсту
+    g.rect(36, 24, 7, 6, "S")
+    g.rect(36, 33, 8, 6, "S")
+    g.rect(36, 42, 7, 6, "S")
+    g.rect(36, 51, 6, 6, "S")
+    g.vline(39, 24, 6, "K"); g.vline(40, 33, 6, "K")
+    g.vline(39, 42, 6, "K"); g.vline(38, 51, 6, "K")
+    g.px(42, 24, "s"); g.px(43, 33, "s"); g.px(42, 42, "s"); g.px(41, 51, "s")
+    # большой палец снизу
+    g.rect(30, 66, 9, 5, "S")
+    g.vline(34, 66, 5, "K")
+    g.px(38, 66, "s")
+    # тень под ладонью
+    g.hline(28, 67, 8, "s")
+    return g, p, "Костяная рука с холстом"
 
 
 def sack_quest():
@@ -601,17 +595,23 @@ def sack_quest():
 
 
 if __name__ == "__main__":
-    for fn, name in [(kostik_portrait, "kostik-portrait.svg"),
-                     (lumi_portrait, "lumi-portrait.svg"),
-                     (echo_portrait, "echo-portrait.svg"),
-                     (kostik_sprite, "kostik.svg"),
-                     (lumi_sprite, "lumi.svg"),
-                     (echo_sprite, "echo.svg"),
-                     (ghost_guest, "ghost.svg"),
-                     (pumpkin_guest, "pumpkin.svg"),
-                     (bat_guest, "bat.svg"),
-                     (kostik_board, "kostik-board.svg"),
-                     (sack_quest, "sack.svg")]:
+    sprites = [(kostik_portrait, "kostik-portrait.svg"),
+               (lumi_portrait, "lumi-portrait.svg"),
+               (echo_portrait, "echo-portrait.svg"),
+               (kostik_sprite, "kostik.svg"),
+               (lumi_sprite, "lumi.svg"),
+               (echo_sprite, "echo.svg"),
+               (ghost_guest, "ghost.svg"),
+               (pumpkin_guest, "pumpkin.svg"),
+               (bat_guest, "bat.svg"),
+               (sack_quest, "sack.svg")]
+    for fn, name in sprites:
         g, p, desc = fn()
         g.render_svg(p, name, desc)
+    # костяные руки: левая + зеркальная правая
+    g, p, desc = bone_hand()
+    g.render_svg(p, "bone-hand-l.svg", desc)
+    m = Grid(g.w, g.h)
+    m.c = [row[::-1] for row in g.c]
+    m.render_svg(p, "bone-hand-r.svg", desc)
     print("done")

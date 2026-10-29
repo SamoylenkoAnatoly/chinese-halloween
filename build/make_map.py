@@ -32,8 +32,34 @@ PAGE = """<!DOCTYPE html>
 <title>Карта двора · Двор Тихой Луны</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="shared/spooky.css?v=3">
+<link rel="stylesheet" href="shared/spooky.css?v=10">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>🎃</text></svg>">
+<style>
+.g-item { cursor: pointer; }
+.g-note { text-align: center; color: #b3a8d4; font-size: 14px; margin-top: 10px; min-height: 20px; }
+.g-inner { transform-box: fill-box; transform-origin: 50% 100%; }
+.g-item.act .g-inner { animation: g-pop .55s ease; }
+@keyframes g-pop { 0%, 100% { transform: translateY(0) scale(1); } 40% { transform: translateY(-5px) scale(1.07); } }
+.g-item .spider { transform-box: fill-box; }
+.g-item.act .spider { animation: sp-drop 1.6s ease; }
+@keyframes sp-drop { 0% { transform: translateY(0); } 30% { transform: translateY(46px); } 65% { transform: translateY(30px); } 100% { transform: translateY(0); } }
+.g-item .batfly2 { transform-box: fill-box; transform-origin: center; }
+.g-item.act .batfly2 { animation: bat-scared 1.5s ease; }
+@keyframes bat-scared { 0% { transform: translate(0, 0); } 35% { transform: translate(-40px, -60px); } 70% { transform: translate(55px, -90px); opacity: .5; } 100% { transform: translate(0, 0); opacity: 1; } }
+.g-item .zhand { transform-box: fill-box; transform-origin: 50% 100%; }
+.g-item.act .zhand { animation: z-rise .9s ease; }
+@keyframes z-rise { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(-16px) rotate(-8deg); } 70% { transform: translateY(-8px) rotate(5deg); } }
+.g-item.act .bub { animation: b-up 1.1s ease; }
+@keyframes b-up { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-34px); opacity: 0; } }
+.g-item .flame2 { transform-box: fill-box; transform-origin: 50% 100%; }
+.g-item.act .flame2 { animation: f-flick .5s ease 3; }
+@keyframes f-flick { 0%, 100% { transform: scaleY(1); opacity: 1; } 50% { transform: scaleY(1.35) scaleX(.8); opacity: .8; } }
+.g-item.act .cat-eye rect { fill: #ffd54f; }
+.g-item .cat-tail { transform-box: fill-box; transform-origin: 20% 90%; }
+.g-item.act .cat-tail { animation: tail-w .8s ease 2; }
+@keyframes tail-w { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-22deg); } }
+.g-item.act .pk-face rect { fill: #ffd54f; }
+</style>
 </head>
 <body>
 <header class="topbar">
@@ -83,6 +109,14 @@ PAGE = """<!DOCTYPE html>
   </div>
 </div>
 
+<div class="map-wrap">
+  <div class="panel" style="margin-top:26px">
+    <h2>Хэллоуин-огород двора <span class="tag">покликай по предметам</span></h2>
+    <svg id="ground-scene" class="map-svg" viewBox="0 0 1000 260" role="img" aria-label="Хэллоуин-предметы двора"></svg>
+    <div class="g-note" id="ground-note">Все предметы двора живые: тыквы ухмыляются, котёл булькает, паук — паучит. Кликай!</div>
+  </div>
+</div>
+
 <img class="float-bat" src="shared/characters/bat.svg" alt="" aria-hidden="true">
 
 <div class="modal-back" id="modal-back">
@@ -94,7 +128,7 @@ PAGE = """<!DOCTYPE html>
 
 <div class="footer-note">Двор Тихой Луны · добрый хэллоуин-курс китайского · для начинающих</div>
 
-<script src="shared/spooky.js?v=3"></script>
+<script src="shared/spooky.js?v=10"></script>
 <script src="shared/lesson-data.js"></script>
 <script>
 (function () {
@@ -293,6 +327,199 @@ PAGE = """<!DOCTYPE html>
 
   D.glyphs.forEach(tombstone);
   D.words.forEach(wordLantern);
+
+  /* ---------- Хэллоуин-огород: детальная интерактивная земля ---------- */
+  (function groundScene() {
+    var gs = document.getElementById("ground-scene");
+    var NOTE = document.getElementById("ground-note");
+    if (!gs || !NOTE) return;
+
+    function grp(parent, cls) { return el("g", { "class": cls || "" }, parent); }
+
+    /* фон: трава, борозды, камешки, кости, светящиеся грибы */
+    px(gs, 0, 0, 1000, 260, "#171030");
+    px(gs, 0, 106, 1000, 6, "#22470f");
+    px(gs, 0, 112, 1000, 6, "#2c5a14");
+    for (var tx = 6; tx < 1000; tx += 18) {
+      var th = 5 + (tx * 7) % 9;
+      px(gs, tx, 112 - th, 3, th, (tx / 18) % 2 ? "#3f7a1e" : "#4f9a28");
+    }
+    px(gs, 0, 118, 1000, 60, "#1c1233");
+    px(gs, 0, 178, 1000, 82, "#140f26");
+    for (var rx = 20; rx < 1000; rx += 47) { px(gs, rx, 190 + (rx * 3) % 50, 7, 4, "#2e2240"); }
+    for (var bx2 = 34; bx2 < 1000; bx2 += 91) {
+      var by2 = 196 + (bx2 * 5) % 46;
+      px(gs, bx2, by2, 14, 3, "#c9c2a4");
+      px(gs, bx2 + 4, by2 - 2, 3, 3, "#c9c2a4");
+    }
+    for (var mx = 60; mx < 1000; mx += 173) {
+      var my = 170 + (mx * 3) % 26;
+      px(gs, mx, my, 2, 6, "#b3a8d4");
+      px(gs, mx - 3, my - 3, 8, 4, "#86c232");
+      px(gs, mx - 1, my - 2, 2, 2, "#bfe8e0", .8);
+    }
+    for (var wx = 96; wx < 1000; wx += 137) { px(gs, wx, 224 + (wx * 2) % 22, 8, 2, "#c5640d", .6); }
+
+    function item(x, y, draw, line, sfx) {
+      var outer = el("g", { "class": "g-item" }, gs);
+      outer.setAttribute("transform", "translate(" + x + "," + y + ")");
+      var inner = grp(outer, "g-inner");
+      draw(inner);
+      el("rect", { x: -52, y: -130, width: 104, height: 150, fill: "transparent" }, inner);
+      outer.addEventListener("click", function (e) {
+        if (sfx) sfx();
+        QM.sparks(e.clientX, e.clientY);
+        NOTE.textContent = line;
+        outer.classList.remove("act");
+        void inner.getBoundingClientRect();
+        outer.classList.add("act");
+        setTimeout(function () { outer.classList.remove("act"); }, 1700);
+      });
+    }
+
+    /* 1. Тыква-джек */
+    item(70, 200, function (d) {
+      px(d, -4, -68, 8, 8, "#5f9420");
+      px(d, 0, -72, 3, 5, "#86c232");
+      px(d, -32, -58, 64, 10, "#d96f1a");
+      px(d, -26, -62, 52, 42, "#d96f1a");
+      px(d, -20, -64, 40, 46, "#ff8c2b");
+      px(d, -12, -66, 24, 50, "#ffb347");
+      px(d, -34, -30, 68, 14, "#d96f1a");
+      var f = grp(d, "pk-face");
+      px(f, -18, -52, 4, 4, "#3a2a5e"); px(f, -14, -48, 4, 4, "#3a2a5e");
+      px(f, 14, -52, 4, 4, "#3a2a5e"); px(f, 10, -48, 4, 4, "#3a2a5e");
+      px(f, -2, -46, 4, 4, "#3a2a5e");
+      px(f, -18, -36, 36, 6, "#3a2a5e");
+      px(f, -12, -30, 24, 4, "#3a2a5e");
+      px(f, -6, -30, 4, 4, "#ff8c2b"); px(f, 4, -30, 4, 4, "#ff8c2b");
+    }, "Тыква-джек ухмыляется: «Мой нос — как четвёртый тон: коротко, решительно и прямо в цель!»",
+      function () { QM.sfx.flame(); });
+
+    /* 2. Пирамида черепов */
+    item(185, 196, function (d) {
+      function skull(x, y) {
+        px(d, x, y, 26, 20, "#e8e2c4");
+        px(d, x + 3, y - 4, 20, 4, "#e8e2c4");
+        px(d, x + 24, y + 2, 2, 16, "#d8d1bd");
+        px(d, x + 5, y + 5, 6, 6, "#0b0716");
+        px(d, x + 15, y + 5, 6, 6, "#0b0716");
+        px(d, x + 11, y + 13, 4, 3, "#0b0716");
+        px(d, x + 4, y + 18, 18, 3, "#d8d1bd");
+      }
+      skull(-34, -28); skull(6, -28); skull(-14, -52);
+      px(d, -44, -6, 24, 4, "#c9c2a4"); px(d, -48, -8, 4, 8, "#c9c2a4");
+      px(d, 22, -4, 20, 4, "#c9c2a4"); px(d, 38, -6, 4, 8, "#c9c2a4");
+    }, "Черепа спорят, какая черта пишется первой — горизонталь или вертикаль. Костик голосует за горизонталь: сверху вниз и слева направо!",
+      function () { QM.sfx.click(); });
+
+    /* 3. Котёл с тон-отваром */
+    item(300, 204, function (d) {
+      px(d, -30, -6, 60, 8, "#0b0716", .5);
+      px(d, -34, -52, 68, 44, "#241744");
+      px(d, -38, -48, 8, 36, "#3a2a5e");
+      px(d, 30, -48, 8, 36, "#1a1033");
+      px(d, -26, -58, 60, 8, "#3a2a5e");
+      px(d, -22, -56, 52, 4, "#86c232");
+      px(d, -18, -55, 10, 2, "#bfe8e0", .7);
+      px(d, -24, -10, 6, 10, "#0b0716"); px(d, 18, -10, 6, 10, "#0b0716");
+      var b1 = grp(d, "bub"); px(b1, -12, -64, 6, 6, "#86c232");
+      var b2 = grp(d, "bub"); px(b2, 2, -66, 8, 8, "#86c232"); px(b2, 4, -64, 3, 3, "#bfe8e0", .7);
+      var b3 = grp(d, "bub"); px(b3, 14, -62, 5, 5, "#86c232");
+      b2.setAttribute("style", "animation-delay:.18s");
+      b3.setAttribute("style", "animation-delay:.32s");
+    }, "В котле булькает тон-отвар: три ложки третьего тона и щепотка второго. Не пробовать — повторять!",
+      function () { QM.sfx.good(); });
+
+    /* 4. Паук Пиньинь на паутине */
+    item(415, 204, function (d) {
+      px(d, -46, -98, 8, 98, "#5f4318");
+      px(d, -46, -98, 8, 6, "#7a5a20");
+      px(d, -38, -94, 30, 5, "#5f4318");
+      px(d, -12, -90, 14, 4, "#5f4318");
+      el("path", { d: "M -10 -88 Q 20 -106 46 -72 M -10 -88 Q 24 -94 48 -60 M -10 -88 Q 26 -80 48 -48",
+                   stroke: "#b3a8d4", "stroke-width": 1, opacity: .45, fill: "none" }, d);
+      var sp = grp(d, "spider");
+      px(sp, -1, -66, 2, 36, "#b3a8d4", .6);
+      px(sp, -8, -32, 16, 12, "#241744");
+      px(sp, -5, -36, 10, 5, "#3a2a5e");
+      px(sp, -4, -35, 2, 2, "#e64533"); px(sp, 0, -35, 2, 2, "#e64533");
+      px(sp, -14, -28, 6, 2, "#241744"); px(sp, 8, -28, 6, 2, "#241744");
+      px(sp, -15, -24, 6, 2, "#241744"); px(sp, 9, -24, 6, 2, "#241744");
+      px(sp, -14, -20, 5, 2, "#241744"); px(sp, 9, -20, 5, 2, "#241744");
+    }, "Паук Пиньинь плетёт паутину из четырёх тонов: один неверный изгиб — и вся сеть путается. Как в произношении!",
+      function () { QM.sfx.ghost(); });
+
+    /* 5. Рука-зомби из кургана */
+    item(530, 198, function (d) {
+      px(d, -34, -14, 68, 16, "#22470f");
+      px(d, -28, -18, 56, 6, "#2c5a14");
+      px(d, -30, -16, 5, 5, "#3f7a1e"); px(d, 22, -15, 5, 5, "#3f7a1e");
+      px(d, 30, -12, 12, 3, "#c9c2a4", .7);
+      var zh = grp(d, "zhand");
+      px(zh, -6, -32, 12, 20, "#c9c2a4");
+      px(zh, -6, -32, 12, 4, "#e8e2c4");
+      px(zh, -7, -36, 14, 5, "#e8e2c4");
+      px(zh, -7, -39, 3, 4, "#e8e2c4"); px(zh, -1, -40, 3, 5, "#e8e2c4"); px(zh, 4, -39, 3, 4, "#e8e2c4");
+    }, "Рука-зомби вылезла за добавкой иероглифов. Скорми ей ещё один урок — и она уляжется обратно!",
+      function () { QM.sfx.bad(); });
+
+    /* 6. Свечки-Фонарики на пеньке */
+    item(645, 202, function (d) {
+      px(d, -30, -22, 60, 24, "#5f4318");
+      px(d, -30, -22, 60, 5, "#7a5a20");
+      px(d, -18, -16, 6, 8, "#3d2a0e"); px(d, 8, -12, 7, 6, "#3d2a0e");
+      function candle(x, h) {
+        px(d, x, -22 - h, 8, h, "#efe9dc");
+        px(d, x + 6, -22 - h, 2, h, "#c9c2ae");
+        var f = grp(d, "flame2");
+        px(f, x + 1, -27 - h, 6, 6, "#ffd54f");
+        px(f, x + 2, -29 - h, 4, 3, "#ff8c2b");
+        px(f, x + 3, -30 - h, 2, 2, "#fff3c4");
+      }
+      candle(-18, 18); candle(-4, 26); candle(10, 14);
+      var fl = d.querySelectorAll(".flame2");
+      fl[1].setAttribute("style", "animation-delay:.12s");
+      fl[2].setAttribute("style", "animation-delay:.22s");
+    }, "Свечки-Фонарики помнят каждый выученный знак. Пламя у них доброе: греет память, а не жжёт.",
+      function () { QM.sfx.flame(); });
+
+    /* 7. Мешок конфет Люми */
+    item(750, 200, function (d) {
+      el("image", { href: "shared/characters/sack.svg", x: -30, y: -62, width: 60, height: 60 }, d);
+      px(d, -46, -8, 6, 6, "#e64533"); px(d, -38, -4, 5, 5, "#ffd54f");
+      px(d, 34, -6, 6, 6, "#86c232"); px(d, 40, -10, 5, 5, "#ff8c2b");
+      px(d, -24, -2, 4, 4, "#bfe8e0"); px(d, 26, -2, 4, 4, "#e64533");
+    }, "Мешок Люми полон конфет за верные ответы. Сладость — за знак, гадость — за невнимательность!",
+      function () { QM.sfx.good(); });
+
+    /* 8. Летучая мышь на ветке */
+    item(858, 200, function (d) {
+      px(d, -46, -34, 6, 36, "#5f4318");
+      px(d, -40, -34, 40, 5, "#5f4318");
+      px(d, -2, -31, 8, 4, "#7a5a20");
+      var bf = grp(d, "batfly2");
+      el("image", { href: "shared/characters/bat.svg", x: 4, y: -62, width: 52, height: 52 }, bf);
+    }, "Летучая мышь перепутала второй тон с третьим и теперь летает кругами. Со всеми бывает — просто тренируйся!",
+      function () { QM.sfx.ghost(); });
+
+    /* 9. Чёрный кот-тоналёр */
+    item(950, 194, function (d) {
+      px(d, -22, -34, 40, 34, "#0b0716");
+      px(d, -22, -34, 40, 3, "#241744");
+      px(d, -18, -50, 26, 18, "#0b0716");
+      px(d, -18, -56, 7, 7, "#0b0716"); px(d, -1, -56, 7, 7, "#0b0716");
+      px(d, -16, -55, 4, 4, "#3a2a5e"); px(d, 1, -55, 4, 4, "#3a2a5e");
+      var e1 = grp(d, "cat-eye"); px(e1, -14, -45, 5, 5, "#86c232");
+      var e2 = grp(d, "cat-eye"); px(e2, -3, -45, 5, 5, "#86c232");
+      px(d, -20, -4, 8, 4, "#0b0716"); px(d, -6, -4, 8, 4, "#0b0716");
+      var tl = grp(d, "cat-tail");
+      px(tl, 18, -20, 6, 18, "#0b0716");
+      px(tl, 20, -28, 4, 10, "#0b0716");
+      px(d, -24, -42, 5, 1, "#3a2a5e"); px(d, -24, -39, 5, 1, "#3a2a5e");
+    }, "Чёрный кот двора шепчет: «мāо — первый тон: ровный, высокий и очень гордый». Даже коты тут знают тоны!",
+      function () { QM.sfx.click(); });
+  })();
 
   /* ---------- прогресс ---------- */
   (function updateProgress() {

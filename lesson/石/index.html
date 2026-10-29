@@ -74,8 +74,9 @@
   <h1>Мел и камень</h1>
   <div class="sub">Пиши как Костик: черта за чертой, мел не жалеем. Три раунда — и фонарь наш.</div>
   <div class="writer-wrap">
-    <img class="kostik-board" id="kostik-board" src="../../shared/characters/kostik-board.svg" alt="Костик с холстом на костях">
+    <img class="bone-hand hand-l" src="../../shared/characters/bone-hand-l.svg" alt="Костяная рука держит холст">
     <div id="hanzi-target"></div>
+    <img class="bone-hand hand-r" src="../../shared/characters/bone-hand-r.svg" alt="">
     <div class="writer-status" id="writer-status">Обведи черты по костям — я смотрю, Костик</div>
     <div class="skulls" id="skulls"></div>
     <div class="writer-ctrl">
@@ -239,8 +240,9 @@
           updateSkulls();
           statusEl.textContent = "Плита выбита! Костик аплодирует костяшками.";
           go4.disabled = false;
-          var board = document.getElementById("kostik-board");
-          if (board) { board.classList.remove("joy"); void board.offsetWidth; board.classList.add("joy"); }
+          document.querySelectorAll(".bone-hand").forEach(function (h) {
+            h.classList.remove("joy"); void h.offsetWidth; h.classList.add("joy");
+          });
           var rect = document.getElementById("hanzi-target").getBoundingClientRect();
           QM.halloweenBurst(rect.left + rect.width / 2, rect.top + rect.height / 2);
           QM.sfx.flame();

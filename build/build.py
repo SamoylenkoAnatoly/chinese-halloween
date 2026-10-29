@@ -270,8 +270,9 @@ BODY_HEAD = """
   <h1>Мел и камень</h1>
   <div class="sub">{writer_sub}</div>
   <div class="writer-wrap">
-    <img class="kostik-board" id="kostik-board" src="{up}shared/characters/kostik-board.svg" alt="Костик с холстом на костях">
+    <img class="bone-hand hand-l" src="{up}shared/characters/bone-hand-l.svg" alt="Костяная рука держит холст">
     <div id="hanzi-target"></div>
+    <img class="bone-hand hand-r" src="{up}shared/characters/bone-hand-r.svg" alt="">
     <div class="writer-status" id="writer-status">Обведи черты по костям — я смотрю, Костик</div>
     <div class="skulls" id="skulls"></div>
     <div class="writer-ctrl">
@@ -488,8 +489,9 @@ LESSON_JS = r"""
           updateSkulls();
           statusEl.textContent = "Плита выбита! Костик аплодирует костяшками.";
           go4.disabled = false;
-          var board = document.getElementById("kostik-board");
-          if (board) { board.classList.remove("joy"); void board.offsetWidth; board.classList.add("joy"); }
+          document.querySelectorAll(".bone-hand").forEach(function (h) {
+            h.classList.remove("joy"); void h.offsetWidth; h.classList.add("joy");
+          });
           var rect = document.getElementById("hanzi-target").getBoundingClientRect();
           QM.halloweenBurst(rect.left + rect.width / 2, rect.top + rect.height / 2);
           QM.sfx.flame();
@@ -622,7 +624,7 @@ def main():
     chars_dir = ROOT / "shared" / "characters"
     for f in ["wizard.svg", "kostik.svg", "lumi.svg", "echo.svg", "ghost.svg",
               "pumpkin.svg", "bat.svg", "kostik-portrait.svg", "lumi-portrait.svg",
-              "echo-portrait.svg", "kostik-board.svg", "sack.svg"]:
+              "echo-portrait.svg", "bone-hand-l.svg", "bone-hand-r.svg", "sack.svg"]:
         if not (chars_dir / f).exists():
             print("НЕТ SVG:", f); ok = False
 
