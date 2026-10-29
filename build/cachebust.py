@@ -66,7 +66,7 @@ def main():
     for ss in sources:
         block = ss.get("block") or {}
         text = block.get("text") or ""
-        if SITE not in text or 'src="' not in text:
+        if SITE not in text or ('src="' not in text and 'href="' not in text):
             continue
         new_text = fix_text(text, version)
         if new_text != text:
