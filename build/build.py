@@ -201,7 +201,7 @@ HEAD = """<!DOCTYPE html>
 <title>{title} · Двор Тихой Луны</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{up}shared/spooky.css?v=3">
+<link rel="stylesheet" href="{up}shared/spooky.css?v=10">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>🎃</text></svg>">
 </head>
 <body class="with-ground">
@@ -270,6 +270,7 @@ BODY_HEAD = """
   <h1>Мел и камень</h1>
   <div class="sub">{writer_sub}</div>
   <div class="writer-wrap">
+    <img class="kostik-board" id="kostik-board" src="{up}shared/characters/kostik-board.svg" alt="Костик с холстом на костях">
     <div id="hanzi-target"></div>
     <div class="writer-status" id="writer-status">Обведи черты по костям — я смотрю, Костик</div>
     <div class="skulls" id="skulls"></div>
@@ -289,6 +290,8 @@ BODY_HEAD = """
   <div class="sub">Гости двора приходят за знаками. Угости правильно — получишь конфету-фонарик.</div>
   <div class="game-scene">
     <div class="guest-row">
+      <img class="lumi-host" src="{up}shared/characters/lumi.svg" alt="Люми — ведёт игру">
+      <img class="sack-img" id="sack" src="{up}shared/characters/sack.svg" alt="Мешок вопросов">
       <img class="guest-img" id="guest-img" src="{up}shared/characters/ghost.svg" alt="">
       <div class="say"><span class="q" id="guest-say">Сладость или гадость?</span><div id="guest-note" style="color:#b3a8d4;font-size:13px;margin-top:4px"></div></div>
     </div>
@@ -310,7 +313,7 @@ BODY_HEAD = """
 
 TAIL = """
 <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5.0/dist/hanzi-writer.min.js"></script>
-<script src="{up}shared/spooky.js?v=3"></script>
+<script src="{up}shared/spooky.js?v=10"></script>
 <script>/*PAYLOAD*/</script>
 <script>/*LESSON_JS*/</script>
 </body>
@@ -398,7 +401,14 @@ LESSON_JS = r"""
   QM.bindPlay(document.getElementById("audio-main2"), L.audio);
   QM.bindPlay(document.getElementById("audio-slow2"), L.audio, true);
   document.getElementById("audio-echo").onclick = function () {
-    QM.sfx.ghost(); QM.playAudio(L.audio);
+    var btn = this;
+    QM.sfx.ghost();
+    QM.playAudio(L.audio);
+    btn.disabled = true;
+    setTimeout(function () {
+      QM.playAudio(L.audio, true);
+      setTimeout(function () { btn.disabled = false; }, 2400);
+    }, 1600);
   };
 
   /* ---- фаза 1 ---- */
@@ -448,9 +458,9 @@ LESSON_JS = r"""
   function initWriter() {
     writer = HanziWriter.create("hanzi-target", {
       width: 300, height: 300, padding: 10,
-      strokeColor: "#4a3560", radicalColor: "#b3611e",
-      outlineColor: "#b0a684", drawingColor: "#3a2a5e",
-      highlightColor: "#e07818", leniency: 1.4,
+      strokeColor: "#4a3560", radicalColor: "#9c5a20",
+      outlineColor: "#94886a", drawingColor: "#3a2a5e",
+      highlightColor: "#c96e12", leniency: 1.4,
       charDataLoader: function (ch, onComplete) {
         var src = "https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/" + ch + ".json";
         fetch(src).then(function (r) { return r.json(); }).then(onComplete);
@@ -476,13 +486,15 @@ LESSON_JS = r"""
         round++;
         if (round > rounds) {
           updateSkulls();
-          statusEl.textContent = "Плита выбита! Можно идти угощать гостей.";
+          statusEl.textContent = "Плита выбита! Костик аплодирует костяшками.";
           go4.disabled = false;
+          var board = document.getElementById("kostik-board");
+          if (board) { board.classList.remove("joy"); void board.offsetWidth; board.classList.add("joy"); }
           var rect = document.getElementById("hanzi-target").getBoundingClientRect();
           QM.halloweenBurst(rect.left + rect.width / 2, rect.top + rect.height / 2);
           QM.sfx.flame();
           setTimeout(function () { QM.sfx.finish(); }, 450);
-          QM.say("kostik", "Отлично вырезано! У меня самого каллиграфия так не ложилась. Жми «сладость или гадость»!");
+          QM.say("kostik", "Ха! Три раунда — и ни одной кривой черты! Вот это рука мастера, я аж подпрыгнул. Жми «сладость или гадость»!");
         } else {
           setTimeout(startRound, 700);
         }
@@ -524,7 +536,9 @@ LESSON_JS = r"""
     img.src = QM.BASE + "shared/characters/" + guest + ".svg";
     img.className = "guest-img";
     document.getElementById("guest-say").textContent = guestSay[guest];
-    document.getElementById("guest-note").textContent = "Вопрос " + (rIdx + 1) + " из " + roundsTotal;
+    var sack = document.getElementById("sack");
+    if (sack) { sack.classList.remove("pull"); void sack.offsetWidth; sack.classList.add("pull"); }
+    document.getElementById("guest-note").textContent = "Люми достаёт из мешка вопрос " + (rIdx + 1) + " из " + roundsTotal;
     var p = document.getElementById("prompt");
     var isAudio = r.prompt === "audio";
     if (isAudio) {
@@ -554,11 +568,13 @@ LESSON_JS = r"""
           img.classList.add("happy");
           QM.sfx.good();
           solved++;
+          document.getElementById("guest-note").textContent = "Сладость! 🍬 Конфета летит в твой мешок.";
           setTimeout(function () { rIdx++; renderRound(); }, 850);
         } else {
           c.classList.add("bad");
           img.classList.add("angry");
           QM.sfx.bad();
+          document.getElementById("guest-note").textContent = "Гадость! 👻 Гость швыряет паутину — пробуй ещё.";
           setTimeout(function () { c.classList.remove("bad"); img.classList.remove("angry"); }, 500);
         }
       };
@@ -582,7 +598,7 @@ LESSON_JS = r"""
     QM.say("kostik", "Фонарь горит — значит, знак твой навсегда. Пойдём на карту, там ещё столько света нужно!");
   }
   function onPhase4() {
-    QM.say("lumi", "Гости уже стоят в очереди! Правило простое: отвечаешь верно — сладость, ошибаешься — попробуй ещё.");
+    QM.say("lumi", "Я Люми, и вот мой мешок вопросов! Гость за гостем, знак за знаком: отвечаешь верно — сладость, ошибаешься — гадость. Тяну первый вопрос...");
     renderRound();
   }
 
@@ -606,7 +622,7 @@ def main():
     chars_dir = ROOT / "shared" / "characters"
     for f in ["wizard.svg", "kostik.svg", "lumi.svg", "echo.svg", "ghost.svg",
               "pumpkin.svg", "bat.svg", "kostik-portrait.svg", "lumi-portrait.svg",
-              "echo-portrait.svg"]:
+              "echo-portrait.svg", "kostik-board.svg", "sack.svg"]:
         if not (chars_dir / f).exists():
             print("НЕТ SVG:", f); ok = False
 

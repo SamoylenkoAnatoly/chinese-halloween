@@ -9,10 +9,14 @@
   QM.BASE = (function () {
     var el = document.querySelector("meta[name=qm-base]");
     var fromMeta = el ? el.getAttribute("content") : "";
-    var css = document.querySelector('link[href$="spooky.css"]');
+    var css = document.querySelector('link[href*="spooky.css"]');
     if (css) {
       var href = css.getAttribute("href");
       return href.replace(/shared\/spooky\.css.*$/, "");
+    }
+    var js = document.querySelector('script[src*="spooky.js"]');
+    if (js) {
+      return js.getAttribute("src").replace(/shared\/spooky\.js.*$/, "");
     }
     return fromMeta;
   })();
@@ -201,7 +205,9 @@
     0: "M 20 62 Q 100 58 180 62",
   };
   QM.drawTone = function (container, toneN, animate) {
-    var box = typeof container === "string" ? document.querySelector(container) : container;
+    var box = typeof container === "string"
+      ? (document.getElementById(container) || document.querySelector(container))
+      : container;
     if (!box) return;
     var col = QM.TONE_COLORS[toneN];
     var d = CONTOURS[toneN] || CONTOURS[0];

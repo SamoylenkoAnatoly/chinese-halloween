@@ -7,7 +7,7 @@
 <title>水田 · Двор Тихой Луны</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../shared/spooky.css?v=3">
+<link rel="stylesheet" href="../../shared/spooky.css?v=10">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>🎃</text></svg>">
 </head>
 <body class="with-ground">
@@ -74,6 +74,7 @@
   <h1>Мел и камень</h1>
   <div class="sub">Собери заклинание из двух знаков — по очереди, как учил Костик.</div>
   <div class="writer-wrap">
+    <img class="kostik-board" id="kostik-board" src="../../shared/characters/kostik-board.svg" alt="Костик с холстом на костях">
     <div id="hanzi-target"></div>
     <div class="writer-status" id="writer-status">Обведи черты по костям — я смотрю, Костик</div>
     <div class="skulls" id="skulls"></div>
@@ -93,6 +94,8 @@
   <div class="sub">Гости двора приходят за знаками. Угости правильно — получишь конфету-фонарик.</div>
   <div class="game-scene">
     <div class="guest-row">
+      <img class="lumi-host" src="../../shared/characters/lumi.svg" alt="Люми — ведёт игру">
+      <img class="sack-img" id="sack" src="../../shared/characters/sack.svg" alt="Мешок вопросов">
       <img class="guest-img" id="guest-img" src="../../shared/characters/ghost.svg" alt="">
       <div class="say"><span class="q" id="guest-say">Сладость или гадость?</span><div id="guest-note" style="color:#b3a8d4;font-size:13px;margin-top:4px"></div></div>
     </div>
@@ -112,7 +115,7 @@
 <div class="ground-strip"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5.0/dist/hanzi-writer.min.js"></script>
-<script src="../../shared/spooky.js?v=3"></script>
+<script src="../../shared/spooky.js?v=10"></script>
 <script>window.LESSON = {"type": "word", "target": "水田", "pinyin": "shuǐtián", "tone": 1, "meaning": "рисовое поле", "audio": "shuitian.mp3", "game": [{"kind": "audio2word", "opts": ["大门", "马车", "女子", "水田"], "ans": "水田", "prompt": "audio", "audio": "shuitian.mp3"}, {"kind": "meaning2word", "opts": ["上下", "山水", "大小", "水田"], "ans": "水田", "prompt": "рисовое поле"}, {"kind": "word2pinyin", "opts": ["shuǐtián", "dàmén", "mǎchē", "nǚzǐ"], "ans": "shuǐtián", "prompt": "水田"}, {"kind": "meaning2word", "opts": ["大门", "女子", "马车", "水田"], "ans": "水田", "prompt": "рисовое поле"}, {"kind": "audio2pinyin", "opts": ["mǎchē", "nǚzǐ", "dàmén", "shuǐtián"], "ans": "shuǐtián", "prompt": "audio", "audio": "shuitian.mp3"}], "parts": ["水", "田"], "num": 22, "total": 25};</script>
 <script>
 (function () {
@@ -149,7 +152,14 @@
   QM.bindPlay(document.getElementById("audio-main2"), L.audio);
   QM.bindPlay(document.getElementById("audio-slow2"), L.audio, true);
   document.getElementById("audio-echo").onclick = function () {
-    QM.sfx.ghost(); QM.playAudio(L.audio);
+    var btn = this;
+    QM.sfx.ghost();
+    QM.playAudio(L.audio);
+    btn.disabled = true;
+    setTimeout(function () {
+      QM.playAudio(L.audio, true);
+      setTimeout(function () { btn.disabled = false; }, 2400);
+    }, 1600);
   };
 
   /* ---- фаза 1 ---- */
@@ -199,9 +209,9 @@
   function initWriter() {
     writer = HanziWriter.create("hanzi-target", {
       width: 300, height: 300, padding: 10,
-      strokeColor: "#4a3560", radicalColor: "#b3611e",
-      outlineColor: "#b0a684", drawingColor: "#3a2a5e",
-      highlightColor: "#e07818", leniency: 1.4,
+      strokeColor: "#4a3560", radicalColor: "#9c5a20",
+      outlineColor: "#94886a", drawingColor: "#3a2a5e",
+      highlightColor: "#c96e12", leniency: 1.4,
       charDataLoader: function (ch, onComplete) {
         var src = "https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/" + ch + ".json";
         fetch(src).then(function (r) { return r.json(); }).then(onComplete);
@@ -227,13 +237,15 @@
         round++;
         if (round > rounds) {
           updateSkulls();
-          statusEl.textContent = "Плита выбита! Можно идти угощать гостей.";
+          statusEl.textContent = "Плита выбита! Костик аплодирует костяшками.";
           go4.disabled = false;
+          var board = document.getElementById("kostik-board");
+          if (board) { board.classList.remove("joy"); void board.offsetWidth; board.classList.add("joy"); }
           var rect = document.getElementById("hanzi-target").getBoundingClientRect();
           QM.halloweenBurst(rect.left + rect.width / 2, rect.top + rect.height / 2);
           QM.sfx.flame();
           setTimeout(function () { QM.sfx.finish(); }, 450);
-          QM.say("kostik", "Отлично вырезано! У меня самого каллиграфия так не ложилась. Жми «сладость или гадость»!");
+          QM.say("kostik", "Ха! Три раунда — и ни одной кривой черты! Вот это рука мастера, я аж подпрыгнул. Жми «сладость или гадость»!");
         } else {
           setTimeout(startRound, 700);
         }
@@ -275,7 +287,9 @@
     img.src = QM.BASE + "shared/characters/" + guest + ".svg";
     img.className = "guest-img";
     document.getElementById("guest-say").textContent = guestSay[guest];
-    document.getElementById("guest-note").textContent = "Вопрос " + (rIdx + 1) + " из " + roundsTotal;
+    var sack = document.getElementById("sack");
+    if (sack) { sack.classList.remove("pull"); void sack.offsetWidth; sack.classList.add("pull"); }
+    document.getElementById("guest-note").textContent = "Люми достаёт из мешка вопрос " + (rIdx + 1) + " из " + roundsTotal;
     var p = document.getElementById("prompt");
     var isAudio = r.prompt === "audio";
     if (isAudio) {
@@ -305,11 +319,13 @@
           img.classList.add("happy");
           QM.sfx.good();
           solved++;
+          document.getElementById("guest-note").textContent = "Сладость! 🍬 Конфета летит в твой мешок.";
           setTimeout(function () { rIdx++; renderRound(); }, 850);
         } else {
           c.classList.add("bad");
           img.classList.add("angry");
           QM.sfx.bad();
+          document.getElementById("guest-note").textContent = "Гадость! 👻 Гость швыряет паутину — пробуй ещё.";
           setTimeout(function () { c.classList.remove("bad"); img.classList.remove("angry"); }, 500);
         }
       };
@@ -333,7 +349,7 @@
     QM.say("kostik", "Фонарь горит — значит, знак твой навсегда. Пойдём на карту, там ещё столько света нужно!");
   }
   function onPhase4() {
-    QM.say("lumi", "Гости уже стоят в очереди! Правило простое: отвечаешь верно — сладость, ошибаешься — попробуй ещё.");
+    QM.say("lumi", "Я Люми, и вот мой мешок вопросов! Гость за гостем, знак за знаком: отвечаешь верно — сладость, ошибаешься — гадость. Тяну первый вопрос...");
     renderRound();
   }
 

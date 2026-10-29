@@ -371,3 +371,47 @@ body.with-ground { display: flex; flex-direction: column; }
 @media (max-width: 700px) {
   .companion { padding: 0 12px; }
 }
+
+/* ---------- Мел и камень: Костик с холстом ---------- */
+.writer-wrap {
+  display: flex; flex-wrap: wrap; gap: 16px;
+  align-items: flex-start; justify-content: center;
+}
+.writer-wrap > .writer-status,
+.writer-wrap > .skulls,
+.writer-wrap > .writer-ctrl { flex: 1 1 100%; }
+.kostik-board {
+  width: 124px; height: 124px; flex-shrink: 0; margin-top: 4px;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 5px 0 rgba(0, 0, 0, .35));
+}
+.kostik-board.joy { animation: kostik-joy .75s ease-in-out 3; }
+@keyframes kostik-joy {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  30% { transform: translateY(-16px) rotate(-7deg); }
+  60% { transform: translateY(-4px) rotate(6deg); }
+}
+
+/* ---------- Сладость или гадость: Люми и мешок вопросов ---------- */
+.lumi-host {
+  width: 64px; height: 64px; flex-shrink: 0;
+  image-rendering: pixelated; align-self: center;
+}
+.sack-img {
+  width: 52px; height: 52px; flex-shrink: 0;
+  image-rendering: pixelated; align-self: flex-end; margin-bottom: 8px;
+  filter: drop-shadow(0 4px 0 rgba(0, 0, 0, .3));
+}
+.sack-img.pull { animation: sack-pull .6s ease 1; }
+@keyframes sack-pull {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  25% { transform: rotate(-18deg) translateY(-10px); }
+  55% { transform: rotate(14deg) translateY(-5px); }
+  80% { transform: rotate(-6deg) translateY(-2px); }
+}
+@media (max-width: 700px) {
+  .kostik-board { width: 92px; height: 92px; }
+  .lumi-host { width: 52px; height: 52px; }
+  .sack-img { width: 42px; height: 42px; }
+  .guest-row img.guest-img { width: 64px; height: 64px; }
+}
