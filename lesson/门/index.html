@@ -7,7 +7,7 @@
 <title>门 · Двор Тихой Луны</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../shared/spooky.css?v=10">
+<link rel="stylesheet" href="../../shared/spooky.css?v=11">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>🎃</text></svg>">
 </head>
 <body class="with-ground">
@@ -74,9 +74,9 @@
   <h1>Мел и камень</h1>
   <div class="sub">Пиши как Костик: черта за чертой, мел не жалеем. Три раунда — и фонарь наш.</div>
   <div class="writer-wrap">
-    <img class="bone-hand hand-l" src="../../shared/characters/bone-hand-l.svg" alt="Костяная рука держит холст">
+    <img class="bone-hand hand-l" src="../../shared/characters/bone-hand-l.svg?v=11" alt="Костяная рука держит холст">
     <div id="hanzi-target"></div>
-    <img class="bone-hand hand-r" src="../../shared/characters/bone-hand-r.svg" alt="">
+    <img class="bone-hand hand-r" src="../../shared/characters/bone-hand-r.svg?v=11" alt="">
     <div class="writer-status" id="writer-status">Обведи черты по костям — я смотрю, Костик</div>
     <div class="skulls" id="skulls"></div>
     <div class="writer-ctrl">
@@ -116,7 +116,7 @@
 <div class="ground-strip" style="background-image:url('../../shared/frame/grounds/%E9%97%A8.svg?v=1'),url('../../shared/frame/undergrounds/%E9%97%A8.svg?v=1')"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5.0/dist/hanzi-writer.min.js"></script>
-<script src="../../shared/spooky.js?v=10"></script>
+<script src="../../shared/spooky.js?v=11"></script>
 <script>window.LESSON = {"type": "glyph", "target": "门", "pinyin": "mén", "tone": 2, "meaning": "ворота; дверь", "audio": "men.mp3", "game": [{"kind": "audio2glyph", "opts": ["中", "门", "上", "天"], "ans": "门", "prompt": "audio", "audio": "men.mp3"}, {"kind": "meaning2glyph", "opts": ["小", "大", "下", "门"], "ans": "门", "prompt": "ворота; дверь"}, {"kind": "glyph2pinyin", "opts": ["měn", "mén", "mēn", "mèn"], "ans": "mén", "prompt": "门"}, {"kind": "pinyin2glyph", "opts": ["上", "天", "门", "中"], "ans": "门", "prompt": "mén"}, {"kind": "audio2pinyin", "opts": ["mēn", "mén", "měn", "mèn"], "ans": "mén", "prompt": "audio", "audio": "men.mp3"}], "parts": [], "num": 17, "total": 25};</script>
 <script>
 (function () {
@@ -210,9 +210,9 @@
   function initWriter() {
     writer = HanziWriter.create("hanzi-target", {
       width: 300, height: 300, padding: 10,
-      strokeColor: "#4a3560", radicalColor: "#9c5a20",
-      outlineColor: "#94886a", drawingColor: "#3a2a5e",
-      highlightColor: "#c96e12", leniency: 1.4,
+      strokeColor: "#4a3560", radicalColor: "#7a4310",
+      outlineColor: "#564c3d", drawingColor: "#3a2a5e",
+      highlightColor: "#a3560d", leniency: 1.4,
       charDataLoader: function (ch, onComplete) {
         var src = "https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/" + ch + ".json";
         fetch(src).then(function (r) { return r.json(); }).then(onComplete);

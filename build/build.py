@@ -201,7 +201,7 @@ HEAD = """<!DOCTYPE html>
 <title>{title} · Двор Тихой Луны</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{up}shared/spooky.css?v=10">
+<link rel="stylesheet" href="{up}shared/spooky.css?v=11">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>🎃</text></svg>">
 </head>
 <body class="with-ground">
@@ -270,9 +270,9 @@ BODY_HEAD = """
   <h1>Мел и камень</h1>
   <div class="sub">{writer_sub}</div>
   <div class="writer-wrap">
-    <img class="bone-hand hand-l" src="{up}shared/characters/bone-hand-l.svg" alt="Костяная рука держит холст">
+    <img class="bone-hand hand-l" src="{up}shared/characters/bone-hand-l.svg?v=11" alt="Костяная рука держит холст">
     <div id="hanzi-target"></div>
-    <img class="bone-hand hand-r" src="{up}shared/characters/bone-hand-r.svg" alt="">
+    <img class="bone-hand hand-r" src="{up}shared/characters/bone-hand-r.svg?v=11" alt="">
     <div class="writer-status" id="writer-status">Обведи черты по костям — я смотрю, Костик</div>
     <div class="skulls" id="skulls"></div>
     <div class="writer-ctrl">
@@ -314,7 +314,7 @@ BODY_HEAD = """
 
 TAIL = """
 <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5.0/dist/hanzi-writer.min.js"></script>
-<script src="{up}shared/spooky.js?v=10"></script>
+<script src="{up}shared/spooky.js?v=11"></script>
 <script>/*PAYLOAD*/</script>
 <script>/*LESSON_JS*/</script>
 </body>
@@ -459,9 +459,9 @@ LESSON_JS = r"""
   function initWriter() {
     writer = HanziWriter.create("hanzi-target", {
       width: 300, height: 300, padding: 10,
-      strokeColor: "#4a3560", radicalColor: "#9c5a20",
-      outlineColor: "#94886a", drawingColor: "#3a2a5e",
-      highlightColor: "#c96e12", leniency: 1.4,
+      strokeColor: "#4a3560", radicalColor: "#7a4310",
+      outlineColor: "#564c3d", drawingColor: "#3a2a5e",
+      highlightColor: "#a3560d", leniency: 1.4,
       charDataLoader: function (ch, onComplete) {
         var src = "https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/" + ch + ".json";
         fetch(src).then(function (r) { return r.json(); }).then(onComplete);
