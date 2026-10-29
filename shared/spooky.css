@@ -138,7 +138,7 @@ a:hover { text-decoration: underline; }
 .phase .sub { color: var(--dim); margin-bottom: 20px; font-size: 15px; }
 
 .glyph-hero {
-  display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: center;
+  display: grid; grid-template-columns: auto 1fr auto; gap: 24px; align-items: center;
   background: var(--panel); border: 3px solid var(--line); border-radius: var(--radius);
   padding: 26px; box-shadow: 0 8px 0 rgba(0, 0, 0, .25);
 }
@@ -158,6 +158,14 @@ a:hover { text-decoration: underline; }
 .glyph-hero .mn { color: var(--dim); font-size: 17px; margin-top: 4px; }
 .glyph-hero .meta { margin-top: 12px; font-size: 14px; color: var(--dim); display: flex; gap: 14px; flex-wrap: wrap; }
 .glyph-hero .meta b { color: var(--ink); }
+.meaning-art { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+.meaning-box {
+  width: 128px; background: var(--night); border: 3px solid var(--line);
+  border-radius: 12px; padding: 8px 8px 6px; display: flex;
+  flex-direction: column; align-items: center; gap: 4px;
+}
+.meaning-box img { width: 100%; aspect-ratio: 1 / 1; image-rendering: pixelated; display: block; border-radius: 8px; }
+.mb-cap { font-size: 16px; color: var(--gold); font-family: "Noto Sans SC", sans-serif; line-height: 1; }
 .badge {
   display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .4px;
   padding: 4px 10px; border-radius: 8px; border: 2px solid rgba(255, 255, 255, .14);
@@ -341,6 +349,8 @@ a:hover { text-decoration: underline; }
 @media (max-width: 700px) {
   .glyph-hero { grid-template-columns: 1fr; }
   .glyph-hero .big { font-size: 90px; min-width: 0; }
+  .meaning-art { justify-content: center; }
+  .meaning-box { width: 96px; }
   .companion .ava { width: 56px; height: 56px; }
   .companion .bubble { font-size: 14px; }
   .stepper { top: 56px; padding: 10px; gap: 6px; }

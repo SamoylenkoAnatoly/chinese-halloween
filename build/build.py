@@ -201,7 +201,7 @@ HEAD = """<!DOCTYPE html>
 <title>{title} · Двор Тихой Луны</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{up}shared/spooky.css?v=11">
+<link rel="stylesheet" href="{up}shared/spooky.css?v=12">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>🎃</text></svg>">
 </head>
 <body class="with-ground">
@@ -239,6 +239,7 @@ BODY_HEAD = """
         <button class="play slow" id="audio-slow">🐢 Медленно</button>
       </div>
     </div>
+    <div class="meaning-art">{meaning_art}</div>
   </div>
   <div style="margin-top:22px;text-align:right"><button class="btn" id="go2">Дальше: голос Коко →</button></div>
 </div>
@@ -270,9 +271,9 @@ BODY_HEAD = """
   <h1>Мел и камень</h1>
   <div class="sub">{writer_sub}</div>
   <div class="writer-wrap">
-    <img class="bone-hand hand-l" src="{up}shared/characters/bone-hand-l.svg?v=11" alt="Костяная рука держит холст">
+    <img class="bone-hand hand-l" src="{up}shared/characters/bone-hand-l.svg?v=12" alt="Костяная рука держит холст">
     <div id="hanzi-target"></div>
-    <img class="bone-hand hand-r" src="{up}shared/characters/bone-hand-r.svg?v=11" alt="">
+    <img class="bone-hand hand-r" src="{up}shared/characters/bone-hand-r.svg?v=12" alt="">
     <div class="writer-status" id="writer-status">Обведи черты по костям — я смотрю, Костик</div>
     <div class="skulls" id="skulls"></div>
     <div class="writer-ctrl">
@@ -314,7 +315,7 @@ BODY_HEAD = """
 
 TAIL = """
 <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5.0/dist/hanzi-writer.min.js"></script>
-<script src="{up}shared/spooky.js?v=11"></script>
+<script src="{up}shared/spooky.js?v=12"></script>
 <script>/*PAYLOAD*/</script>
 <script>/*LESSON_JS*/</script>
 </body>
@@ -339,6 +340,16 @@ def lesson_html(item, kind):
         key_html = "состоит из: <b>{0}</b>".format(" + ".join(item["parts"]))
         writer_sub = "Собери заклинание из двух знаков — по очереди, как учил Костик."
     tale_html = "".join("<p>{0}</p>".format(t) for t in item["tale"])
+    glyph_mean = {g["char"]: g["meaning"] for g in __import__("data").GLYPHS}
+    chars = [title] if is_glyph else list(item["parts"])
+    boxes = []
+    for ch in chars:
+        alt = glyph_mean.get(ch, "").split(";")[0].strip()
+        boxes.append(
+            '<div class="meaning-box"><img src="{0}shared/meanings/{1}.svg?v=12" '
+            'alt="{2}"><span class="mb-cap">{3}</span></div>'.format(
+                up, quote(ch), alt, ch))
+    meaning_art = "".join(boxes)
     payload = {
         "type": kind, "target": title, "pinyin": item["pinyin"], "tone": tone,
         "meaning": item["meaning"], "audio": item["audio"], "game": item["game"],
@@ -360,7 +371,7 @@ def lesson_html(item, kind):
         strokes=item.get("strokes", ""), key_html=key_html, num=num,
         total=TOTAL_LESSONS, big2=title, py2=item["pinyin"],
         tale_html=tale_html, writer_sub=writer_sub, up=up, map_url=MAP_LESSON_URL,
-        ground_div=ground_div)
+        ground_div=ground_div, meaning_art=meaning_art)
     tail = TAIL.format(up=up).replace("/*PAYLOAD*/",
         "window.LESSON = " + json.dumps(payload, ensure_ascii=False) + ";"
         ).replace("/*LESSON_JS*/", LESSON_JS)
