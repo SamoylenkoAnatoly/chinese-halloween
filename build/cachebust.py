@@ -29,14 +29,10 @@ def collect_steps(manifest):
 
 
 def fix_text(text, version):
-    bust = '/?v=%d"' % version
+    # не вставляем слэш: файлам нужен "name.svg?v=N", папкам — "dir/?v=N"
+    bust = '?v=%d"' % version
     new = re.sub(r'\?v=\d+"', bust, text)
-    new = new.replace('//"', bust)
-    new = re.sub(
-        r'(https://samoylenkoanatoly\.github\.io/chinese-halloween/[^"?]*)/"',
-        r'\1' + bust,
-        new,
-    )
+    new = re.sub(r'("https://samoylenkoanatoly\.github\.io/chinese-halloween/[^"?]*)"', r'\1' + bust, new)
     return new
 
 
