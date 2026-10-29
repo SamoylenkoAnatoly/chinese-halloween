@@ -32,7 +32,7 @@ PAGE = """<!DOCTYPE html>
 <title>Карта двора · Двор Тихой Луны</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="shared/spooky.css">
+<link rel="stylesheet" href="shared/spooky.css?v=2">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>🎃</text></svg>">
 </head>
 <body>
@@ -94,7 +94,7 @@ PAGE = """<!DOCTYPE html>
 
 <div class="footer-note">Двор Тихой Луны · добрый хэллоуин-курс китайского · для начинающих</div>
 
-<script src="shared/spooky.js"></script>
+<script src="shared/spooky.js?v=2"></script>
 <script src="shared/lesson-data.js"></script>
 <script>
 (function () {

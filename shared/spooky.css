@@ -350,9 +350,12 @@ a:hover { text-decoration: underline; }
 /* ---------- земля-кладбище и строка обитателей ---------- */
 body.with-ground { display: flex; flex-direction: column; }
 .ground-strip {
-  margin-top: auto; flex: 1 0 72px;
-  background: url("frame/ground.svg") left top repeat;
-  background-size: auto 72px;
+  margin-top: auto; flex: 1 0 144px;
+  background-color: #0b0716;
+  background-image: url("frame/ground.svg?v=2");
+  background-repeat: repeat-x;
+  background-size: auto 144px;
+  background-position: left top;
 }
 .char-row {
   display: flex; gap: 10px; justify-content: center; margin-top: 12px;
