@@ -28,20 +28,31 @@ def collect_steps(manifest):
     return ids
 
 
-def fix_text(text):
-    new = text.replace('//"', '/?v=2"')
+def fix_text(text, version):
+    bust = '/?v=%d"' % version
+    new = re.sub(r'\?v=\d+"', bust, text)
+    new = new.replace('//"', bust)
     new = re.sub(
         r'(https://samoylenkoanatoly\.github\.io/chinese-halloween/[^"?]*)/"',
-        r'\1/?v=2"',
+        r'\1' + bust,
         new,
     )
     return new
 
 
 def main():
+    version = 2
+    only_steps = []
+    if len(sys.argv) > 1:
+        version = int(sys.argv[1])
+        only_steps = [int(x) for x in sys.argv[2:]]
     manifest = json.load(open(MANIFEST_PATH, encoding="utf-8"))
-    step_ids = collect_steps(manifest)
-    print("steps in manifest: %d" % len(step_ids))
+    if only_steps:
+        step_ids = only_steps
+        print("target steps: %s (v=%d)" % (step_ids, version))
+    else:
+        step_ids = collect_steps(manifest)
+        print("steps in manifest: %d" % len(step_ids))
     token = get_token()
 
     sources = []
@@ -61,7 +72,7 @@ def main():
         text = block.get("text") or ""
         if SITE not in text or 'src="' not in text:
             continue
-        new_text = fix_text(text)
+        new_text = fix_text(text, version)
         if new_text != text:
             changed.append((ss, new_text))
     print("steps needing cache-buster: %d" % len(changed))
