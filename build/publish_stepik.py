@@ -351,12 +351,8 @@ def main():
         if test:
             print("TEST MODE: останавливаюсь после первой секции")
             return
-    desc = ('<div><p>%s</p><p><b>Внутри:</b> 17 иероглифов и 8 слов, прописи, аудио, тоны, '
-            'мини-сказки, викторина из 12 вопросов и бонус-игра «Осада домика». '
-            'Все игры открываются прямо в уроках.</p><p>Персонажи: <b>Костик</b> (скелет-экскурсовод), '
-            '<b>Люми</b> (призрак-фонарщик), <b>Эхо</b> (мышь с колокольни) и <b>Магистр Коко</b>.</p></div>'
-            % esc(model["summary"]))
-    api.api("PATCH", "courses/303598", {"course": {"summary": model["summary"], "description": desc}})
+    from make_desc import build_styled, put_course
+    put_course(api, summary=model["summary"], description=build_styled())
     print("course patched (summary+description)")
     c = api.api("GET", "courses/303598")["courses"][0]
     print("final sections:", len(c["sections"]))
