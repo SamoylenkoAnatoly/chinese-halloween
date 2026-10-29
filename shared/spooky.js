@@ -208,8 +208,9 @@
     var anim = animate === false ? "" :
       '<animate attributeName="stroke-dashoffset" from="400" to="0" dur="0.8s" fill="freeze"/>';
     box.innerHTML =
+      '<span class="tone-label">' + QM.TONE_NAMES[toneN] + "</span>" +
       '<svg viewBox="0 0 200 120" preserveAspectRatio="none">' +
-      '<path d="M 0 0 H 200 M 0 60 H 200 M 0 120 H 200" stroke="#241744" stroke-width="1" stroke-dasharray="3 5"/>' +
+      '<path d="M 0 0 H 200 M 0 60 H 200 M 0 120 H 200" stroke="#3a2a5e" stroke-width="1" stroke-dasharray="3 5"/>' +
       '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="7" stroke-linecap="round" ' +
       'stroke-dasharray="400" stroke-dashoffset="0">' + anim + "</path></svg>";
   };

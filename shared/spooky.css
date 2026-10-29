@@ -98,7 +98,8 @@ a:hover { text-decoration: underline; }
 .char-card .ds { font-size: 14px; color: var(--dim); line-height: 1.45; }
 
 .companion {
-  position: fixed; left: 16px; right: 16px; top: 132px; z-index: 90;
+  position: relative; z-index: 90;
+  max-width: 880px; margin: 12px auto 0; padding: 0 20px;
   display: flex; gap: 12px; align-items: flex-start; pointer-events: none;
 }
 .companion .ava {
@@ -132,7 +133,7 @@ a:hover { text-decoration: underline; }
 .stepper .step.active { border-color: var(--pumpkin); color: var(--amber); }
 .stepper .step.active .dot { background: var(--pumpkin); }
 
-.phase { max-width: 880px; margin: 0 auto; padding: 26px 20px 48px; }
+.phase { max-width: 880px; margin: 0 auto; padding: 26px 20px 8px; }
 .phase h1 { font-size: 26px; color: var(--moon); margin-bottom: 4px; }
 .phase .sub { color: var(--dim); margin-bottom: 20px; font-size: 15px; }
 
@@ -168,7 +169,9 @@ a:hover { text-decoration: underline; }
   background: var(--night); border: 3px solid var(--line); border-radius: 12px;
   overflow: hidden;
 }
-.tone-line svg { width: 100%; height: 100%; display: block; }
+.tone-line svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.tone-line .tone-label { position: absolute; top: 8px; right: 12px; font-size: 13px; font-weight: 700; color: var(--dim); z-index: 1; }
+.tone-hint { color: var(--dim); font-size: 13px; margin-top: -8px; }
 
 .audio-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin: 14px 0; }
 .play {
@@ -199,7 +202,7 @@ a:hover { text-decoration: underline; }
   background: var(--panel); border: 3px solid var(--line); border-radius: var(--radius);
   padding: 22px; text-align: center;
 }
-#hanzi-target { width: 340px; height: 340px; margin: 0 auto; background: var(--night); border: 4px solid var(--line); border-radius: 12px; }
+#hanzi-target { width: 340px; height: 340px; margin: 0 auto; background: #e8e2c4; border: 4px solid var(--line); border-radius: 12px; }
 @media (max-width: 480px) { #hanzi-target { width: 260px; height: 260px; } }
 .writer-ctrl { display: flex; gap: 10px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
 .skulls { display: flex; gap: 10px; justify-content: center; margin-top: 14px; font-size: 22px; letter-spacing: 6px; }
@@ -347,16 +350,21 @@ a:hover { text-decoration: underline; }
 /* ---------- земля-кладбище и строка обитателей ---------- */
 body.with-ground { display: flex; flex-direction: column; }
 .ground-strip {
-  margin-top: auto; height: 72px; flex-shrink: 0;
-  background: url("frame/ground.svg") left bottom repeat-x;
+  margin-top: auto; flex: 1 0 72px;
+  background: url("frame/ground.svg") left top repeat;
   background-size: auto 72px;
-  image-rendering: pixelated;
 }
 .char-row {
-  display: flex; gap: 14px; justify-content: center; margin-top: 14px;
+  display: flex; gap: 10px; justify-content: center; margin-top: 12px;
   flex-wrap: nowrap; overflow-x: auto; padding-bottom: 6px;
 }
-.char-row .char-card { flex: 1 0 220px; max-width: 270px; }
+.char-row .char-card {
+  flex: 1 1 0; min-width: 168px; max-width: 250px;
+  padding: 10px 12px; gap: 10px; align-items: center;
+}
+.char-row .char-card img { width: 44px; height: 44px; }
+.char-row .char-card .nm { font-size: 14px; margin-bottom: 2px; }
+.char-row .char-card .ds { font-size: 12px; line-height: 1.35; }
 @media (max-width: 700px) {
-  .companion { top: 118px; }
+  .companion { padding: 0 12px; }
 }

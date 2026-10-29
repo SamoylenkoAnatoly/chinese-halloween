@@ -30,7 +30,7 @@
 
 <div class="map-wrap">
   <svg id="map" class="map-svg" viewBox="0 0 1000 640" role="img" aria-label="Пиксельная карта двора Тихой Луны"></svg>
-  <div class="map-note">Клик по надгробию — сразу откроется урок на Stepik. Костик ждёт у следующего неосвещённого фонаря.</div>
+  <div class="map-note">Клик по надгробию или фонарику — сразу откроется урок на Stepik.</div>
 </div>
 
 <div class="map-wrap">
@@ -119,7 +119,7 @@
     px(svg, p[0], p[1], 3, 3, "#e8e2c4", .65);
   });
   el("circle", { cx: 500, cy: 62, r: 76, fill: "url(#moonGlow)" }, svg);
-  var moonRows = [24, 36, 44, 48, 48, 44, 36, 24];
+  var moonRows = [38, 62, 74, 78, 78, 74, 62, 38];
   moonRows.forEach(function (w, i) {
     px(svg, 500 - w / 2, 22 + i * 10, w, 10, "#e8e2c4");
   });
@@ -267,21 +267,6 @@
 
   D.glyphs.forEach(tombstone);
   D.words.forEach(wordLantern);
-
-  /* ---------- Костик-маркер ---------- */
-  (function placeKostik() {
-    var next = null;
-    var all = D.glyphs.concat(D.words);
-    for (var i = 0; i < all.length; i++) {
-      var it = all[i];
-      var isLit = it.char ? QM.progress.lit(it.char) : QM.progress.word(it.word);
-      if (!isLit) { next = it; break; }
-    }
-    if (!next) next = all[0];
-    var k = el("g", { transform: "translate(" + (next.map[0] - 44) + "," + (next.map[1] + 6) + ")" }, svg);
-    el("image", { href: "shared/characters/kostik.svg", x: 0, y: -44, width: 40, height: 40 }, k);
-    txt(k, 20, 18, "ты здесь", 10, "#86c232", { weight: "600" });
-  })();
 
   /* ---------- прогресс ---------- */
   (function updateProgress() {

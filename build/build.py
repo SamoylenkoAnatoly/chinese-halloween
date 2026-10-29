@@ -205,6 +205,7 @@ HEAD = """<!DOCTYPE html>
   <div class="step" data-ph="3"><span class="dot"></span>Мел и камень</div>
   <div class="step" data-ph="4"><span class="dot"></span>Сладость или гадость</div>
 </nav>
+<div class="companion" id="companion"></div>
 """
 
 BODY_HEAD = """
@@ -241,6 +242,7 @@ BODY_HEAD = """
       <button class="play" id="audio-echo"><span class="ico">🐭</span> Повторить за Эхо</button>
     </div>
     <div class="tone-line" id="tone-line"></div>
+    <div class="tone-hint">Это слепок голоса: линия показывает движение тона. Жми кнопки тонов — слушай и сравнивай.</div>
     <div class="tone-btns" id="tone-btns"></div>
   </div>
   <div class="panel tale" style="margin-top:18px">
@@ -293,7 +295,6 @@ BODY_HEAD = """
 </div>
 
 <div class="ground-strip"></div>
-<div class="companion" id="companion"></div>
 """
 
 TAIL = """
@@ -417,7 +418,7 @@ LESSON_JS = r"""
   var statusEl = document.getElementById("writer-status");
   var skullsEl = document.getElementById("skulls");
   var go4 = document.getElementById("go4");
-  var chars = L.type === "word" ? L.parts : [L.target];
+  var chars = L.type === "word" ? L.parts : [L.target, L.target, L.target];
 
   function updateSkulls() {
     var s = "";
@@ -427,9 +428,9 @@ LESSON_JS = r"""
   function initWriter() {
     writer = HanziWriter.create("hanzi-target", {
       width: 300, height: 300, padding: 10,
-      strokeColor: "#e8e2c4", radicalColor: "#ffb347",
-      outlineColor: "#3a2a5e", drawingColor: "#efe9dc",
-      highlightColor: "#ff8c2b", leniency: 1.4,
+      strokeColor: "#4a3560", radicalColor: "#b3611e",
+      outlineColor: "#b0a684", drawingColor: "#3a2a5e",
+      highlightColor: "#e07818", leniency: 1.4,
       charDataLoader: function (ch, onComplete) {
         var src = "https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/" + ch + ".json";
         fetch(src).then(function (r) { return r.json(); }).then(onComplete);
@@ -439,8 +440,7 @@ LESSON_JS = r"""
   }
   function startRound() {
     updateSkulls();
-    writer.hideOutline();
-    writer.showOutline();
+    if (round > 1) { writer.hideOutline(); } else { writer.showOutline(); }
     writer.setCharacter(chars[round - 1]);
     statusEl.textContent = "Раунд " + round + " из " + rounds +
       (round === 1 ? " — контур виден, просто веди мелом." :
