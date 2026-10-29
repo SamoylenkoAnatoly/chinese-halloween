@@ -121,9 +121,10 @@ def page_url(base, path):
     return base.rstrip("/") + "/" + quote(str(path).strip("/")) + "/"
 
 
-def frame_step(base, path, h, accent=KOKO, subtitle=None):
+def frame_step(base, path, h, accent=KOKO, subtitle=None, v="4"):
     b = base.rstrip("/")
-    url = page_url(base, path) + "?v=4"
+    url = page_url(base, path) + "?v=" + v
+    H = h + 24
     pill = ""
     if subtitle:
         pill = ('<p style="margin:0 0 10px;text-align:center;"><span '
@@ -131,17 +132,28 @@ def frame_step(base, path, h, accent=KOKO, subtitle=None):
                 'border-radius:14px;font-size:13px;color:%s;"><b>%s</b></span></p>'
                 % (accent, PANEL, subtitle))
     frame = (
-        '<div style="border:32px solid %s;background-color:%s;">'
-        '<img alt="" src="%s/shared/frame/top.svg?v=2" style="display:block;width:100%%;border:0;">'
+        '<div style="font-size:0;line-height:0;">'
+        '<img alt="" src="%s/shared/frame/top.svg?v=3" width="100%%" height="112" '
+        'style="width:100%%;height:112px;border:0;"></div>'
+        '<table align="center" cellpadding="0" cellspacing="0"><tbody><tr>'
+        '<td><div style="font-size:0;line-height:0;"><img alt="" '
+        'src="%s/shared/frame/post-l-%d.svg" width="80" height="%d" '
+        'style="width:80px;height:%dpx;border:0;"></div></td>'
+        '<td><div style="background-color:%s;padding:6px;border:6px solid %s;">'
         '<iframe height="%d" src="%s" width="100%%" '
         'style="width:100%%;height:%dpx;border:0;background-color:%s;">'
-        "Ваш браузер не поддерживает iframe — открой урок по ссылке под рамкой.</iframe>"
-        '<img alt="" src="%s/shared/frame/bottom.svg?v=2" style="display:block;width:100%%;border:0;">'
-        "</div>"
+        "Ваш браузер не поддерживает iframe — открой урок по ссылке под рамкой.</iframe></div></td>"
+        '<td><div style="font-size:0;line-height:0;"><img alt="" '
+        'src="%s/shared/frame/post-r-%d.svg" width="80" height="%d" '
+        'style="width:80px;height:%dpx;border:0;"></div></td>'
+        "</tr></tbody></table>"
+        '<div style="font-size:0;line-height:0;">'
+        '<img alt="" src="%s/shared/frame/bottom.svg?v=3" width="100%%" height="52" '
+        'style="width:100%%;height:52px;border:0;"></div>'
         '<p style="margin:8px 0 0;text-align:center;"><a href="%s" target="_blank" '
         'rel="noopener noreferrer" style="color:#5d4a86;font-size:12px;">'
         "↗ открыть урок на отдельной странице</a></p>"
-    ) % (LINE, NIGHT, b, h, url, h, NIGHT, b, url)
+    ) % (b, b, H, H, H, NIGHT, accent, h, url, h, NIGHT, b, H, H, H, b, url)
     return {"block": {"name": "text", "text": pill + frame}}
 
 
@@ -186,7 +198,7 @@ def glyph_lesson_steps(lesson, base):
 
 def story_lesson_steps(lesson, base, model):
     return [frame_step(base, lesson["url"], 1800, KOKO,
-                       "История двора · 6 сцен")]
+                       "История двора · 6 сцен", v="5")]
 
 
 def tones_lesson_steps(lesson, base, model):

@@ -7,6 +7,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../shared/spooky.css">
+<style>
+  .scene-art { margin: 0 0 14px; }
+  .scene-art img { display: block; width: 100%; height: auto; background: #120b24; border: 2px solid #3a2a5e; border-radius: 14px; }
+</style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>🎃</text></svg>">
 </head>
 <body>
@@ -81,6 +85,7 @@
     }).join("");
     holder.innerHTML =
       '<div class="story-panel enter">' +
+      '<div class="scene-art"><img src="../shared/story/scene' + (i + 1) + '.svg" alt="Иллюстрация: ' + p.title + '"></div>' +
       '<div class="scene">' + (p.moon ? '<span class="moon-big">🌙</span>' : "") + scene + "</div>" +
       "<h2>" + p.title + "</h2>" + lines + "</div>";
     prevBtn.disabled = i === 0;
