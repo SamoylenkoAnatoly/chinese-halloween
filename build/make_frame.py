@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-"""Хэллоуинские ВОРОТА для iframe-шагов Stepik (схема урока-примера 2666226).
+"""Хэллоуинские ВОРОТА для iframe-шагов Stepik (во всю ширину).
 
 top.svg (240x28 -> 960x112): балка с кованым заборчиком, тотемы-тыквы
 на тёмных столбах по краям, серп луны, звёзды, мыши, паук на нити.
-post-l/r-{H}.svg (20xN -> 80xH): тёмный столб #1a1033 с тыквой-головой,
-кирпичные метки, паучок с красными глазами; H = iframe + 24.
 bottom.svg (240x13 -> 960x52): балка с заборчиком вниз, трава, тыквы.
-Клетка = 4px. Экспортируемые высоты постов: 1124/1524/1824.
+iframe во всю ширину между ними (см. frame_step в publish_stepik.py),
+клетка = 4px.
 """
 from pathlib import Path
 
@@ -29,8 +28,6 @@ PALETTE = {
     "e": "#4f7a1e",  # трава тень
     "R": "#e64533",  # конфета / глаза паука
 }
-
-POST_HEIGHTS = (1124, 1524, 1824)  # = iframe (1100/1500/1800) + 24 рамки
 
 
 class Grid:
@@ -226,37 +223,6 @@ def make_bottom():
     g.render("bottom.svg", "Порог ворот: балка с оградой вниз, трава и тыквы")
 
 
-def make_post(side, cells):
-    g = Grid(20, cells)
-    g.rect(0, 0, 20, cells, "B")
-    off = 0 if side == "l" else 2
-    pumpkin_totem(g, 10, 0)
-    g.hline(0, 12, 20, "L")
-    g.hline(0, 13, 20, "P")
-    g.hline(0, 14, 20, "L")
-    brick(g, 0, 15, 20, cells - 15 - 12, off=off)
-    g.vline(0, 15, cells - 27, "L")
-    g.vline(19, 15, cells - 27, "L")
-    g.hline(1, 18, 2, "E")
-    g.px(17, 25, "E"); g.px(18, 26, "E")
-    y = cells - 12
-    g.rect(0, y, 20, 12, "L")
-    g.rect(1, y + 1, 18, 10, "B")
-    g.hline(1, y + 4, 18, "P")
-    g.hline(1, y + 7, 18, "P")
-    g.hline(0, y + 11, 20, "P")
-    sx = 14 if side == "l" else 5
-    spider_on_thread(g, sx, 16, 22)
-    by = cells - 40
-    g.px(3 if side == "l" else 16, by, "D")
-    g.px(4 if side == "l" else 15, by + 3, "D")
-    g.render("post-%s-%d.svg" % (side, cells * 4),
-             "Столб ворот с тыквой-головой")
-
-
 if __name__ == "__main__":
     make_top()
     make_bottom()
-    for H in POST_HEIGHTS:
-        for side in ("l", "r"):
-            make_post(side, H // 4)
