@@ -7,14 +7,14 @@
 <title>日月 · Двор Тихой Луны</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../shared/spooky.css">
+<link rel="stylesheet" href="../../shared/spooky.css">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>🎃</text></svg>">
 </head>
 <body>
 <header class="topbar">
   <div class="logo">Двор Тихой Луны <span class="hanzi">月</span></div>
   <div class="spacer"></div>
-  <a class="back" href="../index.html">⟵ Карта двора</a>
+  <a class="back" href="../../index.html">⟵ Карта двора</a>
 </header>
 <nav class="stepper" id="stepper">
   <div class="step active" data-ph="1"><span class="dot"></span>Туман</div>
@@ -91,7 +91,7 @@
   <div class="sub">Гости двора приходят за знаками. Угости правильно — получишь конфету-фонарик.</div>
   <div class="game-scene">
     <div class="guest-row">
-      <img class="guest-img" id="guest-img" src="../shared/characters/ghost.svg" alt="">
+      <img class="guest-img" id="guest-img" src="../../shared/characters/ghost.svg" alt="">
       <div class="say"><span class="q" id="guest-say">Сладость или гадость?</span><div id="guest-note" style="color:#b3a8d4;font-size:13px;margin-top:4px"></div></div>
     </div>
     <div class="prompt" id="prompt"></div>
@@ -102,7 +102,7 @@
     <div class="flame">🏮</div>
     <h2 id="cer-title"></h2>
     <p style="color:#b3a8d4;margin:10px 0 20px" id="cer-text"></p>
-    <a class="btn poison" id="to-map" href="../index.html">На карту двора →</a>
+    <a class="btn poison" id="to-map" href="../../index.html">На карту двора →</a>
   </div>
   <div style="margin-top:22px"><button class="btn ghosty small" id="back3">⟵ Мел и камень</button></div>
 </div>
@@ -110,7 +110,7 @@
 <div class="companion" id="companion"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5.0/dist/hanzi-writer.min.js"></script>
-<script src="../shared/spooky.js"></script>
+<script src="../../shared/spooky.js"></script>
 <script>window.LESSON = {"type": "word", "target": "日月", "pinyin": "rìyuè", "tone": 1, "meaning": "солнце и луна; время", "audio": "riyue.mp3", "game": [{"kind": "audio2word", "opts": ["日月", "月日", "明月", "明白"], "ans": "日月", "prompt": "audio", "audio": "riyue.mp3"}, {"kind": "meaning2word", "opts": ["日月", "名人", "人口", "众人"], "ans": "日月", "prompt": "солнце и луна; время"}, {"kind": "word2pinyin", "opts": ["rìyuè", "yuèrì", "míngyuè", "míngbai"], "ans": "rìyuè", "prompt": "日月"}, {"kind": "meaning2word", "opts": ["日月", "月日", "明月", "明白"], "ans": "日月", "prompt": "солнце и луна; время"}, {"kind": "audio2pinyin", "opts": ["rìyuè", "yuèrì", "míngyuè", "míngbai"], "ans": "rìyuè", "prompt": "audio", "audio": "riyue.mp3"}], "parts": ["日", "月"], "num": 24, "total": 25};</script>
 <script>
 (function () {
@@ -266,7 +266,7 @@
     var r = L.game[rIdx];
     var guest = guests[rIdx % guests.length];
     var img = document.getElementById("guest-img");
-    img.src = "../shared/characters/" + guest + ".svg";
+    img.src = QM.BASE + "shared/characters/" + guest + ".svg";
     img.className = "guest-img";
     document.getElementById("guest-say").textContent = guestSay[guest];
     document.getElementById("guest-note").textContent = "Вопрос " + (rIdx + 1) + " из " + roundsTotal;

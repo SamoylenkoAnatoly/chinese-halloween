@@ -305,7 +305,7 @@ TAIL = """
 
 
 def lesson_html(item, kind):
-    up = "../" if kind == "word" else "../"
+    up = "../../"
     is_glyph = kind == "glyph"
     num = item["index"] + 1
     title = item["char"] if is_glyph else item["word"]
@@ -494,7 +494,7 @@ LESSON_JS = r"""
     var r = L.game[rIdx];
     var guest = guests[rIdx % guests.length];
     var img = document.getElementById("guest-img");
-    img.src = "../shared/characters/" + guest + ".svg";
+    img.src = QM.BASE + "shared/characters/" + guest + ".svg";
     img.className = "guest-img";
     document.getElementById("guest-say").textContent = guestSay[guest];
     document.getElementById("guest-note").textContent = "Вопрос " + (rIdx + 1) + " из " + roundsTotal;
