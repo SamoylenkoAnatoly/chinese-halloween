@@ -11,6 +11,7 @@ import json
 import random
 import sys
 from pathlib import Path
+from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -304,7 +305,7 @@ BODY_HEAD = """
   <div style="margin-top:22px"><button class="btn ghosty small" id="back3">⟵ Мел и камень</button></div>
 </div>
 
-<div class="ground-strip"></div>
+{ground_div}
 """
 
 TAIL = """
@@ -339,6 +340,14 @@ def lesson_html(item, kind):
         "meaning": item["meaning"], "audio": item["audio"], "game": item["game"],
         "parts": item.get("parts", []), "num": num, "total": TOTAL_LESSONS,
     }
+    if kind == "glyph":
+        g = quote(title)
+        ground_div = ('<div class="ground-strip" style="background-image:'
+                      "url('{up}shared/frame/grounds/{g}.svg?v=1'),"
+                      "url('{up}shared/frame/undergrounds/{g}.svg?v=1')\"></div>"
+                      ).format(up=up, g=g)
+    else:
+        ground_div = '<div class="ground-strip"></div>'
     body = BODY_HEAD.format(
         h1=h1, sub=sub, big=title, py_colored=color_pinyin(item["pinyin"], tone),
         meaning=item["meaning"], tone_bg=__import__("data").TONE_COLORS[tone],
@@ -346,7 +355,8 @@ def lesson_html(item, kind):
         tone_name=__import__("data").TONE_NAMES[tone],
         strokes=item.get("strokes", ""), key_html=key_html, num=num,
         total=TOTAL_LESSONS, big2=title, py2=item["pinyin"],
-        tale_html=tale_html, writer_sub=writer_sub, up=up, map_url=MAP_LESSON_URL)
+        tale_html=tale_html, writer_sub=writer_sub, up=up, map_url=MAP_LESSON_URL,
+        ground_div=ground_div)
     tail = TAIL.format(up=up).replace("/*PAYLOAD*/",
         "window.LESSON = " + json.dumps(payload, ensure_ascii=False) + ";"
         ).replace("/*LESSON_JS*/", LESSON_JS)
