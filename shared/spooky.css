@@ -351,11 +351,11 @@ a:hover { text-decoration: underline; }
 body.with-ground { display: flex; flex-direction: column; }
 .ground-strip {
   margin-top: auto; flex: 1 0 144px;
-  background-color: #0b0716;
-  background-image: url("frame/ground.svg?v=2");
-  background-repeat: repeat-x;
-  background-size: auto 144px;
-  background-position: left top;
+  background-color: #0a0714;
+  background-image: url("frame/ground.svg?v=3"), url("frame/underground.svg?v=3");
+  background-repeat: repeat-x, repeat-x;
+  background-size: auto 144px, auto 600px;
+  background-position: left top, left 144px;
 }
 .char-row {
   display: flex; gap: 10px; justify-content: center; margin-top: 12px;

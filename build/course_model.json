@@ -51,10 +51,10 @@
        {
         "kind": "audio2glyph",
         "opts": [
-         "天",
          "中",
-         "上",
-         "下"
+         "天",
+         "下",
+         "上"
         ],
         "ans": "天",
         "prompt": "audio",
@@ -63,9 +63,9 @@
        {
         "kind": "meaning2glyph",
         "opts": [
-         "天",
          "大",
          "小",
+         "天",
          "山"
         ],
         "ans": "天",
@@ -75,9 +75,9 @@
         "kind": "glyph2pinyin",
         "opts": [
          "tiān",
+         "tiàn",
          "tián",
-         "tiǎn",
-         "tiàn"
+         "tiǎn"
         ],
         "ans": "tiān",
         "prompt": "天"
@@ -86,9 +86,9 @@
         "kind": "pinyin2glyph",
         "opts": [
          "天",
-         "中",
          "上",
-         "下"
+         "下",
+         "中"
         ],
         "ans": "天",
         "prompt": "tiān"
@@ -97,9 +97,9 @@
         "kind": "audio2pinyin",
         "opts": [
          "tiān",
-         "tián",
+         "tiàn",
          "tiǎn",
-         "tiàn"
+         "tián"
         ],
         "ans": "tiān",
         "prompt": "audio",
@@ -143,9 +143,9 @@
        {
         "kind": "audio2glyph",
         "opts": [
-         "中",
          "上",
          "下",
+         "中",
          "大"
         ],
         "ans": "中",
@@ -155,10 +155,10 @@
        {
         "kind": "meaning2glyph",
         "opts": [
-         "中",
-         "小",
          "山",
-         "水"
+         "小",
+         "水",
+         "中"
         ],
         "ans": "中",
         "prompt": "середина; центр"
@@ -166,10 +166,10 @@
        {
         "kind": "glyph2pinyin",
         "opts": [
-         "zhōng",
-         "zhóng",
          "zhǒng",
-         "zhòng"
+         "zhòng",
+         "zhōng",
+         "zhóng"
         ],
         "ans": "zhōng",
         "prompt": "中"
@@ -177,10 +177,10 @@
        {
         "kind": "pinyin2glyph",
         "opts": [
-         "中",
-         "上",
          "下",
-         "大"
+         "大",
+         "上",
+         "中"
         ],
         "ans": "中",
         "prompt": "zhōng"
@@ -188,10 +188,10 @@
        {
         "kind": "audio2pinyin",
         "opts": [
-         "zhōng",
-         "zhóng",
          "zhǒng",
-         "zhòng"
+         "zhóng",
+         "zhòng",
+         "zhōng"
         ],
         "ans": "zhōng",
         "prompt": "audio",
@@ -235,9 +235,9 @@
        {
         "kind": "audio2glyph",
         "opts": [
+         "大",
          "上",
          "下",
-         "大",
          "小"
         ],
         "ans": "上",
@@ -247,10 +247,10 @@
        {
         "kind": "meaning2glyph",
         "opts": [
-         "上",
-         "山",
          "水",
-         "火"
+         "火",
+         "山",
+         "上"
         ],
         "ans": "上",
         "prompt": "верх; наверх"
@@ -258,10 +258,10 @@
        {
         "kind": "glyph2pinyin",
         "opts": [
+         "shǎng",
          "shàng",
-         "shāng",
          "sháng",
-         "shǎng"
+         "shāng"
         ],
         "ans": "shàng",
         "prompt": "上"
@@ -270,8 +270,8 @@
         "kind": "pinyin2glyph",
         "opts": [
          "上",
-         "下",
          "大",
+         "下",
          "小"
         ],
         "ans": "上",
@@ -280,10 +280,10 @@
        {
         "kind": "audio2pinyin",
         "opts": [
-         "shàng",
-         "shāng",
+         "shǎng",
          "sháng",
-         "shǎng"
+         "shāng",
+         "shàng"
         ],
         "ans": "shàng",
         "prompt": "audio",
@@ -327,10 +327,10 @@
        {
         "kind": "audio2glyph",
         "opts": [
-         "下",
          "大",
-         "小",
-         "山"
+         "下",
+         "山",
+         "小"
         ],
         "ans": "下",
         "prompt": "audio",
@@ -339,10 +339,10 @@
        {
         "kind": "meaning2glyph",
         "opts": [
-         "下",
+         "土",
          "水",
          "火",
-         "土"
+         "下"
         ],
         "ans": "下",
         "prompt": "низ; вниз"
@@ -352,8 +352,8 @@
         "opts": [
          "xià",
          "xiā",
-         "xiá",
-         "xiǎ"
+         "xiǎ",
+         "xiá"
         ],
         "ans": "xià",
         "prompt": "下"
@@ -361,10 +361,10 @@
        {
         "kind": "pinyin2glyph",
         "opts": [
-         "下",
-         "大",
          "小",
-         "山"
+         "山",
+         "下",
+         "大"
         ],
         "ans": "下",
         "prompt": "xià"
@@ -372,10 +372,10 @@
        {
         "kind": "audio2pinyin",
         "opts": [
-         "xià",
          "xiā",
+         "xiǎ",
          "xiá",
-         "xiǎ"
+         "xià"
         ],
         "ans": "xià",
         "prompt": "audio",
@@ -420,9 +420,9 @@
         "kind": "audio2glyph",
         "opts": [
          "大",
+         "水",
          "小",
-         "山",
-         "水"
+         "山"
         ],
         "ans": "大",
         "prompt": "audio",
@@ -432,9 +432,9 @@
         "kind": "meaning2glyph",
         "opts": [
          "大",
-         "火",
+         "石",
          "土",
-         "石"
+         "火"
         ],
         "ans": "大",
         "prompt": "большой"
@@ -442,9 +442,9 @@
        {
         "kind": "glyph2pinyin",
         "opts": [
-         "dà",
          "dā",
          "dá",
+         "dà",
          "dǎ"
         ],
         "ans": "dà",
@@ -453,10 +453,10 @@
        {
         "kind": "pinyin2glyph",
         "opts": [
-         "大",
          "小",
-         "山",
-         "水"
+         "水",
+         "大",
+         "山"
         ],
         "ans": "大",
         "prompt": "dà"
@@ -464,10 +464,10 @@
        {
         "kind": "audio2pinyin",
         "opts": [
+         "dǎ",
          "dà",
          "dā",
-         "dá",
-         "dǎ"
+         "dá"
         ],
         "ans": "dà",
         "prompt": "audio",
@@ -511,10 +511,10 @@
        {
         "kind": "audio2glyph",
         "opts": [
-         "小",
-         "山",
+         "火",
          "水",
-         "火"
+         "山",
+         "小"
         ],
         "ans": "小",
         "prompt": "audio",
@@ -523,8 +523,8 @@
        {
         "kind": "meaning2glyph",
         "opts": [
-         "小",
          "土",
+         "小",
          "石",
          "田"
         ],
@@ -534,10 +534,10 @@
        {
         "kind": "glyph2pinyin",
         "opts": [
-         "xiǎo",
-         "xiāo",
          "xiáo",
-         "xiào"
+         "xiào",
+         "xiāo",
+         "xiǎo"
         ],
         "ans": "xiǎo",
         "prompt": "小"
@@ -545,8 +545,8 @@
        {
         "kind": "pinyin2glyph",
         "opts": [
-         "小",
          "山",
+         "小",
          "水",
          "火"
         ],
@@ -556,10 +556,10 @@
        {
         "kind": "audio2pinyin",
         "opts": [
-         "xiǎo",
+         "xiào",
          "xiāo",
          "xiáo",
-         "xiào"
+         "xiǎo"
         ],
         "ans": "xiǎo",
         "prompt": "audio",
@@ -608,10 +608,10 @@
        {
         "kind": "audio2glyph",
         "opts": [
-         "山",
-         "水",
+         "土",
          "火",
-         "土"
+         "水",
+         "山"
         ],
         "ans": "山",
         "prompt": "audio",
@@ -631,10 +631,10 @@
        {
         "kind": "glyph2pinyin",
         "opts": [
-         "shān",
          "shán",
-         "shǎn",
-         "shàn"
+         "shān",
+         "shàn",
+         "shǎn"
         ],
         "ans": "shān",
         "prompt": "山"
@@ -642,10 +642,10 @@
        {
         "kind": "pinyin2glyph",
         "opts": [
-         "山",
-         "水",
          "火",
-         "土"
+         "山",
+         "土",
+         "水"
         ],
         "ans": "山",
         "prompt": "shān"
@@ -653,10 +653,10 @@
        {
         "kind": "audio2pinyin",
         "opts": [
-         "shān",
          "shán",
-         "shǎn",
-         "shàn"
+         "shàn",
+         "shān",
+         "shǎn"
         ],
         "ans": "shān",
         "prompt": "audio",
@@ -700,8 +700,8 @@
        {
         "kind": "audio2glyph",
         "opts": [
-         "水",
          "火",
+         "水",
          "土",
          "石"
         ],
@@ -712,9 +712,9 @@
        {
         "kind": "meaning2glyph",
         "opts": [
+         "女",
          "水",
          "田",
-         "女",
          "子"
         ],
         "ans": "水",
@@ -723,10 +723,10 @@
        {
         "kind": "glyph2pinyin",
         "opts": [
-         "shuǐ",
-         "shuī",
+         "shuì",
          "shuí",
-         "shuì"
+         "shuǐ",
+         "shuī"
         ],
         "ans": "shuǐ",
         "prompt": "水"
@@ -735,9 +735,9 @@
         "kind": "pinyin2glyph",
         "opts": [
          "水",
-         "火",
          "土",
-         "石"
+         "石",
+         "火"
         ],
         "ans": "水",
         "prompt": "shuǐ"
@@ -745,9 +745,9 @@
        {
         "kind": "audio2pinyin",
         "opts": [
+         "shuí",
          "shuǐ",
          "shuī",
-         "shuí",
          "shuì"
         ],
         "ans": "shuǐ",
@@ -794,8 +794,8 @@
         "opts": [
          "火",
          "土",
-         "石",
-         "田"
+         "田",
+         "石"
         ],
         "ans": "火",
         "prompt": "audio",
@@ -804,10 +804,10 @@
        {
         "kind": "meaning2glyph",
         "opts": [
-         "火",
-         "女",
+         "马",
          "子",
-         "马"
+         "火",
+         "女"
         ],
         "ans": "火",
         "prompt": "огонь; пожар"
@@ -815,10 +815,10 @@
        {
         "kind": "glyph2pinyin",
         "opts": [
-         "huǒ",
          "huō",
          "huó",
-         "huò"
+         "huò",
+         "huǒ"
         ],
         "ans": "huǒ",
         "prompt": "火"
@@ -826,10 +826,10 @@
        {
         "kind": "pinyin2glyph",
         "opts": [
+         "田",
          "火",
          "土",
-         "石",
-         "田"
+         "石"
         ],
         "ans": "火",
         "prompt": "huǒ"
@@ -837,9 +837,9 @@
        {
         "kind": "audio2pinyin",
         "opts": [
-         "huǒ",
-         "huō",
          "huó",
+         "huō",
+         "huǒ",
          "huò"
         ],
         "ans": "huǒ",
@@ -884,10 +884,10 @@
        {
         "kind": "audio2glyph",
         "opts": [
-         "土",
-         "石",
+         "女",
          "田",
-         "女"
+         "石",
+         "土"
         ],
         "ans": "土",
         "prompt": "audio",
@@ -896,9 +896,9 @@
        {
         "kind": "meaning2glyph",
         "opts": [
-         "土",
-         "子",
          "马",
+         "子",
+         "土",
          "车"
         ],
         "ans": "土",
@@ -907,10 +907,10 @@
        {
         "kind": "glyph2pinyin",
         "opts": [
-         "tǔ",
-         "tū",
          "tú",
-         "tù"
+         "tù",
+         "tǔ",
+         "tū"
         ],
         "ans": "tǔ",
         "prompt": "土"
@@ -918,10 +918,10 @@
        {
         "kind": "pinyin2glyph",
         "opts": [
-         "土",
-         "石",
+         "女",
          "田",
-         "女"
+         "土",
+         "石"
         ],
         "ans": "土",
         "prompt": "tǔ"
@@ -929,10 +929,10 @@
        {
         "kind": "audio2pinyin",
         "opts": [
-         "tǔ",
          "tū",
          "tú",
-         "tù"
+         "tù",
+         "tǔ"
         ],
         "ans": "tǔ",
         "prompt": "audio",
@@ -977,9 +977,9 @@
         "kind": "audio2glyph",
         "opts": [
          "石",
-         "田",
+         "子",
          "女",
-         "子"
+         "田"
         ],
         "ans": "石",
         "prompt": "audio",
@@ -988,10 +988,10 @@
        {
         "kind": "meaning2glyph",
         "opts": [
-         "石",
          "马",
          "车",
-         "门"
+         "门",
+         "石"
         ],
         "ans": "石",
         "prompt": "камень"
@@ -999,9 +999,9 @@
        {
         "kind": "glyph2pinyin",
         "opts": [
-         "shí",
          "shī",
          "shǐ",
+         "shí",
          "shì"
         ],
         "ans": "shí",
@@ -1012,8 +1012,8 @@
         "opts": [
          "石",
          "田",
-         "女",
-         "子"
+         "子",
+         "女"
         ],
         "ans": "石",
         "prompt": "shí"
@@ -1021,9 +1021,9 @@
        {
         "kind": "audio2pinyin",
         "opts": [
+         "shǐ",
          "shí",
          "shī",
-         "shǐ",
          "shì"
         ],
         "ans": "shí",
@@ -1073,10 +1073,10 @@
        {
         "kind": "audio2glyph",
         "opts": [
-         "田",
-         "女",
          "子",
-         "马"
+         "马",
+         "女",
+         "田"
         ],
         "ans": "田",
         "prompt": "audio",
@@ -1118,10 +1118,10 @@
        {
         "kind": "audio2pinyin",
         "opts": [
-         "tián",
          "tiān",
-         "tiǎn",
-         "tiàn"
+         "tiàn",
+         "tián",
+         "tiǎn"
         ],
         "ans": "tián",
         "prompt": "audio",
@@ -1165,10 +1165,10 @@
        {
         "kind": "audio2glyph",
         "opts": [
-         "女",
          "子",
          "马",
-         "车"
+         "车",
+         "女"
         ],
         "ans": "女",
         "prompt": "audio",
@@ -1177,10 +1177,10 @@
        {
         "kind": "meaning2glyph",
         "opts": [
+         "中",
          "女",
          "门",
-         "天",
-         "中"
+         "天"
         ],
         "ans": "女",
         "prompt": "женщина; дочь"
@@ -1188,9 +1188,9 @@
        {
         "kind": "glyph2pinyin",
         "opts": [
-         "nǚ",
          "nǖ",
          "nǘ",
+         "nǚ",
          "nǜ"
         ],
         "ans": "nǚ",
@@ -1199,10 +1199,10 @@
        {
         "kind": "pinyin2glyph",
         "opts": [
-         "女",
          "子",
-         "马",
-         "车"
+         "车",
+         "女",
+         "马"
         ],
         "ans": "女",
         "prompt": "nǚ"
@@ -1210,9 +1210,9 @@
        {
         "kind": "audio2pinyin",
         "opts": [
-         "nǚ",
          "nǖ",
          "nǘ",
+         "nǚ",
          "nǜ"
         ],
         "ans": "nǚ",
@@ -1257,10 +1257,10 @@
        {
         "kind": "audio2glyph",
         "opts": [
-         "子",
-         "马",
          "车",
-         "门"
+         "门",
+         "子",
+         "马"
         ],
         "ans": "子",
         "prompt": "audio",
@@ -1269,10 +1269,10 @@
        {
         "kind": "meaning2glyph",
         "opts": [
-         "子",
-         "天",
          "中",
-         "上"
+         "上",
+         "子",
+         "天"
         ],
         "ans": "子",
         "prompt": "ребёнок; сын"
@@ -1280,9 +1280,9 @@
        {
         "kind": "glyph2pinyin",
         "opts": [
-         "zǐ",
          "zī",
          "zí",
+         "zǐ",
          "zì"
         ],
         "ans": "zǐ",
@@ -1292,9 +1292,9 @@
         "kind": "pinyin2glyph",
         "opts": [
          "子",
+         "门",
          "马",
-         "车",
-         "门"
+         "车"
         ],
         "ans": "子",
         "prompt": "zǐ"
@@ -1302,10 +1302,10 @@
        {
         "kind": "audio2pinyin",
         "opts": [
-         "zǐ",
-         "zī",
          "zí",
-         "zì"
+         "zī",
+         "zì",
+         "zǐ"
         ],
         "ans": "zǐ",
         "prompt": "audio",
@@ -1349,10 +1349,10 @@
        {
         "kind": "audio2glyph",
         "opts": [
-         "马",
-         "车",
          "门",
-         "天"
+         "马",
+         "天",
+         "车"
         ],
         "ans": "马",
         "prompt": "audio",
@@ -1362,9 +1362,9 @@
         "kind": "meaning2glyph",
         "opts": [
          "马",
-         "中",
          "上",
-         "下"
+         "下",
+         "中"
         ],
         "ans": "马",
         "prompt": "лошадь"
@@ -1372,10 +1372,10 @@
        {
         "kind": "glyph2pinyin",
         "opts": [
+         "mà",
          "mǎ",
          "mā",
-         "má",
-         "mà"
+         "má"
         ],
         "ans": "mǎ",
         "prompt": "马"
@@ -1383,10 +1383,10 @@
        {
         "kind": "pinyin2glyph",
         "opts": [
-         "马",
          "车",
-         "门",
-         "天"
+         "天",
+         "马",
+         "门"
         ],
         "ans": "马",
         "prompt": "mǎ"
@@ -1394,9 +1394,9 @@
        {
         "kind": "audio2pinyin",
         "opts": [
+         "má",
          "mǎ",
          "mā",
-         "má",
          "mà"
         ],
         "ans": "mǎ",
@@ -1441,10 +1441,10 @@
        {
         "kind": "audio2glyph",
         "opts": [
-         "车",
+         "中",
          "门",
-         "天",
-         "中"
+         "车",
+         "天"
         ],
         "ans": "车",
         "prompt": "audio",
@@ -1453,10 +1453,10 @@
        {
         "kind": "meaning2glyph",
         "opts": [
-         "车",
          "上",
+         "大",
          "下",
-         "大"
+         "车"
         ],
         "ans": "车",
         "prompt": "повозка; машина"
@@ -1464,10 +1464,10 @@
        {
         "kind": "glyph2pinyin",
         "opts": [
-         "chē",
-         "ché",
          "chě",
-         "chè"
+         "chē",
+         "chè",
+         "ché"
         ],
         "ans": "chē",
         "prompt": "车"
@@ -1475,10 +1475,10 @@
        {
         "kind": "pinyin2glyph",
         "opts": [
-         "车",
-         "门",
+         "中",
          "天",
-         "中"
+         "门",
+         "车"
         ],
         "ans": "车",
         "prompt": "chē"
@@ -1487,8 +1487,8 @@
         "kind": "audio2pinyin",
         "opts": [
          "chē",
-         "ché",
          "chě",
+         "ché",
          "chè"
         ],
         "ans": "chē",
@@ -1533,10 +1533,10 @@
        {
         "kind": "audio2glyph",
         "opts": [
-         "门",
-         "天",
          "中",
-         "上"
+         "门",
+         "上",
+         "天"
         ],
         "ans": "门",
         "prompt": "audio",
@@ -1545,10 +1545,10 @@
        {
         "kind": "meaning2glyph",
         "opts": [
-         "门",
-         "下",
+         "小",
          "大",
-         "小"
+         "下",
+         "门"
         ],
         "ans": "门",
         "prompt": "ворота; дверь"
@@ -1556,9 +1556,9 @@
        {
         "kind": "glyph2pinyin",
         "opts": [
+         "měn",
          "mén",
          "mēn",
-         "měn",
          "mèn"
         ],
         "ans": "mén",
@@ -1567,10 +1567,10 @@
        {
         "kind": "pinyin2glyph",
         "opts": [
-         "门",
+         "上",
          "天",
-         "中",
-         "上"
+         "门",
+         "中"
         ],
         "ans": "门",
         "prompt": "mén"
@@ -1578,8 +1578,8 @@
        {
         "kind": "audio2pinyin",
         "opts": [
-         "mén",
          "mēn",
+         "mén",
          "měn",
          "mèn"
         ],
@@ -1631,10 +1631,10 @@
        {
         "kind": "audio2word",
         "opts": [
-         "大小",
          "上下",
+         "火山",
          "山水",
-         "火山"
+         "大小"
         ],
         "ans": "大小",
         "prompt": "audio",
@@ -1654,9 +1654,9 @@
        {
         "kind": "word2pinyin",
         "opts": [
-         "dàxiǎo",
-         "shàngxià",
          "shānshuǐ",
+         "shàngxià",
+         "dàxiǎo",
          "huǒshān"
         ],
         "ans": "dàxiǎo",
@@ -1665,10 +1665,10 @@
        {
         "kind": "meaning2word",
         "opts": [
-         "大小",
          "上下",
-         "山水",
-         "火山"
+         "大小",
+         "火山",
+         "山水"
         ],
         "ans": "大小",
         "prompt": "размер; величина"
@@ -1677,9 +1677,9 @@
         "kind": "audio2pinyin",
         "opts": [
          "dàxiǎo",
-         "shàngxià",
          "shānshuǐ",
-         "huǒshān"
+         "huǒshān",
+         "shàngxià"
         ],
         "ans": "dàxiǎo",
         "prompt": "audio",
@@ -1724,9 +1724,9 @@
         "kind": "audio2word",
         "opts": [
          "上下",
-         "山水",
+         "水田",
          "火山",
-         "水田"
+         "山水"
         ],
         "ans": "上下",
         "prompt": "audio",
@@ -1735,10 +1735,10 @@
        {
         "kind": "meaning2word",
         "opts": [
-         "上下",
-         "女子",
          "马车",
-         "大门"
+         "大门",
+         "上下",
+         "女子"
         ],
         "ans": "上下",
         "prompt": "верх и низ; примерно"
@@ -1746,10 +1746,10 @@
        {
         "kind": "word2pinyin",
         "opts": [
-         "shàngxià",
          "shānshuǐ",
-         "huǒshān",
-         "shuǐtián"
+         "shuǐtián",
+         "shàngxià",
+         "huǒshān"
         ],
         "ans": "shàngxià",
         "prompt": "上下"
@@ -1757,10 +1757,10 @@
        {
         "kind": "meaning2word",
         "opts": [
+         "水田",
          "上下",
          "山水",
-         "火山",
-         "水田"
+         "火山"
         ],
         "ans": "上下",
         "prompt": "верх и низ; примерно"
@@ -1768,10 +1768,10 @@
        {
         "kind": "audio2pinyin",
         "opts": [
-         "shàngxià",
-         "shānshuǐ",
          "huǒshān",
-         "shuǐtián"
+         "shānshuǐ",
+         "shuǐtián",
+         "shàngxià"
         ],
         "ans": "shàngxià",
         "prompt": "audio",
@@ -1815,10 +1815,10 @@
        {
         "kind": "audio2word",
         "opts": [
+         "女子",
          "山水",
-         "火山",
          "水田",
-         "女子"
+         "火山"
         ],
         "ans": "山水",
         "prompt": "audio",
@@ -1827,10 +1827,10 @@
        {
         "kind": "meaning2word",
         "opts": [
-         "山水",
-         "马车",
          "大门",
-         "大小"
+         "大小",
+         "山水",
+         "马车"
         ],
         "ans": "山水",
         "prompt": "горы и воды; пейзаж"
@@ -1839,9 +1839,9 @@
         "kind": "word2pinyin",
         "opts": [
          "shānshuǐ",
+         "nǚzǐ",
          "huǒshān",
-         "shuǐtián",
-         "nǚzǐ"
+         "shuǐtián"
         ],
         "ans": "shānshuǐ",
         "prompt": "山水"
@@ -1849,10 +1849,10 @@
        {
         "kind": "meaning2word",
         "opts": [
+         "女子",
          "山水",
-         "火山",
          "水田",
-         "女子"
+         "火山"
         ],
         "ans": "山水",
         "prompt": "горы и воды; пейзаж"
@@ -1860,8 +1860,8 @@
        {
         "kind": "audio2pinyin",
         "opts": [
-         "shānshuǐ",
          "huǒshān",
+         "shānshuǐ",
          "shuǐtián",
          "nǚzǐ"
         ],
@@ -1908,9 +1908,9 @@
         "kind": "audio2word",
         "opts": [
          "火山",
-         "水田",
          "女子",
-         "马车"
+         "马车",
+         "水田"
         ],
         "ans": "火山",
         "prompt": "audio",
@@ -1919,10 +1919,10 @@
        {
         "kind": "meaning2word",
         "opts": [
-         "火山",
          "大门",
+         "上下",
          "大小",
-         "上下"
+         "火山"
         ],
         "ans": "火山",
         "prompt": "вулкан"
@@ -1930,10 +1930,10 @@
        {
         "kind": "word2pinyin",
         "opts": [
-         "huǒshān",
-         "shuǐtián",
          "nǚzǐ",
-         "mǎchē"
+         "mǎchē",
+         "shuǐtián",
+         "huǒshān"
         ],
         "ans": "huǒshān",
         "prompt": "火山"
@@ -1941,8 +1941,8 @@
        {
         "kind": "meaning2word",
         "opts": [
-         "火山",
          "水田",
+         "火山",
          "女子",
          "马车"
         ],
@@ -1952,10 +1952,10 @@
        {
         "kind": "audio2pinyin",
         "opts": [
-         "huǒshān",
+         "mǎchē",
          "shuǐtián",
          "nǚzǐ",
-         "mǎchē"
+         "huǒshān"
         ],
         "ans": "huǒshān",
         "prompt": "audio",
@@ -1999,10 +1999,10 @@
        {
         "kind": "audio2word",
         "opts": [
-         "水田",
-         "女子",
+         "大门",
          "马车",
-         "大门"
+         "女子",
+         "水田"
         ],
         "ans": "水田",
         "prompt": "audio",
@@ -2011,10 +2011,10 @@
        {
         "kind": "meaning2word",
         "opts": [
-         "水田",
-         "大小",
          "上下",
-         "山水"
+         "山水",
+         "大小",
+         "水田"
         ],
         "ans": "水田",
         "prompt": "рисовое поле"
@@ -2023,9 +2023,9 @@
         "kind": "word2pinyin",
         "opts": [
          "shuǐtián",
-         "nǚzǐ",
+         "dàmén",
          "mǎchē",
-         "dàmén"
+         "nǚzǐ"
         ],
         "ans": "shuǐtián",
         "prompt": "水田"
@@ -2033,10 +2033,10 @@
        {
         "kind": "meaning2word",
         "opts": [
-         "水田",
+         "大门",
          "女子",
          "马车",
-         "大门"
+         "水田"
         ],
         "ans": "水田",
         "prompt": "рисовое поле"
@@ -2044,10 +2044,10 @@
        {
         "kind": "audio2pinyin",
         "opts": [
-         "shuǐtián",
-         "nǚzǐ",
          "mǎchē",
-         "dàmén"
+         "nǚzǐ",
+         "dàmén",
+         "shuǐtián"
         ],
         "ans": "shuǐtián",
         "prompt": "audio",
@@ -2091,8 +2091,8 @@
        {
         "kind": "audio2word",
         "opts": [
-         "女子",
          "马车",
+         "女子",
          "大门",
          "大小"
         ],
@@ -2103,9 +2103,9 @@
        {
         "kind": "meaning2word",
         "opts": [
-         "女子",
          "上下",
          "山水",
+         "女子",
          "火山"
         ],
         "ans": "女子",
@@ -2137,9 +2137,9 @@
         "kind": "audio2pinyin",
         "opts": [
          "nǚzǐ",
+         "dàxiǎo",
          "mǎchē",
-         "dàmén",
-         "dàxiǎo"
+         "dàmén"
         ],
         "ans": "nǚzǐ",
         "prompt": "audio",
@@ -2183,8 +2183,8 @@
        {
         "kind": "audio2word",
         "opts": [
-         "马车",
          "大门",
+         "马车",
          "大小",
          "上下"
         ],
@@ -2206,10 +2206,10 @@
        {
         "kind": "word2pinyin",
         "opts": [
-         "mǎchē",
-         "dàmén",
          "dàxiǎo",
-         "shàngxià"
+         "dàmén",
+         "shàngxià",
+         "mǎchē"
         ],
         "ans": "mǎchē",
         "prompt": "马车"
@@ -2217,10 +2217,10 @@
        {
         "kind": "meaning2word",
         "opts": [
+         "上下",
          "马车",
          "大门",
-         "大小",
-         "上下"
+         "大小"
         ],
         "ans": "马车",
         "prompt": "повозка"
@@ -2228,10 +2228,10 @@
        {
         "kind": "audio2pinyin",
         "opts": [
-         "mǎchē",
+         "shàngxià",
          "dàmén",
          "dàxiǎo",
-         "shàngxià"
+         "mǎchē"
         ],
         "ans": "mǎchē",
         "prompt": "audio",
@@ -2275,10 +2275,10 @@
        {
         "kind": "audio2word",
         "opts": [
-         "大门",
-         "大小",
          "上下",
-         "山水"
+         "山水",
+         "大小",
+         "大门"
         ],
         "ans": "大门",
         "prompt": "audio",
@@ -2287,8 +2287,8 @@
        {
         "kind": "meaning2word",
         "opts": [
-         "大门",
          "火山",
+         "大门",
          "水田",
          "女子"
         ],
@@ -2298,10 +2298,10 @@
        {
         "kind": "word2pinyin",
         "opts": [
-         "dàmén",
          "dàxiǎo",
-         "shàngxià",
-         "shānshuǐ"
+         "shānshuǐ",
+         "dàmén",
+         "shàngxià"
         ],
         "ans": "dàmén",
         "prompt": "大门"
@@ -2309,8 +2309,8 @@
        {
         "kind": "meaning2word",
         "opts": [
-         "大门",
          "大小",
+         "大门",
          "上下",
          "山水"
         ],
@@ -2320,10 +2320,10 @@
        {
         "kind": "audio2pinyin",
         "opts": [
-         "dàmén",
+         "shānshuǐ",
          "dàxiǎo",
          "shàngxià",
-         "shānshuǐ"
+         "dàmén"
         ],
         "ans": "dàmén",
         "prompt": "audio",

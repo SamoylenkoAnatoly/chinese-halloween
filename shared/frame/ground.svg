@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 36" width="1440" height="144" shape-rendering="crispEdges">
-<defs><linearGradient id="soilg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#141027"/><stop offset="1" stop-color="#0b0716"/></linearGradient></defs>
+<defs><linearGradient id="soilg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#141027"/><stop offset="1" stop-color="#120d26"/></linearGradient></defs>
 <rect x="0" y="20" width="360" height="16" fill="url(#soilg)"/>
 <rect x="0" y="16" width="360" height="2" fill="#3f7a1e"/>
 <rect x="0" y="18" width="360" height="2" fill="#2c5a14"/>

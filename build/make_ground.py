@@ -192,7 +192,7 @@ out = [
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 36" width="1440" height="144" '
     'shape-rendering="crispEdges">',
     '<defs><linearGradient id="soilg" x1="0" y1="0" x2="0" y2="1">'
-    '<stop offset="0" stop-color="#141027"/><stop offset="1" stop-color="#0b0716"/>'
+    '<stop offset="0" stop-color="#141027"/><stop offset="1" stop-color="#120d26"/>'
     "</linearGradient></defs>",
     '<rect x="0" y="%d" width="%d" height="%d" fill="url(#soilg)"/>' % (GRASS + 4, W, H - GRASS - 4),
     '<rect x="0" y="%d" width="%d" height="2" fill="%s"/>' % (GRASS, W, C["g1"]),

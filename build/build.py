@@ -8,6 +8,7 @@
   build/course_model.json    — модель курса для publish_stepik.py
 """
 import json
+import random
 import sys
 from pathlib import Path
 
@@ -105,21 +106,29 @@ def pick_word_distractors(answer, n, offset):
     return out
 
 
+def shuffled(items, seed):
+    r = random.Random(seed)
+    out = list(items)
+    r.shuffle(out)
+    return out
+
+
 def glyph_game(g, glyph_index):
     ch = g["char"]
     variants, _ = pinyin_variants(g["pinyin"])
     d1 = pick_glyph_distractors(ch, 3, 1)
     d2 = pick_glyph_distractors(ch, 3, 4)
+    seed = g["char"] + str(glyph_index)
     return [
-        {"kind": "audio2glyph", "opts": [ch] + d1, "ans": ch,
+        {"kind": "audio2glyph", "opts": shuffled([ch] + d1, seed + "a"), "ans": ch,
          "prompt": "audio", "audio": g["audio"]},
-        {"kind": "meaning2glyph", "opts": [ch] + d2, "ans": ch,
+        {"kind": "meaning2glyph", "opts": shuffled([ch] + d2, seed + "b"), "ans": ch,
          "prompt": g["meaning"]},
-        {"kind": "glyph2pinyin", "opts": variants, "ans": g["pinyin"],
+        {"kind": "glyph2pinyin", "opts": shuffled(variants, seed + "c"), "ans": g["pinyin"],
          "prompt": ch},
-        {"kind": "pinyin2glyph", "opts": [ch] + d1, "ans": ch,
+        {"kind": "pinyin2glyph", "opts": shuffled([ch] + d1, seed + "d"), "ans": ch,
          "prompt": g["pinyin"]},
-        {"kind": "audio2pinyin", "opts": variants, "ans": g["pinyin"],
+        {"kind": "audio2pinyin", "opts": shuffled(variants, seed + "e"), "ans": g["pinyin"],
          "prompt": "audio", "audio": g["audio"]},
     ]
 
@@ -139,17 +148,18 @@ def word_game(w, word_index):
     meaning_opts = []
     for cand in d1:
         meaning_opts.append(next(x for x in WORDS if x["word"] == cand)["meaning"])
+    seed = w["word"] + str(word_index)
     return [
-        {"kind": "audio2word", "opts": [word] + d1, "ans": word,
+        {"kind": "audio2word", "opts": shuffled([word] + d1, seed + "a"), "ans": word,
          "prompt": "audio", "audio": w["audio"]},
-        {"kind": "meaning2word", "opts": [word] + d2, "ans": word,
+        {"kind": "meaning2word", "opts": shuffled([word] + d2, seed + "b"), "ans": word,
          "prompt": w["meaning"]},
-        {"kind": "word2pinyin", "opts": [w["pinyin"]] + other_py, "ans": w["pinyin"],
-         "prompt": word},
-        {"kind": "meaning2word", "opts": [word] + d1, "ans": word,
+        {"kind": "word2pinyin", "opts": shuffled([w["pinyin"]] + other_py, seed + "c"),
+         "ans": w["pinyin"], "prompt": word},
+        {"kind": "meaning2word", "opts": shuffled([word] + d1, seed + "d"), "ans": word,
          "prompt": w["meaning"]},
-        {"kind": "audio2pinyin", "opts": [w["pinyin"]] + other_py, "ans": w["pinyin"],
-         "prompt": "audio", "audio": w["audio"]},
+        {"kind": "audio2pinyin", "opts": shuffled([w["pinyin"]] + other_py, seed + "e"),
+         "ans": w["pinyin"], "prompt": "audio", "audio": w["audio"]},
     ]
 
 
@@ -190,7 +200,7 @@ HEAD = """<!DOCTYPE html>
 <title>{title} · Двор Тихой Луны</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{up}shared/spooky.css?v=2">
+<link rel="stylesheet" href="{up}shared/spooky.css?v=3">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>🎃</text></svg>">
 </head>
 <body class="with-ground">
@@ -299,7 +309,7 @@ BODY_HEAD = """
 
 TAIL = """
 <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5.0/dist/hanzi-writer.min.js"></script>
-<script src="{up}shared/spooky.js?v=2"></script>
+<script src="{up}shared/spooky.js?v=3"></script>
 <script>/*PAYLOAD*/</script>
 <script>/*LESSON_JS*/</script>
 </body>
