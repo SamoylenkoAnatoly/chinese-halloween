@@ -21,10 +21,24 @@ import publish_stepik as ps
 from publish_stepik import DIM, GOLD, INK, KOKO, LINE, NIGHT, PANEL, POISON, PUMPKIN
 
 COURSE_ID = 303598
+INTERIOR = "https://samoylenkoanatoly.github.io/chinese-halloween/shared/interior"
+
+ROOMS = [
+    ("koko-room.svg", "Кабинет Магистра Коко — зелья и книги заклинаний"),
+    ("lumi-room.svg", "Чердак Люми — луна в круглом окне"),
+    ("echo-room.svg", "Кухонька Эхо — котёл и сырная полка"),
+    ("kostik-room.svg", "Гостиная Костика — кресло и чай"),
+]
+
+
+def img(name, alt):
+    return ('<img src="%s/%s?v=1" alt="%s" style="width:100%%;height:auto;margin-top:12px;">'
+            % (INTERIOR, name, alt))
 
 MARKERS = [
     "ДОБРО ПОЖАЛОВАТЬ ВО ДВОР ТИХОЙ ЛУНЫ",
     "Обитатели двора",
+    "Загляни внутрь домика",
     "Что ждёт внутри",
     "Как зажигается фонарик",
     "Программа праздника",
@@ -101,7 +115,10 @@ def build_styled():
         '<p style="margin:0;text-align:center;font-size:21px;color:%s;">'
         '<b>🎃 ДОБРО ПОЖАЛОВАТЬ ВО ДВОР ТИХОЙ ЛУНЫ 🌙</b></p>'
         '<p style="margin:8px 0 0;text-align:center;font-size:14px;color:%s;">'
-        'хэллоуин-интенсив китайского для начинающих</p>' % (GOLD, DIM))
+        'хэллоуин-интенсив китайского для начинающих</p>'
+        '<img src="%s/banner.svg?v=1" alt="Гостиная двора Тихой Луны: камин, книжный шкаф, '
+        'тыквы и летучие мыши" style="width:100%%;height:auto;margin-top:14px;">'
+        % (GOLD, DIM, INTERIOR))
     inner.append(divider())
     inner.append('<div style="padding:12px 14px;background-color:%s;border:3px solid %s;">%s</div>'
                  % (PANEL, LINE, ps.esc(load_summary())))
@@ -111,6 +128,17 @@ def build_styled():
         inner.append("<tr>")
         for emoji, name, role, border in row:
             inner.append(card(emoji, name, role, border))
+        inner.append("</tr>")
+    inner.append("</tbody></table>")
+    inner.append(h("🖼 Загляни внутрь домика", GOLD))
+    inner.append('<table style="width:100%;"><tbody>')
+    for row in (ROOMS[:2], ROOMS[2:]):
+        inner.append("<tr>")
+        for fname, caption in row:
+            inner.append('<td style="width:50%%;padding:8px 6px;border:3px solid %s;background-color:%s;'
+                         'text-align:center;">%s'
+                         '<p style="margin:6px 0 0;font-size:13px;color:%s;">%s</p></td>'
+                         % (LINE, PANEL, img(fname, caption), DIM, caption))
         inner.append("</tr>")
     inner.append("</tbody></table>")
     inner.append(h("🍬 Что ждёт внутри", GOLD))
