@@ -17,7 +17,7 @@
 <header class="topbar">
   <div class="logo">Двор Тихой Луны <span class="hanzi">🌙</span></div>
   <div class="spacer"></div>
-  <a class="back" href="../index.html">⟵ Карта двора</a>
+  <a class="back" href="https://stepik.org/lesson/2666960/step/1" target="_top">⟵ Карта двора</a>
 </header>
 
 <section class="hero">
@@ -47,13 +47,15 @@
     ghost: "../shared/characters/ghost.svg",
     pumpkin: "../shared/characters/pumpkin.svg",
     bat: "../shared/characters/bat.svg",
+    burst: "../shared/characters/burst.svg",
+    lantern: "../shared/characters/lantern.svg",
   };
   var NAMES = { koko: "Коко", kostik: "Костик", lumi: "Люми", echo: "Эхо", narrator: "" };
   var PANELS = [
     { title: "Сцена 1. Хижина Коко", scene: [SPR.koko, SPR.pumpkin], moon: true, lines: [
       ["koko", "Щепотка полночи... три капли луны... тыква по диагонали... Зелье «Тыквенная улыбка» почти готово!"],
       ["koko", "Осталось прочитать заклинание. Тон второй, вверх... а на строчку в моей книге что-то накапало..."]]},
-    { title: "Сцена 2. Чих", scene: [SPR.koko, "💥", SPR.bat], moon: true, lines: [
+    { title: "Сцена 2. Чих", scene: [SPR.koko, SPR.burst, SPR.bat], moon: true, lines: [
       ["koko", "Тыквенная улыбка... а-а... А-А... <b>ЦЗЫ-И-И-И!</b>"],
       ["narrator", "Чих вышел с неправильным тоном. Страница гримуара выпорхнула в окно, как испуганная мышь. Над кладбищем загудел колокол."]]},
     { title: "Сцена 3. Двор просыпается", scene: [SPR.ghost, SPR.pumpkin, SPR.bat], moon: true, lines: [
@@ -62,7 +64,7 @@
     { title: "Сцена 4. Костик", scene: [SPR.kostik], moon: false, lines: [
       ["kostik", "Тихо-тихо! Никого не пугаем, никого не гоняем. Я Костик, учитель каллиграфии. Кажется, мы всё забыли... даже свои имена."],
       ["kostik", "Но у меня есть мел, шляпа и отличный план. Студент, подай костяную руку!"]]},
-    { title: "Сцена 5. Люми", scene: [SPR.lumi, "🏮"], moon: false, lines: [
+    { title: "Сцена 5. Люми", scene: [SPR.lumi, SPR.lantern], moon: false, lines: [
       ["lumi", "Я... я Люми. Я смотритель фонарей. Я один помню, где висят Фонарики Памяти!"],
       ["lumi", "Каждый зажигается от китайского знака. Зажжёте все до рассвета — память вернётся всем, и никто не рассыплется в искры!"]]},
     { title: "Сцена 6. Эхо и план", scene: [SPR.echo, SPR.koko, SPR.kostik], moon: true, lines: [
@@ -89,10 +91,10 @@
       '<div class="scene">' + (p.moon ? '<span class="moon-big">🌙</span>' : "") + scene + "</div>" +
       "<h2>" + p.title + "</h2>" + lines + "</div>";
     prevBtn.disabled = i === 0;
-    nextBtn.textContent = i === PANELS.length - 1 ? "🏮 Пойдём зажигать фонари!" : "Дальше →";
+    nextBtn.textContent = i === PANELS.length - 1 ? "Переходи на следующий шаг" : "Дальше →";
     if (i === PANELS.length - 1) {
       QM.progress.markStory();
-      QM.say("kostik", "План такой: сначала — тоны полуночи, потом фонари по крыльям. Кликни «Пойдём зажигать» — и вперёд!");
+      QM.say("kostik", "План такой: сначала — тоны полуночи, потом фонари по крыльям. Кликни «Переходи на следующий шаг» — и вперёд!");
     }
   }
   prevBtn.onclick = function () { if (i > 0) { i--; QM.sfx.click(); render(); } };

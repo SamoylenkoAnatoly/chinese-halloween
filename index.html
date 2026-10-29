@@ -13,8 +13,8 @@
 <header class="topbar">
   <div class="logo">Двор Тихой Луны <span class="hanzi">🌙</span></div>
   <div class="spacer"></div>
-  <a class="back" href="story/index.html">📖 Сказка Коко</a>
-  <a class="back" href="finale/index.html">🏮 Праздник</a>
+  <a class="back" href="https://stepik.org/lesson/2666112/step/1" target="_top">📖 Сказка Коко</a>
+  <a class="back" href="https://stepik.org/lesson/2666659/step/1" target="_top">🏮 Праздник</a>
 </header>
 
 <section class="hero">
@@ -29,14 +29,14 @@
 </section>
 
 <div class="map-wrap">
-  <svg id="map" class="map-svg" viewBox="0 0 1000 640" role="img" aria-label="Карта двора Тихой Луны"></svg>
-  <div class="map-note">Нажми на надгробие или фонарь — откроется урок. Костик стоит у следующего неосвещённого фонаря.</div>
+  <svg id="map" class="map-svg" viewBox="0 0 1000 640" role="img" aria-label="Пиксельная карта двора Тихой Луны"></svg>
+  <div class="map-note">Клик по надгробию — сразу откроется урок на Stepik. Костик ждёт у следующего неосвещённого фонаря.</div>
 </div>
 
 <div class="map-wrap">
   <div class="panel" style="margin-top:26px">
     <h2>Обитатели двора <span class="tag">нажми на карточку</span></h2>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:14px">
+    <div class="char-row">
       <div class="char-card clickable" data-char="koko" style="cursor:pointer">
         <img src="shared/characters/wizard.svg" alt="Магистр Коко">
         <div><div class="nm">Магистр Коко</div><div class="ds">Хитрый маг. Автор слишком доброго заклинания. Отвечает за звуки и тоны.</div></div>
@@ -74,9 +74,10 @@
 (function () {
   "use strict";
   var QM = window.QM, D = window.QM_LESSONS;
+  var LINKS = {"story": "https://stepik.org/lesson/2666112/step/1", "tones": "https://stepik.org/lesson/2666228/step/1", "天": "https://stepik.org/lesson/2666633/step/1", "中": "https://stepik.org/lesson/2666634/step/1", "上": "https://stepik.org/lesson/2666635/step/1", "下": "https://stepik.org/lesson/2666636/step/1", "大": "https://stepik.org/lesson/2666637/step/1", "小": "https://stepik.org/lesson/2666638/step/1", "山": "https://stepik.org/lesson/2666639/step/1", "水": "https://stepik.org/lesson/2666640/step/1", "火": "https://stepik.org/lesson/2666641/step/1", "土": "https://stepik.org/lesson/2666642/step/1", "石": "https://stepik.org/lesson/2666643/step/1", "田": "https://stepik.org/lesson/2666644/step/1", "女": "https://stepik.org/lesson/2666645/step/1", "子": "https://stepik.org/lesson/2666646/step/1", "马": "https://stepik.org/lesson/2666647/step/1", "车": "https://stepik.org/lesson/2666648/step/1", "门": "https://stepik.org/lesson/2666649/step/1", "大小": "https://stepik.org/lesson/2666650/step/1", "上下": "https://stepik.org/lesson/2666651/step/1", "山水": "https://stepik.org/lesson/2666652/step/1", "火山": "https://stepik.org/lesson/2666653/step/1", "水田": "https://stepik.org/lesson/2666654/step/1", "女子": "https://stepik.org/lesson/2666655/step/1", "马车": "https://stepik.org/lesson/2666656/step/1", "大门": "https://stepik.org/lesson/2666657/step/1", "bonus": "https://stepik.org/lesson/2666275/step/1", "finale": "https://stepik.org/lesson/2666659/step/1"};
   var svg = document.getElementById("map");
   var NS = "http://www.w3.org/2000/svg";
-  var TONE_COLORS = { 1: "#e64533", 2: "#ff8c2b", 3: "#29b6f6", 4: "#86c232", 0: "#bfe8e0" };
+  var TONE_COLORS = QM.TONE_COLORS;
 
   function el(tag, attrs, parent) {
     var e = document.createElementNS(NS, tag);
@@ -84,145 +85,191 @@
     if (parent) parent.appendChild(e);
     return e;
   }
+  function px(parent, x, y, w, h, c, o) {
+    var a = { x: x, y: y, width: w, height: h, fill: c };
+    if (o !== undefined) a.opacity = o;
+    el("rect", a, parent);
+  }
   function txt(parent, x, y, s, size, fill, opts) {
+    opts = opts || {};
     var t = el("text", { x: x, y: y, "text-anchor": "middle", "font-size": size, fill: fill }, parent);
-    if (opts && opts.font) t.setAttribute("font-family", opts.font);
-    if (opts && opts.weight) t.setAttribute("font-weight", opts.weight);
+    if (opts.font) t.setAttribute("font-family", opts.font);
+    if (opts.weight) t.setAttribute("font-weight", opts.weight);
     t.textContent = s;
     return t;
   }
-  function clickable(g, onClick) {
-    g.style.cursor = "pointer";
-    g.addEventListener("click", onClick);
-    g.addEventListener("keydown", function (e) { if (e.key === "Enter") onClick(); });
-    g.setAttribute("tabindex", "0");
-    g.setAttribute("role", "button");
+  function wrapLink(grp, url) {
+    if (!url) { grp.style.cursor = "pointer"; return grp; }
+    var a = el("a", { href: url, target: "_top" }, svg);
+    a.appendChild(grp);
+    grp.style.cursor = "pointer";
+    return grp;
   }
 
-  /* ---------- фон ---------- */
+  /* ---------- фон: пиксельное небо ---------- */
   var defs = el("defs", {}, svg);
   defs.innerHTML = '<radialGradient id="moonGlow"><stop offset="0%" stop-color="#e8e2c4" stop-opacity=".35"/><stop offset="100%" stop-color="#e8e2c4" stop-opacity="0"/></radialGradient>';
 
-  el("rect", { x: 0, y: 0, width: 1000, height: 640, fill: "#120b24" }, svg);
-  el("rect", { x: 0, y: 170, width: 1000, height: 470, fill: "#171030" }, svg);
-  el("rect", { x: 0, y: 505, width: 1000, height: 135, fill: "#141027" }, svg);
+  px(svg, 0, 0, 1000, 640, "#120b24");
+  px(svg, 0, 196, 1000, 444, "#171030");
+  px(svg, 0, 505, 1000, 135, "#141027");
   [[140, 26], [220, 48], [305, 20], [410, 40], [620, 30], [700, 55], [780, 24], [860, 44],
    [60, 90], [180, 110], [280, 95], [360, 115], [450, 95], [540, 118], [660, 100], [740, 118],
    [830, 96], [920, 115], [70, 200], [940, 210], [50, 320], [952, 330]].forEach(function (p) {
-    el("rect", { x: p[0], y: p[1], width: 3, height: 3, fill: "#e8e2c4", opacity: .65 }, svg);
+    px(svg, p[0], p[1], 3, 3, "#e8e2c4", .65);
   });
-  el("circle", { cx: 500, cy: 62, r: 72, fill: "url(#moonGlow)" }, svg);
-  el("circle", { cx: 500, cy: 62, r: 40, fill: "#e8e2c4" }, svg);
-  el("circle", { cx: 486, cy: 54, r: 8, fill: "#d0c9a8" }, svg);
-  el("circle", { cx: 512, cy: 72, r: 6, fill: "#d0c9a8" }, svg);
-  el("circle", { cx: 494, cy: 78, r: 4, fill: "#d0c9a8" }, svg);
+  el("circle", { cx: 500, cy: 62, r: 76, fill: "url(#moonGlow)" }, svg);
+  var moonRows = [24, 36, 44, 48, 48, 44, 36, 24];
+  moonRows.forEach(function (w, i) {
+    px(svg, 500 - w / 2, 22 + i * 10, w, 10, "#e8e2c4");
+  });
+  px(svg, 486, 52, 10, 10, "#d0c9a8");
+  px(svg, 506, 64, 8, 8, "#d0c9a8");
+  px(svg, 494, 72, 6, 6, "#d0c9a8");
   var clouds = el("g", { opacity: .5 }, svg);
   el("ellipse", { cx: 240, cy: 70, rx: 90, ry: 16, fill: "#241744" }, clouds);
   el("ellipse", { cx: 760, cy: 95, rx: 110, ry: 14, fill: "#1c1233" }, clouds);
-  [[210, 168, 90, 40], [500, 176, 130, 40], [810, 168, 90, 40]].forEach(function (f) {
-    el("ellipse", { cx: f[0], cy: f[1], rx: f[2], ry: f[3], fill: "#e8e2c4", opacity: .05 }, svg);
-  });
-  txt(svg, 500, 140, "Д В О Р   Т И Х О Й   Л У Н Ы", 15, "#b3a8d4");
+  txt(svg, 500, 148, "Д В О Р   Т И Х О Й   Л У Н Ы", 15, "#b3a8d4");
 
-  /* ---------- могилы-уроки (иероглифы) ---------- */
+  /* ---------- пиксельный забор ---------- */
+  px(svg, 0, 172, 1000, 4, "#241744");
+  px(svg, 0, 182, 1000, 4, "#241744");
+  for (var fx = 4; fx < 1000; fx += 40) {
+    px(svg, fx, 164, 6, 30, "#2e2240");
+    px(svg, fx, 160, 6, 4, "#3a2a5e");
+  }
+
+  /* ---------- нижняя земля: трава + мертвецы ---------- */
+  px(svg, 0, 620, 1000, 20, "#0e0a1d");
+  px(svg, 0, 612, 1000, 8, "#2c5a14");
+  px(svg, 0, 610, 1000, 2, "#3f7a1e");
+  for (var gx = 8; gx < 1000; gx += 24) {
+    if ((gx / 24) % 2) px(svg, gx, 604, 8, 6, "#4f9a28");
+  }
+  px(svg, 130, 622, 10, 8, "#e8e2c4"); px(svg, 133, 625, 2, 2, "#0e0a1d"); px(svg, 136, 625, 2, 2, "#0e0a1d");
+  px(svg, 420, 624, 12, 3, "#c9c2a4");
+  px(svg, 640, 622, 10, 8, "#e8e2c4"); px(svg, 643, 625, 2, 2, "#0e0a1d"); px(svg, 646, 625, 2, 2, "#0e0a1d");
+  px(svg, 880, 624, 12, 3, "#c9c2a4");
+
+  /* ---------- могилы-уроки (пиксель) ---------- */
   function tombstone(g) {
     var lit = QM.progress.lit(g.char);
-    var grp = el("g", { class: "tomb", transform: "translate(" + g.map[0] + "," + g.map[1] + ")" }, svg);
-    el("ellipse", { cx: 0, cy: 4, rx: 34, ry: 6, fill: "#0b0716", opacity: .55 }, grp);
-    el("path", { class: "stone", d: "M-26 2 L-26 -34 Q-26 -48 0 -48 Q26 -48 26 -34 L26 2 Z", fill: "#514e73", stroke: "#2e2240", "stroke-width": 3 }, grp);
-    el("rect", { x: -32, y: 2, width: 64, height: 6, rx: 2, fill: "#3a3757", stroke: "#2e2240", "stroke-width": 2 }, grp);
-    if (lit) el("circle", { class: "lit-glow", cx: 40, cy: -32, r: 26, fill: "#ff8c2b", opacity: .2 }, grp);
-    el("line", { x1: 26, y1: -46, x2: 40, y2: -46, stroke: "#2e2240", "stroke-width": 3 }, grp);
-    el("line", { x1: 40, y1: -46, x2: 40, y2: -38, stroke: "#2e2240", "stroke-width": 3 }, grp);
-    el("rect", { x: 35, y: -38, width: 10, height: 13, rx: 2, fill: lit ? "#ff8c2b" : "#4a3a5e", stroke: "#2e2240", "stroke-width": 2 }, grp);
-    el("rect", { x: 38.5, y: -34, width: 3, height: 6, fill: lit ? "#ffd54f" : "#3a2a5e" }, grp);
-    txt(grp, 0, -14, g.char, 26, lit ? "#ffd54f" : "#8f8bb0", { font: "Noto Sans SC, sans-serif", weight: "700" });
+    var grp = el("g", { class: "tomb", transform: "translate(" + g.map[0] + "," + g.map[1] + ")" });
+    px(grp, -34, 0, 68, 8, "#0b0716", .55);
+    px(grp, -32, 2, 64, 6, "#3a3757");
+    px(grp, -16, -46, 32, 4, "#514e73");
+    px(grp, -20, -42, 40, 4, "#514e73");
+    px(grp, -24, -38, 48, 4, "#514e73");
+    px(grp, -26, -34, 52, 36, "#514e73");
+    px(grp, -26, -34, 6, 36, "#5d5a80");
+    px(grp, 16, -34, 10, 36, "#3a3757");
+    px(grp, -14, -28, 28, 4, "#2e2240");
+    px(grp, -14, -6, 28, 4, "#2e2240");
+    if (lit) el("circle", { class: "lit-glow", cx: 48, cy: -24, r: 26, fill: "#ff8c2b", opacity: .2 }, grp);
+    px(grp, 30, -44, 20, 4, "#2e2240");
+    px(grp, 46, -40, 4, 8, "#2e2240");
+    px(grp, 42, -32, 12, 14, lit ? "#ff8c2b" : "#4a3a5e");
+    px(grp, 45, -28, 6, 6, lit ? "#ffd54f" : "#3a2a5e");
+    txt(grp, 0, -10, g.char, 26, lit ? "#ffd54f" : "#8f8bb0",
+        { font: "Noto Sans SC, sans-serif", weight: "700" });
     txt(grp, 0, 26, lit ? g.pinyin : "? ? ?", 12, lit ? TONE_COLORS[g.tone] : "#6a6490", { weight: "600" });
-    clickable(grp, function () { openLessonModal(g, "glyph"); });
+    wrapLink(grp, LINKS[g.char]);
   }
 
-  /* ---------- фонарики-слова ---------- */
+  /* ---------- фонарики-слова (пиксель) ---------- */
   function wordLantern(w) {
     var lit = QM.progress.word(w.word);
-    var grp = el("g", { class: "tomb", transform: "translate(" + w.map[0] + "," + w.map[1] + ")" }, svg);
-    el("ellipse", { cx: 0, cy: 4, rx: 30, ry: 5, fill: "#0b0716", opacity: .55 }, grp);
-    el("rect", { x: -3, y: -46, width: 6, height: 48, rx: 2, fill: "#3a3757", stroke: "#2e2240", "stroke-width": 2 }, grp);
-    if (lit) el("circle", { class: "lit-glow", cx: 0, cy: -46, r: 30, fill: "#ffb347", opacity: .22 }, grp);
-    el("line", { x1: 0, y1: -46, x2: 0, y2: -40, stroke: "#2e2240", "stroke-width": 3 }, grp);
-    el("rect", { x: -27, y: -40, width: 54, height: 24, rx: 4, fill: lit ? "#ff8c2b" : "#4a3a5e", stroke: "#2e2240", "stroke-width": 2.5 }, grp);
-    txt(grp, 0, -22, w.word, 15, lit ? "#120b24" : "#8f8bb0", { font: "Noto Sans SC, sans-serif", weight: "700" });
-    txt(grp, 0, 22, lit ? w.pinyin : "? ? ?", 11, lit ? TONE_COLORS[w.tone] : "#6a6490", { weight: "600" });
-    clickable(grp, function () { openLessonModal(w, "word"); });
+    var grp = el("g", { class: "tomb", transform: "translate(" + w.map[0] + "," + w.map[1] + ")" });
+    px(grp, -30, 0, 60, 8, "#0b0716", .55);
+    px(grp, -2, -50, 4, 54, "#3a3757");
+    if (lit) el("circle", { class: "lit-glow", cx: 0, cy: -30, r: 28, fill: "#ffb347", opacity: .22 }, grp);
+    px(grp, -14, -46, 28, 4, lit ? "#ffd54f" : "#3a3757");
+    px(grp, -16, -42, 32, 22, lit ? "#e64533" : "#4a3a5e");
+    px(grp, -8, -42, 4, 22, lit ? "#b93126" : "#3a3757");
+    px(grp, 4, -42, 4, 22, lit ? "#b93126" : "#3a3757");
+    px(grp, -4, -38, 8, 14, lit ? "#ffb347" : "#3a3757");
+    px(grp, -12, -20, 24, 4, lit ? "#ffd54f" : "#3a3757");
+    px(grp, -2, -16, 4, 8, lit ? "#ffd54f" : "#3a3757");
+    txt(grp, 0, -27, w.word, 15, lit ? "#ffe9a8" : "#8f8bb0",
+        { font: "Noto Sans SC, sans-serif", weight: "700" });
+    txt(grp, 0, 26, lit ? w.pinyin : "? ? ?", 11, lit ? TONE_COLORS[w.tone] : "#6a6490", { weight: "600" });
+    wrapLink(grp, LINKS[w.word]);
   }
 
-  /* ---------- спец-объекты ---------- */
-  function special(key, label, desc, href, doneFlag) {
+  /* ---------- спец-объекты (пиксель) ---------- */
+  function specialGrp(key) {
     var pt = D.special[key].map;
-    var grp = el("g", { class: "tomb", transform: "translate(" + pt[0] + "," + pt[1] + ")" }, svg);
-    return { grp: grp, label: label, desc: desc, href: href, done: doneFlag, key: key };
+    return el("g", { class: "tomb", transform: "translate(" + pt[0] + "," + pt[1] + ")" });
   }
+  function label(grp, s) { txt(grp, 0, 24, s, 13, "#e8e2c4", { weight: "600" }); }
 
-  function drawStory(sp) {
-    var g = sp.grp;
-    el("rect", { x: -52, y: -44, width: 104, height: 46, rx: 4, fill: "#2d1e52", stroke: "#2e2240", "stroke-width": 3 }, g);
-    el("path", { d: "M-60 -44 L0 -84 L60 -44 Z", fill: "#3a2a5e", stroke: "#2e2240", "stroke-width": 3 }, g);
-    el("rect", { x: -14, y: -26, width: 28, height: 28, rx: 2, fill: "#ffd54f", stroke: "#2e2240", "stroke-width": 2, opacity: sp.done ? 1 : .55 }, g);
-    el("line", { x1: 0, y1: -26, x2: 0, y2: 2, stroke: "#2e2240", "stroke-width": 2 }, g);
+  function drawStory() {
+    var g = specialGrp("story");
+    px(g, -48, -40, 96, 42, "#2d1e52");
+    for (var bx = -44; bx < 44; bx += 16) { px(g, bx, -34, 12, 3, "#3a2a5e"); px(g, bx, -22, 12, 3, "#3a2a5e"); px(g, bx, -10, 12, 3, "#3a2a5e"); }
+    px(g, -56, -44, 112, 4, "#3a2a5e");
+    px(g, -48, -48, 96, 4, "#3a2a5e");
+    px(g, -40, -52, 80, 4, "#4a3a5e");
+    px(g, -32, -56, 64, 4, "#4a3a5e");
+    px(g, -12, -30, 24, 20, "#ffd54f");
+    px(g, -12, -22, 24, 3, "#120b24");
     el("image", { href: "shared/characters/wizard.svg", x: 44, y: -36, width: 52, height: 52 }, g);
-    el("circle", { class: "lit-glow", cx: 0, cy: -12, r: 26, fill: "#ffd54f", opacity: .16 }, g);
-    txt(g, 0, 24, sp.label, 13, "#e8e2c4", { weight: "600" });
-    clickable(g, function () { openSpecialModal(sp); });
+    el("circle", { class: "lit-glow", cx: 0, cy: -20, r: 26, fill: "#ffd54f", opacity: .16 }, g);
+    label(g, "📖 Сказка Коко");
+    wrapLink(g, LINKS.story);
   }
-  function drawTower(sp) {
-    var g = sp.grp;
-    el("rect", { x: -30, y: -70, width: 60, height: 74, rx: 3, fill: "#2d1e52", stroke: "#2e2240", "stroke-width": 3 }, g);
-    el("path", { d: "M-40 -70 L0 -104 L40 -70 Z", fill: "#3a2a5e", stroke: "#2e2240", "stroke-width": 3 }, g);
-    el("path", { d: "M-12 -52 Q0 -70 12 -52 L12 -38 L-12 -38 Z", fill: "#141027" }, g);
-    el("circle", { cx: 0, cy: -40, r: 7, fill: "#ffd54f", stroke: "#2e2240", "stroke-width": 2 }, g);
-    el("image", { href: "shared/characters/echo.svg", x: 26, y: -100, width: 40, height: 40 }, g);
-    txt(g, 0, 24, sp.label, 13, "#e8e2c4", { weight: "600" });
-    clickable(g, function () { openSpecialModal(sp); });
+  function drawTower() {
+    var g = specialGrp("tones");
+    px(g, -24, -70, 48, 64, "#2d1e52");
+    px(g, -24, -70, 48, 3, "#3a2a5e");
+    px(g, -32, -74, 64, 4, "#3a2a5e");
+    px(g, -24, -78, 48, 4, "#3a2a5e");
+    px(g, -16, -82, 32, 4, "#4a3a5e");
+    px(g, -8, -86, 16, 4, "#4a3a5e");
+    px(g, -10, -54, 20, 16, "#141027");
+    el("circle", { cx: 0, cy: -46, r: 6, fill: "#ffd54f", stroke: "#2e2240", "stroke-width": 2 }, g);
+    el("image", { href: "shared/characters/echo.svg", x: 26, y: -96, width: 40, height: 40 }, g);
+    label(g, "🔔 Тоны полуночи");
+    wrapLink(g, LINKS.tones);
   }
-  function drawCandyHouse(sp) {
-    var g = sp.grp;
-    el("rect", { x: -48, y: -40, width: 96, height: 42, rx: 4, fill: "#3f2a12", stroke: "#2e2240", "stroke-width": 3 }, g);
-    el("path", { d: "M-56 -40 L0 -76 L56 -40 Z", fill: "#d96f9c", stroke: "#2e2240", "stroke-width": 3 }, g);
-    [[-40, -34, 8, 8], [-24, -34, 8, 8], [-8, -34, 8, 8], [8, -34, 8, 8], [24, -34, 8, 8],
-     [-40, -18, 8, 8], [-24, -18, 8, 8], [-8, -18, 8, 8], [8, -18, 8, 8], [24, -18, 8, 8]].forEach(function (r) {
-      el("rect", { x: r[0], y: r[1], width: r[2], height: r[3], fill: "#8a5fd6", opacity: .8 }, g);
-    });
-    el("rect", { x: -12, y: -18, width: 24, height: 20, rx: 2, fill: "#ffd54f", stroke: "#2e2240", "stroke-width": 2 }, g);
-    txt(g, 0, 24, sp.label, 13, "#e8e2c4", { weight: "600" });
-    clickable(g, function () { openSpecialModal(sp); });
+  function drawCandyHouse() {
+    var g = specialGrp("bonus");
+    px(g, -44, -40, 88, 42, "#3f2a12");
+    for (var cx2 = -40; cx2 < 40; cx2 += 16) { px(g, cx2, -34, 8, 8, "#8a5fd6", .8); px(g, cx2, -18, 8, 8, "#8a5fd6", .8); }
+    px(g, -52, -44, 104, 4, "#d96f9c");
+    px(g, -44, -48, 88, 4, "#d96f9c");
+    px(g, -36, -52, 72, 4, "#e08cb0");
+    px(g, -28, -56, 56, 4, "#e08cb0");
+    px(g, -12, -20, 24, 22, "#ffd54f");
+    px(g, -2, -20, 4, 22, "#2e2240");
+    label(g, "🍬 Осада домика");
+    wrapLink(g, LINKS.bonus);
   }
-  function drawPavilion(sp) {
-    var g = sp.grp;
-    el("rect", { x: -54, y: -50, width: 108, height: 52, rx: 4, fill: "#2d1e52", stroke: "#2e2240", "stroke-width": 3 }, g);
-    el("path", { d: "M-64 -50 L0 -92 L64 -50 Z", fill: "#8a5fd6", stroke: "#2e2240", "stroke-width": 3 }, g);
-    el("circle", { class: "lit-glow", cx: 0, cy: -24, r: 30, fill: "#ff8c2b", opacity: .25 }, g);
-    el("rect", { x: -12, y: -40, width: 24, height: 30, rx: 3, fill: "#ff8c2b", stroke: "#2e2240", "stroke-width": 2.5 }, g);
-    el("rect", { x: -6, y: -34, width: 12, height: 16, fill: "#ffd54f" }, g);
-    el("image", { href: "shared/characters/kostik.svg", x: 40, y: -20, width: 44, height: 44 }, g);
-    txt(g, 0, 24, sp.label, 13, "#e8e2c4", { weight: "600" });
-    clickable(g, function () { openSpecialModal(sp); });
+  function drawPavilion() {
+    var g = specialGrp("finale");
+    px(g, -52, -10, 104, 12, "#2d1e52");
+    px(g, -44, -42, 8, 32, "#3a2a5e");
+    px(g, 36, -42, 8, 32, "#3a2a5e");
+    px(g, -60, -46, 120, 4, "#8a5fd6");
+    px(g, -52, -50, 104, 4, "#8a5fd6");
+    px(g, -44, -54, 88, 4, "#9b74e0");
+    px(g, -36, -58, 72, 4, "#9b74e0");
+    px(g, -28, -62, 56, 4, "#b394ec");
+    px(g, -20, -66, 40, 4, "#b394ec");
+    el("circle", { class: "lit-glow", cx: 0, cy: -26, r: 30, fill: "#ff8c2b", opacity: .25 }, g);
+    px(g, -8, -40, 16, 20, "#ff8c2b");
+    px(g, -4, -36, 8, 12, "#ffd54f");
+    el("image", { href: "shared/characters/kostik.svg", x: 40, y: -18, width: 44, height: 44 }, g);
+    label(g, "🏮 Праздник Луны");
+    wrapLink(g, LINKS.finale);
   }
+  drawStory(); drawTower(); drawCandyHouse(); drawPavilion();
 
-  var spStory = special("story", "📖 Сказка Коко",
-    "Как всё началось: чих с неправильным тоном, четыре героя и план на ночь.",
-    "story/index.html", function () { return QM.progress.story(); });
-  var spTones = special("tones", "🔔 Тоны полуночи",
-    "Четыре чиха Коко. Выучи тона — они половина китайского произношения.",
-    "tones/index.html", function () { return QM.progress.tones(); });
-  var spBonus = special("bonus", "🍬 Осада домика",
-    "Бонус: гости идут волнами — отбей осаду знаками и словами.",
-    "bonus-siege/index.html", function () { return false; });
-  var spFinale = special("finale", "🏮 Праздник Тыквенной Луны",
-    "Финал истории: парад фонарей и сюрприз для Костика.",
-    "finale/index.html", function () { return QM.progress.litCount() >= 25; });
-  drawStory(spStory); drawTower(spTones); drawCandyHouse(spBonus); drawPavilion(spFinale);
+  D.glyphs.forEach(tombstone);
+  D.words.forEach(wordLantern);
 
-  /* ---------- Костик-маркер у следующего неосвещённого урока ---------- */
-  function placeKostik() {
+  /* ---------- Костик-маркер ---------- */
+  (function placeKostik() {
     var next = null;
     var all = D.glyphs.concat(D.words);
     for (var i = 0; i < all.length; i++) {
@@ -231,24 +278,19 @@
       if (!isLit) { next = it; break; }
     }
     if (!next) next = all[0];
-    var k = el("g", { transform: "translate(" + (next.map[0] - 42) + "," + (next.map[1] + 6) + ")" }, svg);
+    var k = el("g", { transform: "translate(" + (next.map[0] - 44) + "," + (next.map[1] + 6) + ")" }, svg);
     el("image", { href: "shared/characters/kostik.svg", x: 0, y: -44, width: 40, height: 40 }, k);
     txt(k, 20, 18, "ты здесь", 10, "#86c232", { weight: "600" });
-  }
-
-  D.glyphs.forEach(tombstone);
-  D.words.forEach(wordLantern);
-  placeKostik();
+  })();
 
   /* ---------- прогресс ---------- */
-  function updateProgress() {
+  (function updateProgress() {
     var n = QM.progress.litCount();
     document.getElementById("prog-fill").style.width = (n / 25 * 100) + "%";
     document.getElementById("prog-lbl").textContent = n + " / 25";
-  }
-  updateProgress();
+  })();
 
-  /* ---------- модалка ---------- */
+  /* ---------- модалка био ---------- */
   var back = document.getElementById("modal-back");
   function openModal(html) {
     document.getElementById("modal-body").innerHTML = html;
@@ -259,30 +301,6 @@
   back.addEventListener("click", function (e) { if (e.target === back) closeModal(); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeModal(); });
 
-  function openLessonModal(it, kind) {
-    QM.sfx.click();
-    var isLit = kind === "glyph" ? QM.progress.lit(it.char) : QM.progress.word(it.word);
-    var target = it.char || it.word;
-    var py = '<span style="color:' + TONE_COLORS[it.tone] + ';font-weight:700">' + it.pinyin + "</span>";
-    openModal(
-      "<h3><span class='hanzi' style='font-size:44px;color:" + (isLit ? "#ffd54f" : "#e8e2c4") + "'>" + target +
-      "</span> &nbsp;" + py + "</h3>" +
-      "<p><b style='color:#efe9dc'>" + it.meaning + "</b></p>" +
-      "<p>" + (isLit ? "🏮 Фонарь зажжён. Можешь зайти повторить — Люми не против."
-        : "Внутри туман. Пройди 4 фазы урока — и фонарь загорится.") + "</p>" +
-      "<a class='btn' href='" + "lesson/" + encodeURIComponent(target) + "/index.html'>" +
-      (isLit ? "Зайти повторить →" : "Начать урок →") + "</a>");
-  }
-  function openSpecialModal(sp) {
-    QM.sfx.click();
-    var done = sp.done();
-    openModal(
-      "<h3>" + sp.label + "</h3><p>" + sp.desc + "</p>" +
-      "<p>" + (done ? "✅ Готово!" : "Ещё не пройдено.") + "</p>" +
-      "<a class='btn " + (done ? "ghosty" : "") + "' href='" + sp.href + "'>Открыть →</a>");
-  }
-
-  /* ---------- карточки персонажей ---------- */
   var BIOS = {
     koko: { name: "Магистр Коко", img: "shared/characters/wizard.svg",
       bio: "Волшебник в фиолетовой шляпе, автор зелья «Тыквенная улыбка». Один неправильный тон — и половина кладбища проснулась. Теперь учит звукам, тонам и сказкам-заклинаниям. Смеётся: «Хе-хе-е...»" },

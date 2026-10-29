@@ -146,6 +146,52 @@
     }
   };
 
+  /* ---------- хэллоуин-фейерверк ---------- */
+  var HB_PAL = { o: "#ff8c2b", d: "#c5640d", g: "#86c232", w: "#efe9dc", b: "#1a1033", p: "#e64533" };
+  var HB_SPRITES = [
+    ["...g.", "ooooo", "ododo", "ooooo", ".ooo."],
+    ["p.p.p", "pwwwp", "pwwwp", "pwwwp", "p.p.p"],
+    [".www.", "wwwww", "wbwbw", "wwwww", "w.w.w"],
+    ["b...b", "bbbbb", ".bbb.", "b.b.b", "b...b"],
+    [".www.", "wwwww", "wbwbw", "wwwww", ".w.w."],
+  ];
+  QM.halloweenBurst = function (x, y) {
+    var cv = document.createElement("canvas");
+    cv.width = window.innerWidth;
+    cv.height = window.innerHeight;
+    cv.style.cssText = "position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:300";
+    document.body.appendChild(cv);
+    var c2 = cv.getContext("2d");
+    var dust = [];
+    for (var i = 0; i < 44; i++) {
+      var a = Math.random() * Math.PI * 2, sp = 3 + Math.random() * 6;
+      dust.push({ s: HB_SPRITES[i % HB_SPRITES.length], x: x, y: y,
+        vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 5.5,
+        life: 55 + Math.random() * 30, sz: 3 + ((i % 3) === 0 ? 1 : 0) });
+    }
+    (function tick() {
+      c2.clearRect(0, 0, cv.width, cv.height);
+      var alive = false;
+      for (var k = 0; k < dust.length; k++) {
+        var p = dust[k];
+        if (p.life <= 0) continue;
+        alive = true;
+        p.life--; p.x += p.vx; p.y += p.vy; p.vy += 0.28; p.vx *= 0.985;
+        c2.globalAlpha = Math.max(0, Math.min(1, p.life / 25));
+        for (var r = 0; r < p.s.length; r++) {
+          for (var c = 0; c < p.s[r].length; c++) {
+            var ch = p.s[r].charAt(c);
+            if (ch === "." || !HB_PAL[ch]) continue;
+            c2.fillStyle = HB_PAL[ch];
+            c2.fillRect(Math.round(p.x + c * p.sz), Math.round(p.y + r * p.sz), p.sz, p.sz);
+          }
+        }
+      }
+      c2.globalAlpha = 1;
+      if (alive) requestAnimationFrame(tick); else cv.parentNode.removeChild(cv);
+    })();
+  };
+
   /* ---------- тональный контур ---------- */
   var CONTOURS = {
     1: "M 20 32 L 180 32",

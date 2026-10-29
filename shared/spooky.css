@@ -98,8 +98,8 @@ a:hover { text-decoration: underline; }
 .char-card .ds { font-size: 14px; color: var(--dim); line-height: 1.45; }
 
 .companion {
-  position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 90;
-  display: flex; gap: 12px; align-items: flex-end; pointer-events: none;
+  position: fixed; left: 16px; right: 16px; top: 132px; z-index: 90;
+  display: flex; gap: 12px; align-items: flex-start; pointer-events: none;
 }
 .companion .ava {
   width: 72px; height: 72px; image-rendering: pixelated; flex-shrink: 0;
@@ -108,7 +108,7 @@ a:hover { text-decoration: underline; }
 }
 .companion .bubble {
   max-width: 640px; background: var(--ghost); color: #10312b;
-  border: 3px solid #4f837b; border-radius: 14px; border-bottom-left-radius: 4px;
+  border: 3px solid #4f837b; border-radius: 14px; border-top-left-radius: 4px;
   padding: 12px 16px; font-size: 16px; line-height: 1.45;
   box-shadow: 0 6px 0 rgba(0, 0, 0, .3); pointer-events: auto;
   transition: opacity .25s;
@@ -132,7 +132,7 @@ a:hover { text-decoration: underline; }
 .stepper .step.active { border-color: var(--pumpkin); color: var(--amber); }
 .stepper .step.active .dot { background: var(--pumpkin); }
 
-.phase { max-width: 880px; margin: 0 auto; padding: 26px 20px 140px; }
+.phase { max-width: 880px; margin: 0 auto; padding: 26px 20px 48px; }
 .phase h1 { font-size: 26px; color: var(--moon); margin-bottom: 4px; }
 .phase .sub { color: var(--dim); margin-bottom: 20px; font-size: 15px; }
 
@@ -342,4 +342,21 @@ a:hover { text-decoration: underline; }
   .companion .bubble { font-size: 14px; }
   .stepper { top: 56px; padding: 10px; gap: 6px; }
   .stepper .step { font-size: 11px; padding: 5px 8px; }
+}
+
+/* ---------- земля-кладбище и строка обитателей ---------- */
+body.with-ground { display: flex; flex-direction: column; }
+.ground-strip {
+  margin-top: auto; height: 72px; flex-shrink: 0;
+  background: url("frame/ground.svg") left bottom repeat-x;
+  background-size: auto 72px;
+  image-rendering: pixelated;
+}
+.char-row {
+  display: flex; gap: 14px; justify-content: center; margin-top: 14px;
+  flex-wrap: nowrap; overflow-x: auto; padding-bottom: 6px;
+}
+.char-row .char-card { flex: 1 0 220px; max-width: 270px; }
+@media (max-width: 700px) {
+  .companion { top: 118px; }
 }

@@ -1,0 +1,368 @@
+# -*- coding: utf-8 -*-
+"""Корневая карта двора: пиксельное кладбище, клик по надгробию = урок Stepik."""
+import json
+import re
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+MANIFEST = ROOT / "build" / "stepik_manifest.json"
+STEP_BASE = "https://stepik.org/lesson/%d/step/1"
+
+SPECIALS = {"Чих Магистра Коко": "story", "Тоны полуночи": "tones",
+            "Бонус: Осада домика": "bonus", "Праздник Тыквенной Луны": "finale"}
+
+
+def load_links():
+    man = json.load(open(MANIFEST, encoding="utf-8"))
+    links = {}
+    for sec in man["sections"].values():
+        for title, entry in sec["lessons"].items():
+            m = re.match(r"^\d+\.\s+(\S+)\s+\[", title)
+            key = m.group(1) if m else SPECIALS.get(title)
+            if key:
+                links[key] = STEP_BASE % entry["lesson_id"]
+    return links
+
+
+PAGE = """<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Карта двора · Двор Тихой Луны</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared/spooky.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>🎃</text></svg>">
+</head>
+<body>
+<header class="topbar">
+  <div class="logo">Двор Тихой Луны <span class="hanzi">🌙</span></div>
+  <div class="spacer"></div>
+  <a class="back" href="__STORY_URL__" target="_top">📖 Сказка Коко</a>
+  <a class="back" href="__FINALE_URL__" target="_top">🏮 Праздник</a>
+</header>
+
+<section class="hero">
+  <h1>Двор Тихой Луны</h1>
+  <p class="sub">Магистр Коко чихнул с неправильным тоном — и обитатели старого кладбища проснулись.
+  Помоги им вернуть память: зажги все 25 Фонариков Памяти китайскими знаками до рассвета.</p>
+  <div class="progress-bar" style="max-width:640px;margin:0 auto">
+    <span style="font-size:22px">🏮</span>
+    <div class="track"><div class="fill" id="prog-fill" style="width:0%"></div></div>
+    <span class="lbl" id="prog-lbl">0 / 25</span>
+  </div>
+</section>
+
+<div class="map-wrap">
+  <svg id="map" class="map-svg" viewBox="0 0 1000 640" role="img" aria-label="Пиксельная карта двора Тихой Луны"></svg>
+  <div class="map-note">Клик по надгробию — сразу откроется урок на Stepik. Костик ждёт у следующего неосвещённого фонаря.</div>
+</div>
+
+<div class="map-wrap">
+  <div class="panel" style="margin-top:26px">
+    <h2>Обитатели двора <span class="tag">нажми на карточку</span></h2>
+    <div class="char-row">
+      <div class="char-card clickable" data-char="koko" style="cursor:pointer">
+        <img src="shared/characters/wizard.svg" alt="Магистр Коко">
+        <div><div class="nm">Магистр Коко</div><div class="ds">Хитрый маг. Автор слишком доброго заклинания. Отвечает за звуки и тоны.</div></div>
+      </div>
+      <div class="char-card clickable" data-char="kostik" style="cursor:pointer">
+        <img src="shared/characters/kostik-portrait.svg" alt="Скелетик Костик">
+        <div><div class="nm">Скелетик Костик</div><div class="ds">Первый воскрешённый. Бывший учитель каллиграфии. Ваш гид по двору.</div></div>
+      </div>
+      <div class="char-card clickable" data-char="lumi" style="cursor:pointer">
+        <img src="shared/characters/lumi-portrait.svg" alt="Призрак Люми">
+        <div><div class="nm">Призрак Люми</div><div class="ds">Смотритель фонарей. Единственный, кто помнит, где висят Фонарики Памяти.</div></div>
+      </div>
+      <div class="char-card clickable" data-char="echo" style="cursor:pointer">
+        <img src="shared/characters/echo-portrait.svg" alt="Мышь Эхо">
+        <div><div class="nm">Мышь Эхо</div><div class="ds">Жительница колокольни. Сто лет слушала звуки — и помнит их все.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<img class="float-bat" src="shared/characters/bat.svg" alt="" aria-hidden="true">
+
+<div class="modal-back" id="modal-back">
+  <div class="modal">
+    <button class="close-x" id="modal-close" title="Закрыть">✕</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<div class="footer-note">Двор Тихой Луны · добрый хэллоуин-курс китайского · для начинающих</div>
+
+<script src="shared/spooky.js"></script>
+<script src="shared/lesson-data.js"></script>
+<script>
+(function () {
+  "use strict";
+  var QM = window.QM, D = window.QM_LESSONS;
+  var LINKS = __LINKS__;
+  var svg = document.getElementById("map");
+  var NS = "http://www.w3.org/2000/svg";
+  var TONE_COLORS = QM.TONE_COLORS;
+
+  function el(tag, attrs, parent) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function px(parent, x, y, w, h, c, o) {
+    var a = { x: x, y: y, width: w, height: h, fill: c };
+    if (o !== undefined) a.opacity = o;
+    el("rect", a, parent);
+  }
+  function txt(parent, x, y, s, size, fill, opts) {
+    opts = opts || {};
+    var t = el("text", { x: x, y: y, "text-anchor": "middle", "font-size": size, fill: fill }, parent);
+    if (opts.font) t.setAttribute("font-family", opts.font);
+    if (opts.weight) t.setAttribute("font-weight", opts.weight);
+    t.textContent = s;
+    return t;
+  }
+  function wrapLink(grp, url) {
+    if (!url) { grp.style.cursor = "pointer"; return grp; }
+    var a = el("a", { href: url, target: "_top" }, svg);
+    a.appendChild(grp);
+    grp.style.cursor = "pointer";
+    return grp;
+  }
+
+  /* ---------- фон: пиксельное небо ---------- */
+  var defs = el("defs", {}, svg);
+  defs.innerHTML = '<radialGradient id="moonGlow"><stop offset="0%" stop-color="#e8e2c4" stop-opacity=".35"/><stop offset="100%" stop-color="#e8e2c4" stop-opacity="0"/></radialGradient>';
+
+  px(svg, 0, 0, 1000, 640, "#120b24");
+  px(svg, 0, 196, 1000, 444, "#171030");
+  px(svg, 0, 505, 1000, 135, "#141027");
+  [[140, 26], [220, 48], [305, 20], [410, 40], [620, 30], [700, 55], [780, 24], [860, 44],
+   [60, 90], [180, 110], [280, 95], [360, 115], [450, 95], [540, 118], [660, 100], [740, 118],
+   [830, 96], [920, 115], [70, 200], [940, 210], [50, 320], [952, 330]].forEach(function (p) {
+    px(svg, p[0], p[1], 3, 3, "#e8e2c4", .65);
+  });
+  el("circle", { cx: 500, cy: 62, r: 76, fill: "url(#moonGlow)" }, svg);
+  var moonRows = [24, 36, 44, 48, 48, 44, 36, 24];
+  moonRows.forEach(function (w, i) {
+    px(svg, 500 - w / 2, 22 + i * 10, w, 10, "#e8e2c4");
+  });
+  px(svg, 486, 52, 10, 10, "#d0c9a8");
+  px(svg, 506, 64, 8, 8, "#d0c9a8");
+  px(svg, 494, 72, 6, 6, "#d0c9a8");
+  var clouds = el("g", { opacity: .5 }, svg);
+  el("ellipse", { cx: 240, cy: 70, rx: 90, ry: 16, fill: "#241744" }, clouds);
+  el("ellipse", { cx: 760, cy: 95, rx: 110, ry: 14, fill: "#1c1233" }, clouds);
+  txt(svg, 500, 148, "Д В О Р   Т И Х О Й   Л У Н Ы", 15, "#b3a8d4");
+
+  /* ---------- пиксельный забор ---------- */
+  px(svg, 0, 172, 1000, 4, "#241744");
+  px(svg, 0, 182, 1000, 4, "#241744");
+  for (var fx = 4; fx < 1000; fx += 40) {
+    px(svg, fx, 164, 6, 30, "#2e2240");
+    px(svg, fx, 160, 6, 4, "#3a2a5e");
+  }
+
+  /* ---------- нижняя земля: трава + мертвецы ---------- */
+  px(svg, 0, 620, 1000, 20, "#0e0a1d");
+  px(svg, 0, 612, 1000, 8, "#2c5a14");
+  px(svg, 0, 610, 1000, 2, "#3f7a1e");
+  for (var gx = 8; gx < 1000; gx += 24) {
+    if ((gx / 24) % 2) px(svg, gx, 604, 8, 6, "#4f9a28");
+  }
+  px(svg, 130, 622, 10, 8, "#e8e2c4"); px(svg, 133, 625, 2, 2, "#0e0a1d"); px(svg, 136, 625, 2, 2, "#0e0a1d");
+  px(svg, 420, 624, 12, 3, "#c9c2a4");
+  px(svg, 640, 622, 10, 8, "#e8e2c4"); px(svg, 643, 625, 2, 2, "#0e0a1d"); px(svg, 646, 625, 2, 2, "#0e0a1d");
+  px(svg, 880, 624, 12, 3, "#c9c2a4");
+
+  /* ---------- могилы-уроки (пиксель) ---------- */
+  function tombstone(g) {
+    var lit = QM.progress.lit(g.char);
+    var grp = el("g", { class: "tomb", transform: "translate(" + g.map[0] + "," + g.map[1] + ")" });
+    px(grp, -34, 0, 68, 8, "#0b0716", .55);
+    px(grp, -32, 2, 64, 6, "#3a3757");
+    px(grp, -16, -46, 32, 4, "#514e73");
+    px(grp, -20, -42, 40, 4, "#514e73");
+    px(grp, -24, -38, 48, 4, "#514e73");
+    px(grp, -26, -34, 52, 36, "#514e73");
+    px(grp, -26, -34, 6, 36, "#5d5a80");
+    px(grp, 16, -34, 10, 36, "#3a3757");
+    px(grp, -14, -28, 28, 4, "#2e2240");
+    px(grp, -14, -6, 28, 4, "#2e2240");
+    if (lit) el("circle", { class: "lit-glow", cx: 48, cy: -24, r: 26, fill: "#ff8c2b", opacity: .2 }, grp);
+    px(grp, 30, -44, 20, 4, "#2e2240");
+    px(grp, 46, -40, 4, 8, "#2e2240");
+    px(grp, 42, -32, 12, 14, lit ? "#ff8c2b" : "#4a3a5e");
+    px(grp, 45, -28, 6, 6, lit ? "#ffd54f" : "#3a2a5e");
+    txt(grp, 0, -10, g.char, 26, lit ? "#ffd54f" : "#8f8bb0",
+        { font: "Noto Sans SC, sans-serif", weight: "700" });
+    txt(grp, 0, 26, lit ? g.pinyin : "? ? ?", 12, lit ? TONE_COLORS[g.tone] : "#6a6490", { weight: "600" });
+    wrapLink(grp, LINKS[g.char]);
+  }
+
+  /* ---------- фонарики-слова (пиксель) ---------- */
+  function wordLantern(w) {
+    var lit = QM.progress.word(w.word);
+    var grp = el("g", { class: "tomb", transform: "translate(" + w.map[0] + "," + w.map[1] + ")" });
+    px(grp, -30, 0, 60, 8, "#0b0716", .55);
+    px(grp, -2, -50, 4, 54, "#3a3757");
+    if (lit) el("circle", { class: "lit-glow", cx: 0, cy: -30, r: 28, fill: "#ffb347", opacity: .22 }, grp);
+    px(grp, -14, -46, 28, 4, lit ? "#ffd54f" : "#3a3757");
+    px(grp, -16, -42, 32, 22, lit ? "#e64533" : "#4a3a5e");
+    px(grp, -8, -42, 4, 22, lit ? "#b93126" : "#3a3757");
+    px(grp, 4, -42, 4, 22, lit ? "#b93126" : "#3a3757");
+    px(grp, -4, -38, 8, 14, lit ? "#ffb347" : "#3a3757");
+    px(grp, -12, -20, 24, 4, lit ? "#ffd54f" : "#3a3757");
+    px(grp, -2, -16, 4, 8, lit ? "#ffd54f" : "#3a3757");
+    txt(grp, 0, -27, w.word, 15, lit ? "#ffe9a8" : "#8f8bb0",
+        { font: "Noto Sans SC, sans-serif", weight: "700" });
+    txt(grp, 0, 26, lit ? w.pinyin : "? ? ?", 11, lit ? TONE_COLORS[w.tone] : "#6a6490", { weight: "600" });
+    wrapLink(grp, LINKS[w.word]);
+  }
+
+  /* ---------- спец-объекты (пиксель) ---------- */
+  function specialGrp(key) {
+    var pt = D.special[key].map;
+    return el("g", { class: "tomb", transform: "translate(" + pt[0] + "," + pt[1] + ")" });
+  }
+  function label(grp, s) { txt(grp, 0, 24, s, 13, "#e8e2c4", { weight: "600" }); }
+
+  function drawStory() {
+    var g = specialGrp("story");
+    px(g, -48, -40, 96, 42, "#2d1e52");
+    for (var bx = -44; bx < 44; bx += 16) { px(g, bx, -34, 12, 3, "#3a2a5e"); px(g, bx, -22, 12, 3, "#3a2a5e"); px(g, bx, -10, 12, 3, "#3a2a5e"); }
+    px(g, -56, -44, 112, 4, "#3a2a5e");
+    px(g, -48, -48, 96, 4, "#3a2a5e");
+    px(g, -40, -52, 80, 4, "#4a3a5e");
+    px(g, -32, -56, 64, 4, "#4a3a5e");
+    px(g, -12, -30, 24, 20, "#ffd54f");
+    px(g, -12, -22, 24, 3, "#120b24");
+    el("image", { href: "shared/characters/wizard.svg", x: 44, y: -36, width: 52, height: 52 }, g);
+    el("circle", { class: "lit-glow", cx: 0, cy: -20, r: 26, fill: "#ffd54f", opacity: .16 }, g);
+    label(g, "📖 Сказка Коко");
+    wrapLink(g, LINKS.story);
+  }
+  function drawTower() {
+    var g = specialGrp("tones");
+    px(g, -24, -70, 48, 64, "#2d1e52");
+    px(g, -24, -70, 48, 3, "#3a2a5e");
+    px(g, -32, -74, 64, 4, "#3a2a5e");
+    px(g, -24, -78, 48, 4, "#3a2a5e");
+    px(g, -16, -82, 32, 4, "#4a3a5e");
+    px(g, -8, -86, 16, 4, "#4a3a5e");
+    px(g, -10, -54, 20, 16, "#141027");
+    el("circle", { cx: 0, cy: -46, r: 6, fill: "#ffd54f", stroke: "#2e2240", "stroke-width": 2 }, g);
+    el("image", { href: "shared/characters/echo.svg", x: 26, y: -96, width: 40, height: 40 }, g);
+    label(g, "🔔 Тоны полуночи");
+    wrapLink(g, LINKS.tones);
+  }
+  function drawCandyHouse() {
+    var g = specialGrp("bonus");
+    px(g, -44, -40, 88, 42, "#3f2a12");
+    for (var cx2 = -40; cx2 < 40; cx2 += 16) { px(g, cx2, -34, 8, 8, "#8a5fd6", .8); px(g, cx2, -18, 8, 8, "#8a5fd6", .8); }
+    px(g, -52, -44, 104, 4, "#d96f9c");
+    px(g, -44, -48, 88, 4, "#d96f9c");
+    px(g, -36, -52, 72, 4, "#e08cb0");
+    px(g, -28, -56, 56, 4, "#e08cb0");
+    px(g, -12, -20, 24, 22, "#ffd54f");
+    px(g, -2, -20, 4, 22, "#2e2240");
+    label(g, "🍬 Осада домика");
+    wrapLink(g, LINKS.bonus);
+  }
+  function drawPavilion() {
+    var g = specialGrp("finale");
+    px(g, -52, -10, 104, 12, "#2d1e52");
+    px(g, -44, -42, 8, 32, "#3a2a5e");
+    px(g, 36, -42, 8, 32, "#3a2a5e");
+    px(g, -60, -46, 120, 4, "#8a5fd6");
+    px(g, -52, -50, 104, 4, "#8a5fd6");
+    px(g, -44, -54, 88, 4, "#9b74e0");
+    px(g, -36, -58, 72, 4, "#9b74e0");
+    px(g, -28, -62, 56, 4, "#b394ec");
+    px(g, -20, -66, 40, 4, "#b394ec");
+    el("circle", { class: "lit-glow", cx: 0, cy: -26, r: 30, fill: "#ff8c2b", opacity: .25 }, g);
+    px(g, -8, -40, 16, 20, "#ff8c2b");
+    px(g, -4, -36, 8, 12, "#ffd54f");
+    el("image", { href: "shared/characters/kostik.svg", x: 40, y: -18, width: 44, height: 44 }, g);
+    label(g, "🏮 Праздник Луны");
+    wrapLink(g, LINKS.finale);
+  }
+  drawStory(); drawTower(); drawCandyHouse(); drawPavilion();
+
+  D.glyphs.forEach(tombstone);
+  D.words.forEach(wordLantern);
+
+  /* ---------- Костик-маркер ---------- */
+  (function placeKostik() {
+    var next = null;
+    var all = D.glyphs.concat(D.words);
+    for (var i = 0; i < all.length; i++) {
+      var it = all[i];
+      var isLit = it.char ? QM.progress.lit(it.char) : QM.progress.word(it.word);
+      if (!isLit) { next = it; break; }
+    }
+    if (!next) next = all[0];
+    var k = el("g", { transform: "translate(" + (next.map[0] - 44) + "," + (next.map[1] + 6) + ")" }, svg);
+    el("image", { href: "shared/characters/kostik.svg", x: 0, y: -44, width: 40, height: 40 }, k);
+    txt(k, 20, 18, "ты здесь", 10, "#86c232", { weight: "600" });
+  })();
+
+  /* ---------- прогресс ---------- */
+  (function updateProgress() {
+    var n = QM.progress.litCount();
+    document.getElementById("prog-fill").style.width = (n / 25 * 100) + "%";
+    document.getElementById("prog-lbl").textContent = n + " / 25";
+  })();
+
+  /* ---------- модалка био ---------- */
+  var back = document.getElementById("modal-back");
+  function openModal(html) {
+    document.getElementById("modal-body").innerHTML = html;
+    back.classList.add("open");
+  }
+  function closeModal() { back.classList.remove("open"); }
+  document.getElementById("modal-close").onclick = closeModal;
+  back.addEventListener("click", function (e) { if (e.target === back) closeModal(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeModal(); });
+
+  var BIOS = {
+    koko: { name: "Магистр Коко", img: "shared/characters/wizard.svg",
+      bio: "Волшебник в фиолетовой шляпе, автор зелья «Тыквенная улыбка». Один неправильный тон — и половина кладбища проснулась. Теперь учит звукам, тонам и сказкам-заклинаниям. Смеётся: «Хе-хе-е...»" },
+    kostik: { name: "Скелетик Костик", img: "shared/characters/kostik-portrait.svg",
+      bio: "Учитель каллиграфии, первым поднявшийся из-под надгробия. Ведёт студента по двору, пишет мелом по плитам и не жалеет похвал. Мечтает открыть большие ворота праздника — фонарь 大门." },
+    lumi: { name: "Призрак Люми", img: "shared/characters/lumi-portrait.svg",
+      bio: "Смотритель кладбищенских фонарей при жизни, поэтому один помнит все Фонарики Памяти. Застенчив: говорит из-за надгробий, краснеет даже без щёк. Зажигает фонари и ведёт «Сладость или гадость»." },
+    echo: { name: "Мышь Эхо", img: "shared/characters/echo-portrait.svg",
+      bio: "Сто лет жила на колокольне и записывала в память каждый звук двора. Единственная, кто ничего не забыл. Повторяет тоны за Коко и подсказывает произношение." },
+  };
+  document.querySelectorAll(".char-card.clickable").forEach(function (card) {
+    card.addEventListener("click", function () {
+      var b = BIOS[card.getAttribute("data-char")];
+      openModal("<img src='" + b.img + "' alt=''><h3>" + b.name + "</h3><p>" + b.bio + "</p>" +
+        "<button class='btn small ghosty' id='m-close2'>Понятно!</button>");
+      document.getElementById("m-close2").onclick = closeModal;
+    });
+  });
+})();
+</script>
+</body>
+</html>
+"""
+
+
+def main():
+    links = load_links()
+    page = (PAGE
+            .replace("__STORY_URL__", links.get("story", "story/index.html"))
+            .replace("__FINALE_URL__", links.get("finale", "finale/index.html"))
+            .replace("__LINKS__", json.dumps(links, ensure_ascii=False)))
+    (ROOT / "index.html").write_text(page, encoding="utf-8", newline="\n")
+    glyphs = sum(1 for k in links if len(k) == 1)
+    print("index.html:", len(page), "bytes | links:", len(links), "| glyph links:", glyphs,
+          "| specials:", all(k in links for k in ("story", "tones", "bonus", "finale")))
+
+
+if __name__ == "__main__":
+    main()

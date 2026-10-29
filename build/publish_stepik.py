@@ -118,10 +118,11 @@ def audio_html(url):
 
 
 def page_url(base, path):
-    return base.rstrip("/") + "/" + quote(str(path).strip("/")) + "/"
+    p = quote(str(path).strip("/"))
+    return base.rstrip("/") + "/" + (p + "/" if p else "")
 
 
-def frame_step(base, path, h, accent=KOKO, subtitle=None, v="4"):
+def frame_step(base, path, h, accent=KOKO, subtitle=None, v="5"):
     b = base.rstrip("/")
     url = page_url(base, path) + "?v=" + v
     pill = ""
@@ -189,7 +190,7 @@ def glyph_lesson_steps(lesson, base):
 
 def story_lesson_steps(lesson, base, model):
     return [frame_step(base, lesson["url"], 1800, KOKO,
-                       "История двора · 6 сцен", v="5")]
+                       "История двора · 6 сцен", v="6")]
 
 
 def tones_lesson_steps(lesson, base, model):

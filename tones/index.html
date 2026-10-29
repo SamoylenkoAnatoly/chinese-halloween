@@ -9,11 +9,11 @@
 <link rel="stylesheet" href="../shared/spooky.css">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>🎃</text></svg>">
 </head>
-<body>
+<body class="with-ground">
 <header class="topbar">
   <div class="logo">Двор Тихой Луны <span class="hanzi">🌙</span></div>
   <div class="spacer"></div>
-  <a class="back" href="../index.html">⟵ Карта двора</a>
+  <a class="back" href="https://stepik.org/lesson/2666960/step/1" target="_top">⟵ Карта двора</a>
 </header>
 
 <section class="hero">
@@ -36,13 +36,14 @@
   </div>
 
   <div class="panel quiz-card" id="quiz-done" style="display:none;text-align:center">
-    <div style="font-size:56px">🎉</div>
+    <img src="../shared/characters/lumi.svg" alt="Люми" style="width:88px;height:88px;image-rendering:pixelated">
     <h2>Тоны полуночи покорены!</h2>
     <p style="color:#b3a8d4;margin:12px 0 20px">Эхо записала твой результат в колокольную книгу. Теперь каждый фонарь двора готов звучать правильно.</p>
-    <a class="btn" href="../index.html">На карту двора →</a>
+    <a class="btn" href="https://stepik.org/lesson/2666960/step/1" target="_top">На карту двора →</a>
   </div>
 </div>
 
+<div class="ground-strip"></div>
 <div class="companion" id="companion"></div>
 <div class="footer-note">Двор Тихой Луны · тоны</div>
 
@@ -56,6 +57,10 @@
   document.getElementById("intro2").textContent =
     "Коко чихнул четыре раза подряд (он утверждает, что специально). Слушай и повторяй за мышью: один и тот же слог «ма» в четырёх тонах.";
 
+  var GUESTS = { 1: ["ghost", "призрак плывёт ровно"],
+                 2: ["bat", "мышь взмывает вверх"],
+                 3: ["lumi", "Люми ныряет вниз и обратно"],
+                 4: ["pumpkin", "тыква чихает решительно"] };
   var CARDS = [
     { t: 1, hint: "высокий и ровный — как нить, на которой висит колокол двора",
       koko: "Первый тон: держи голос ровно, как нить колокола в тишине." },
@@ -79,7 +84,13 @@
     d.className = "panel";
     d.style.marginBottom = "18px";
     d.innerHTML =
-      "<h2><span class='badge' style='background:" + QM.TONE_COLORS[c.t] + ";color:#120b24'>" + c.t + "-й тон</span></h2>" +
+      "<div style='display:flex;gap:14px;align-items:center;margin-bottom:10px'>" +
+      "<img src='../shared/characters/" + GUESTS[c.t][0] + ".svg' alt='' " +
+      "style='width:56px;height:56px;image-rendering:pixelated;background:#120b24;" +
+      "border:3px solid #3a2a5e;border-radius:12px;padding:4px'>" +
+      "<h2 style='margin:0'><span class='badge' style='background:" + QM.TONE_COLORS[c.t] +
+      ";color:#120b24'>" + c.t + "-й тон</span>" +
+      " <span style='font-size:14px;color:#b3a8d4;font-weight:500'>" + GUESTS[c.t][1] + "</span></h2></div>" +
       '<div class="audio-row"><button class="play" data-f="ma' + c.t + '.mp3"><span class="ico">🔊</span> мā</button>' +
       '<button class="play slow" data-f="ma' + c.t + '.mp3" data-slow="1">🐢 Медленно</button></div>' +
       '<div class="tone-line contour"></div>' +
@@ -112,7 +123,7 @@
 
   function renderProgress() {
     var s = "";
-    for (var i = 0; i < QUIZ.length; i++) s += i < qi ? (okCount > i ? "✅" : "✅") : i === qi ? "🔸" : "▫️";
+    for (var i = 0; i < QUIZ.length; i++) s += i < qi ? "🍬" : i === qi ? "🎃" : "🕯️";
     progEl.textContent = s;
   }
   function renderQuiz() {
@@ -122,7 +133,7 @@
       document.getElementById("quiz-done").style.display = "";
       QM.progress.markTones();
       QM.sfx.finish();
-      QM.sparks(window.innerWidth / 2, window.innerHeight / 2);
+      QM.halloweenBurst(window.innerWidth / 2, window.innerHeight / 3);
       QM.say("kostik", "Все четыре тона как на ладони! Теперь на карту — фонари ждут правильных звуков.");
       return;
     }

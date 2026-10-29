@@ -17,6 +17,7 @@ from data import (COURSE, GLYPHS, WORDS, SECTIONS, SPECIAL_LESSONS, SPECIAL_POIN
                   CHARACTERS, WING_TITLES, STORY_PANELS, FINALE, TONES)
 
 TOTAL_LESSONS = len(GLYPHS) + len(WORDS)
+MAP_LESSON_URL = "https://stepik.org/lesson/2666960/step/1"
 
 # ---------------------------------------------------------------- тоны
 MARKS = {
@@ -192,11 +193,11 @@ HEAD = """<!DOCTYPE html>
 <link rel="stylesheet" href="{up}shared/spooky.css">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>🎃</text></svg>">
 </head>
-<body>
+<body class="with-ground">
 <header class="topbar">
   <div class="logo">Двор Тихой Луны <span class="hanzi">🌙</span></div>
   <div class="spacer"></div>
-  <a class="back" href="{up}index.html">⟵ Карта двора</a>
+  <a class="back" href="{map_url}" target="_top">⟵ Карта двора</a>
 </header>
 <nav class="stepper" id="stepper">
   <div class="step active" data-ph="1"><span class="dot"></span>Туман</div>
@@ -286,11 +287,12 @@ BODY_HEAD = """
     <div class="flame">🏮</div>
     <h2 id="cer-title"></h2>
     <p style="color:#b3a8d4;margin:10px 0 20px" id="cer-text"></p>
-    <a class="btn poison" id="to-map" href="{up}index.html">На карту двора →</a>
+    <a class="btn poison" id="to-map" href="{map_url}" target="_top">На карту двора →</a>
   </div>
   <div style="margin-top:22px"><button class="btn ghosty small" id="back3">⟵ Мел и камень</button></div>
 </div>
 
+<div class="ground-strip"></div>
 <div class="companion" id="companion"></div>
 """
 
@@ -333,11 +335,11 @@ def lesson_html(item, kind):
         tone_name=__import__("data").TONE_NAMES[tone],
         strokes=item.get("strokes", ""), key_html=key_html, num=num,
         total=TOTAL_LESSONS, big2=title, py2=item["pinyin"],
-        tale_html=tale_html, writer_sub=writer_sub, up=up)
+        tale_html=tale_html, writer_sub=writer_sub, up=up, map_url=MAP_LESSON_URL)
     tail = TAIL.format(up=up).replace("/*PAYLOAD*/",
         "window.LESSON = " + json.dumps(payload, ensure_ascii=False) + ";"
         ).replace("/*LESSON_JS*/", LESSON_JS)
-    return HEAD.format(title=title, up=up) + body + tail
+    return HEAD.format(title=title, up=up, map_url=MAP_LESSON_URL) + body + tail
 
 
 LESSON_JS = r"""
@@ -445,16 +447,21 @@ LESSON_JS = r"""
         round === 2 ? " — теперь по памяти! Контур скрыт." : " — финальный раунд, ты почти Костик!");
     writer.quiz({
       onMistake: function (data) {
-        if (data.strokeNum === data.strokesTotal - 1) { /* последняя */ }
         statusEl.textContent = "Черта №" + (data.strokeNum + 1) + " уехала. Попробуй ещё раз — мел прощает.";
       },
       onCorrect: function () {
         QM.sfx.good();
+      },
+      onComplete: function () {
         round++;
         if (round > rounds) {
           updateSkulls();
           statusEl.textContent = "Плита выбита! Можно идти угощать гостей.";
           go4.disabled = false;
+          var rect = document.getElementById("hanzi-target").getBoundingClientRect();
+          QM.halloweenBurst(rect.left + rect.width / 2, rect.top + rect.height / 2);
+          QM.sfx.flame();
+          setTimeout(function () { QM.sfx.finish(); }, 450);
           QM.say("kostik", "Отлично вырезано! У меня самого каллиграфия так не ложилась. Жми «сладость или гадость»!");
         } else {
           setTimeout(startRound, 700);
