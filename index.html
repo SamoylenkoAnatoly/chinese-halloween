@@ -55,12 +55,7 @@
 </section>
 
 <div class="map-wrap">
-  <svg id="map" class="map-svg" viewBox="0 0 1000 640" role="img" aria-label="Пиксельная карта двора Тихой Луны"></svg>
-  <div class="map-note">Клик по надгробию или фонарику — сразу откроется урок на Stepik.</div>
-</div>
-
-<div class="map-wrap">
-  <div class="panel" style="margin-top:26px">
+  <div class="panel">
     <h2>Обитатели двора <span class="tag">нажми на карточку</span></h2>
     <div class="char-row">
       <div class="char-card clickable" data-char="koko" style="cursor:pointer">
@@ -84,11 +79,9 @@
 </div>
 
 <div class="map-wrap">
-  <div class="panel" style="margin-top:26px">
-    <h2>Хэллоуин-огород двора <span class="tag">покликай по предметам</span></h2>
-    <svg id="ground-scene" class="map-svg" viewBox="0 0 1000 260" role="img" aria-label="Хэллоуин-предметы двора"></svg>
-    <div class="g-note" id="ground-note">Все предметы двора живые: тыквы ухмыляются, котёл булькает, паук — паучит. Кликай!</div>
-  </div>
+  <svg id="map" class="map-svg" viewBox="0 0 1000 640" role="img" aria-label="Пиксельная карта двора Тихой Луны"></svg>
+  <svg id="ground-scene" class="map-svg" viewBox="0 0 1000 260" role="img" aria-label="Хэллоуин-огород двора — живые предметы"></svg>
+  <div class="g-note" id="ground-note">Клик по надгробию или фонарику — сразу откроется урок на Stepik. Предметы огорода тоже живые — покликай!</div>
 </div>
 
 <img class="float-bat" src="shared/characters/bat.svg" alt="" aria-hidden="true">
@@ -311,7 +304,7 @@
     function grp(parent, cls) { return el("g", { "class": cls || "" }, parent); }
 
     /* фон: трава, борозды, камешки, кости, светящиеся грибы */
-    px(gs, 0, 0, 1000, 260, "#171030");
+    px(gs, 0, 0, 1000, 260, "#0e0a1d");
     px(gs, 0, 106, 1000, 6, "#22470f");
     px(gs, 0, 112, 1000, 6, "#2c5a14");
     for (var tx = 6; tx < 1000; tx += 18) {
