@@ -111,57 +111,38 @@ def wrap(inner, accent=KOKO):
             % (INK, NIGHT, accent)) + inner + "</div>"
 
 
-def header(title, subtitle, accent=KOKO):
-    return ('<div style="padding:16px;text-align:center;border:3px solid %s;'
-            'background-color:%s;"><h2 style="margin:0 0 8px;color:%s;">%s</h2>'
-            '<p style="margin:0;color:%s;font-size:14px;">%s</p></div>') % (
-        accent, PANEL, INK, title, DIM, subtitle)
-
-
-def open_btn(url):
-    return ('<p style="margin:10px 0;"><a href="%s" target="_blank" rel="noopener noreferrer" '
-            'style="display:inline-block;padding:10px 24px;background-color:%s;color:%s;'
-            'font-weight:bold;font-size:15px;border:3px solid %s;border-radius:10px;'
-            'text-decoration:none;">↗ Открыть на отдельной странице</a></p>'
-            '<p style="margin:0;font-size:11px;color:%s;">Если страница не открывается внутри '
-            'шага — нажми кнопку сверху.</p>') % (url, PUMPKIN, NIGHT, GOLD, DIM)
-
-
-def iframe(url, h, accent=KOKO):
-    return ('<div style="margin-top:10px;"><iframe height="%d" src="%s" '
-            'style="width:100%%;height:%dpx;border:3px solid %s;background-color:%s;" width="100%%">'
-            "Ваш браузер не поддерживает iframe — воспользуйся кнопкой выше.</iframe></div>") % (
-        h, url, h, accent, NIGHT)
-
-
-def chip(label, value):
-    return ('<span style="display:inline-block;margin:3px 4px;padding:4px 10px;'
-            'border:2px solid %s;border-radius:8px;color:%s;font-size:13px;background-color:%s;">'
-            "<b>%s:</b> %s</span>") % (LINE, GOLD, PANEL, label, value)
-
-
-def body_block(html, accent=LINE):
-    return '<div style="padding:14px;border:3px solid %s;background-color:%s;margin-top:10px;">%s</div>' % (
-        accent, PANEL, html)
-
-
-def tale_html(tale):
-    return "".join("<p style='margin:0 0 8px;'>%s</p>" % t for t in tale)
-
-
 def audio_html(url):
     return ('<audio controls preload="none" src="%s" style="vertical-align:middle;"></audio> '
             '<a href="%s" target="_blank" rel="noopener noreferrer" style="color:%s;font-size:13px;">↗ звук</a>') % (
         url, url, PUMPKIN)
 
 
-def text_step(title, subtitle, blocks, url=None, h=1500, accent=KOKO):
-    inner = header(title, subtitle, accent)
-    for b in blocks:
-        inner += b
-    if url:
-        inner += open_btn(url) + iframe(url, h, accent)
-    return {"block": {"name": "text", "text": wrap(inner, accent)}}
+def page_url(base, path):
+    return base.rstrip("/") + "/" + quote(str(path).strip("/")) + "/"
+
+
+def frame_step(base, path, h, accent=KOKO, subtitle=None):
+    b = base.rstrip("/")
+    url = page_url(base, path) + "?v=4"
+    pill = ""
+    if subtitle:
+        pill = ('<p style="margin:0 0 10px;text-align:center;"><span '
+                'style="display:inline-block;padding:4px 14px;border:2px solid %s;'
+                'border-radius:14px;font-size:13px;color:%s;"><b>%s</b></span></p>'
+                % (accent, PANEL, subtitle))
+    frame = (
+        '<div style="border:6px solid %s;background-color:%s;">'
+        '<img alt="" src="%s/shared/frame/top.svg" style="display:block;width:100%%;border:0;">'
+        '<iframe height="%d" src="%s" width="100%%" '
+        'style="width:100%%;height:%dpx;border:0;background-color:%s;">'
+        "Ваш браузер не поддерживает iframe — открой урок по ссылке под рамкой.</iframe>"
+        '<img alt="" src="%s/shared/frame/bottom.svg" style="display:block;width:100%%;border:0;">'
+        "</div>"
+        '<p style="margin:8px 0 0;text-align:center;"><a href="%s" target="_blank" '
+        'rel="noopener noreferrer" style="color:#5d4a86;font-size:12px;">'
+        "↗ открыть урок на отдельной странице</a></p>"
+    ) % (accent, NIGHT, b, h, url, h, NIGHT, b, url)
+    return {"block": {"name": "text", "text": pill + frame}}
 
 
 def choice_step(question_html, options, correct, accent=GOLD):
@@ -178,56 +159,17 @@ def choice_step(question_html, options, correct, accent=GOLD):
                                  "is_options_feedback": True}}}
 
 
-def glyph_passport(d, num, base):
-    who = "Костик" if d.get("wing") else ""
-    han = d.get("char") or d.get("word")
-    py = d["pinyin"]
-    mean = d["meaning"]
-    passport = body_block(
-        '<p style="margin:0 0 10px;text-align:center;">%s</p><p style="margin:0 0 10px;text-align:center;">'
-        '<span style="color:%s;font-size:26px;"><b>%s</b></span></p><p style="margin:0;text-align:center;">%s</p>'
-        % (big_char(han, 72), GOLD, esc(py), esc(mean)),
-        KOKO)
-    facts = ""
-    if d.get("key"):
-        facts += chip("Ключ", esc(d["key"]))
-    if d.get("strokes"):
-        facts += chip("Черт", str(d["strokes"]))
-    facts += chip("Фонарик", "%d из %d" % (num, d["total"]))
-    if d.get("parts"):
-        facts += chip("Состав", esc(" + ".join(d["parts"])))
-    steps_html = body_block(
-        "<p style='margin:0 0 8px;'><b style='color:%s;'>Как зажечь фонарик (фазы урока):</b></p>"
-        "<ol style='margin:0 0 8px;padding-left:20px;'>"
-        "<li><b>Туман</b> — паспорт знака: разглядим его в лунном тумане.</li>"
-        "<li><b>Голос Коко</b> — послушай звук, изучи тон и мини-сказку.</li>"
-        "<li><b>Мел и камень</b> — обведи знак 3 раза в тренажёре письма.</li>"
-        "<li><b>Сладость или гадость</b> — 5 раундов игры, и фонарик загорается.</li></ol>"
-        "<p style='margin:0;font-size:12px;color:%s;'>На этом шаге открой фазы 1–2. Дальше — два задания Stepik, "
-        "а фазы 3–4 ждут в последнем шаге урока.</p>" % (GOLD, DIM))
-    tale = body_block(
-        "<p style='margin:0 0 6px;'><b style='color:%s;'>Мини-сказка %s:</b></p>%s"
-        "<p style='margin:6px 0 0;font-size:12px;color:%s;'>Полная версия — в уроке.</p>"
-        % (PUMPKIN, esc(who) if who else "Костика", tale_html([d["tale"][0]]), DIM),
-        PUMPKIN)
-    return passport + facts + steps_html + tale
-
-
 def glyph_lesson_steps(lesson, base):
     d = lesson["data"]
     num = lesson["num"]
     han = d.get("char") or d.get("word")
-    url = base + "/" + quote(lesson["url"]) + "/"
-    audio_url = base + "/audio/" + quote(d["audio"])
+    audio_url = base.rstrip("/") + "/audio/" + quote(d["audio"])
     kind = "знак" if d.get("char") else "слово"
     g = d["game"]
     meaning_round = g[1]
     pinyin_round = g[2]
-    s1 = text_step(
-        "Фонарик %d: %s" % (num, esc(lesson["title"].split(" — ")[0])),
-        "Костик ведёт к фонарику · фазы 1–2",
-        [glyph_passport(d, num, base)],
-        url, 1500, KOKO)
+    s1 = frame_step(base, lesson["url"], 1500, KOKO,
+                    "Фонарик %d · фазы 1–2 · Туман и Голос Коко" % num)
     s2 = choice_step(
         "<p style='margin:0 0 8px;font-size:15px;color:%s;'>Какой %s означает "
         "<b style='color:%s;'>«%s»</b>?</p>%s"
@@ -237,64 +179,22 @@ def glyph_lesson_steps(lesson, base):
         "<p style='margin:0 0 8px;'>%s</p><p style='margin:0 0 10px;font-size:15px;color:%s;'>"
         "Выбери правильное чтение:</p>%s" % (big_char(han, 56), DIM, audio_html(audio_url)),
         pinyin_round["opts"], pinyin_round["ans"], PUMPKIN)
-    s4 = text_step(
-        "Сладость или гадость · финал фонарика",
-        "Вернись в урок и пройди фазы 3–4",
-        [body_block(
-            "<p style='margin:0 0 8px;'><b style='color:%s;'>Осталось:</b></p>"
-            "<ul style='margin:0 0 8px;padding-left:20px;'>"
-            "<li><b>Мел и камень</b> — обведи %s три раза.</li>"
-            "<li><b>Сладость или гадость</b> — 5 раундов игры.</li></ul>"
-            "<p style='margin:0;font-size:13px;'>Когда раунды пройдены, фонарик <b>%s</b> загорается, "
-            "и двор на <a href='%s' target='_blank' rel='noopener noreferrer' style='color:%s;'>карте двора</a> "
-            "становится светлее. Прогресс сохраняется в браузере.</p>"
-            % (GOLD, big_char(han, 22), esc(han), base + "/", PUMPKIN), POISON)],
-        url, 1500, POISON)
+    s4 = frame_step(base, lesson["url"], 1500, POISON,
+                    "Фонарик %d · фазы 3–4 · Мел и камень · Сладость или гадость" % num)
     return [s1, s2, s3, s4]
 
 
 def story_lesson_steps(lesson, base, model):
-    url = base + lesson["url"]
-    chars_row = "".join(
-        '<img alt="%s" height="72" width="72" src="%s" style="margin:0 3px;border:3px solid %s;border-radius:10px;">'
-        % (n, base + "/shared/characters/" + f, KOKO)
-        for n, f in [("Костик", "kostik-portrait.svg"), ("Люми", "lumi-portrait.svg"),
-                     ("Эхо", "echo-portrait.svg"), ("Магистр Коко", "wizard.svg")])
-    intro = body_block(
-        "<p style='margin:0 0 10px;'>Добро пожаловать в <b>Двор Тихой Луны</b>! Магистр Коко варил "
-        "хэллоуинское зелье «Тыквенная улыбка», но чихнул с неправильным тоном — и заклинание "
-        "воскресило обитателей старого кладбища, заодно стерев всем память.</p>"
-        "<p style='margin:0 0 10px;'>Чтобы всё исправить, нужно зажечь <b>25 Фонариков Памяти</b>: "
-        "каждый загорается от выученного китайского знака или слова. В путь!</p>"
-        "<p style='margin:0 0 6px;text-align:center;'>%s</p>"
-        "<p style='margin:6px 0 0;text-align:center;font-size:13px;color:%s;'>"
-        "<b>Костик</b> — экскурсовод и бывший учитель каллиграфии · <b>Люми</b> — застенчивый "
-        "призрак-фонарщик · <b>Эхо</b> — мышь с колокольни, помнит все звуки · <b>Коко</b> — мастер звука и тонов"
-        "</p>" % (chars_row, DIM), KOKO)
-    plan = body_block(
-        "<p style='margin:0 0 8px;'><b style='color:%s;'>Как устроен курс</b></p>"
-        "<ul style='margin:0 0 8px;padding-left:20px;'>"
-        "<li><b>Пробуждение</b> — история чиха и тоны полуночи.</li>"
-        "<li><b>Крыло Луны, Крыло Сердца, Крыло Памяти</b> — 17 иероглифов: у каждого свой урок-фонарик.</li>"
-        "<li><b>Слова-заклинания</b> — 8 слов из уже знакомых знаков.</li>"
-        "<li><b>Праздник Тыквенной Луны</b> — большая викторина, финал истории и бонус-игра.</li></ul>"
-        "<p style='margin:0;font-size:13px;color:%s;'>Внутри уроков — прописи, аудио, мини-сказки и игры. "
-        "Прогресс сохраняется, фонарики горят. 🎃</p>" % (GOLD, DIM), GOLD)
-    return [text_step("Чих Магистра Коко", "История двора · 6 сцен",
-                      [intro, plan], url, 1800, KOKO)]
+    return [frame_step(base, lesson["url"], 1800, KOKO,
+                       "История двора · 6 сцен")]
 
 
 def tones_lesson_steps(lesson, base, model):
-    url = base + lesson["url"]
     t = model["tones"]
-    intro = body_block(
-        "<p style='margin:0 0 10px;'>%s</p><p style='margin:0;'>%s</p>" % (
-            t["intro"][0].replace("<b>", "<b style='color:%s;'>" % GOLD),
-            t["intro"][1].replace("<b>", "<b style='color:%s;'>" % GOLD)), KOKO)
     tone_names = {1: "1-й тон — высокий ровный (мā)", 2: "2-й тон — вверх (мá)",
                   3: "3-й тон — вниз и обратно (мǎ)", 4: "4-й тон — резко вниз (мà)"}
-    steps = [text_step("Тоны полуночи", "Четыре чиха Коко · слушай и повторяй",
-                       [intro], url, 1800, KOKO)]
+    steps = [frame_step(base, lesson["url"], 1800, KOKO,
+                        "Четыре чиха Коко · слушай и повторяй")]
     for i, q in enumerate(t["quiz"], 1):
         au = base + "/audio/" + quote(q["audio"])
         steps.append(choice_step(
@@ -315,14 +215,13 @@ def quiz_lesson_steps(lesson, base, model):
     picks = picks[:12]
     rng.shuffle(picks)
     kinds_pool = ["meaning", "pinyin", "audio_pinyin"]
-    intro = body_block(
+    intro = wrap(
         "<p style='margin:0 0 8px;'><b style='color:%s;'>Осада почти отбита!</b> Великая викторина "
         "«Сладость или гадость»: 12 вопросов по всем 25 фонарикам. За каждый — балл; если ошибся — "
         "вернись к фонарику на <a href='%s' target='_blank' rel='noopener noreferrer' style='color:%s;'>карте двора</a>.</p>"
         "<p style='margin:0;font-size:13px;color:%s;'>Вопросы трёх видов: смысл знака, чтение знака, "
-        "чтение на слух. Не забудь включить звук!</p>" % (GOLD, base + "/", PUMPKIN, DIM), PUMPKIN)
-    steps = [text_step("Большая викторина «Сладость или гадость»",
-                       "12 вопросов · все 25 фонариков", [intro], None, 0, PUMPKIN)]
+        "чтение на слух — включи звук!</p>" % (GOLD, base + "/", PUMPKIN, DIM), PUMPKIN)
+    steps = [{"block": {"name": "text", "text": intro}}]
     for i, l in enumerate(picks, 1):
         d = l["data"]
         han = d.get("char") or d.get("word")
@@ -348,26 +247,13 @@ def quiz_lesson_steps(lesson, base, model):
 
 
 def finale_lesson_steps(lesson, base, model):
-    f = model["finale"]
-    paras = "".join("<p style='margin:0 0 8px;'>%s</p>" % p for p in f["paras"][:2])
-    tail = body_block(
-        "<p style='margin:0 0 8px;'>%s</p><p style='margin:0 0 8px;'>Чем закончилась история — читай "
-        "на странице финала: там грамота <b>«%s»</b> на твое имя.</p>"
-        "<p style='margin:0;font-size:13px;color:%s;'>Спасибо, что зажёг все фонари двора!</p>"
-        % (f["paras"][2], esc(f["certificate"]), DIM), GOLD)
-    return [text_step("Праздник Тыквенной Луны", "Финал истории и грамота",
-                      [body_block(paras, KOKO), tail], base + lesson["url"], 1800, GOLD)]
+    return [frame_step(base, lesson["url"], 1800, GOLD,
+                       "Финал истории и грамота")]
 
 
 def bonus_lesson_steps(lesson, base, model):
-    intro = body_block(
-        "<p style='margin:0 0 8px;'><b style='color:%s;'>Бонус: Осада домика!</b> Полночь, к конфетному "
-        "домику стягиваются гости: призраки, тыквы, мыши. Отбей <b>12 волн</b>, узнавая знаки и слова. "
-        "Три ❤️, на волну — 18 секунд.</p>"
-        "<p style='margin:0;font-size:13px;color:%s;'>Баллов не даёт — только слава. Эхо наблюдает с колокольни.</p>"
-        % (GOLD, DIM), POISON)
-    return [text_step("Бонус: Осада домика", "12 волн · 3 ❤️ · 18 секунд на волну",
-                      [intro], base + lesson["url"], 1100, POISON)]
+    return [frame_step(base, lesson["url"], 1100, POISON,
+                       "12 волн · 3 ❤️ · 18 секунд на волну")]
 
 
 def build_lesson(lesson, base, model):
