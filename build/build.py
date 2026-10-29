@@ -194,7 +194,7 @@ HEAD = """<!DOCTYPE html>
 </head>
 <body>
 <header class="topbar">
-  <div class="logo">Двор Тихой Луны <span class="hanzi">月</span></div>
+  <div class="logo">Двор Тихой Луны <span class="hanzi">🌙</span></div>
   <div class="spacer"></div>
   <a class="back" href="{up}index.html">⟵ Карта двора</a>
 </header>
