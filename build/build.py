@@ -77,7 +77,7 @@ def pinyin_variants(pinyin):
 
 def color_pinyin(pinyin, tone):
     return '<span style="color:{0}">{1}</span>'.format(
-        {1: "#e64533", 2: "#ff8c2b", 3: "#29b6f6", 4: "#86c232", 0: "#bfe8e0"}[tone], pinyin)
+        {1: "#e64533", 2: "#ff8c2b", 3: "#29b6f6", 4: "#8a5fd6", 0: "#bfe8e0"}[tone], pinyin)
 
 
 # ---------------------------------------------------------------- игровые раунды
@@ -201,7 +201,7 @@ HEAD = """<!DOCTYPE html>
 <title>{title} · Двор Тихой Луны</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{up}shared/spooky.css?v=14">
+<link rel="stylesheet" href="{up}shared/spooky.css?v=15">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>🎃</text></svg>">
 </head>
 <body class="with-ground">
@@ -318,7 +318,7 @@ BODY_HEAD = """
 
 TAIL = """
 <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5.0/dist/hanzi-writer.min.js"></script>
-<script src="{up}shared/spooky.js?v=13"></script>
+<script src="{up}shared/spooky.js?v=14"></script>
 <script>/*PAYLOAD*/</script>
 <script>/*LESSON_JS*/</script>
 </body>

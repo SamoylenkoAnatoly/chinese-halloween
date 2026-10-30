@@ -4,7 +4,7 @@
 
   var QM = (window.QM = {});
 
-  QM.TONE_COLORS = { 1: "#e64533", 2: "#ff8c2b", 3: "#29b6f6", 4: "#86c232", 0: "#bfe8e0" };
+  QM.TONE_COLORS = { 1: "#e64533", 2: "#ff8c2b", 3: "#29b6f6", 4: "#8a5fd6", 0: "#bfe8e0" };
   QM.TONE_NAMES = { 1: "1-й тон", 2: "2-й тон", 3: "3-й тон", 4: "4-й тон", 0: "нейтральный" };
   QM.BASE = (function () {
     var el = document.querySelector("meta[name=qm-base]");
