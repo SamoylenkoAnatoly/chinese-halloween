@@ -122,7 +122,7 @@ def page_url(base, path):
     return base.rstrip("/") + "/" + (p + "/" if p else "")
 
 
-def frame_step(base, path, h, accent=KOKO, subtitle=None, v="20"):
+def frame_step(base, path, h, accent=KOKO, subtitle=None, v="21"):
     b = base.rstrip("/")
     url = page_url(base, path) + "?v=" + v
     pill = ""
@@ -187,7 +187,7 @@ def glyph_lesson_steps(lesson, base):
 
 def story_lesson_steps(lesson, base, model):
     return [frame_step(base, lesson["url"], 1800, KOKO,
-                       "История двора · 6 сцен", v="20")]
+                       "История двора · 6 сцен", v="21")]
 
 
 def tones_lesson_steps(lesson, base, model):
@@ -254,7 +254,7 @@ def finale_lesson_steps(lesson, base, model):
 
 def bonus_lesson_steps(lesson, base, model):
     return [frame_step(base, lesson["url"], 1100, POISON,
-                       "12 волн · 3 ❤️ · 18 секунд на волну")]
+                       "12 волн · 3 ❤️ · скелеты несут ответы")]
 
 
 def build_lesson(lesson, base, model):
