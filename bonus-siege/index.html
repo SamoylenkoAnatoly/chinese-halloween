@@ -24,17 +24,28 @@
   .siege-house { position: absolute; right: 8px; bottom: 52px; width: 140px; image-rendering: pixelated; z-index: 2; }
   .siege-house.shake { animation: houseshake .5s; }
   @keyframes houseshake { 20% { transform: translateX(-6px) rotate(-2deg); } 40% { transform: translateX(5px) rotate(2deg); } 60% { transform: translateX(-4px); } 80% { transform: translateX(3px); } }
-  .raider { position: absolute; width: 92px; z-index: 3; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; transition: transform .7s ease-out, opacity .35s; }
+  .raider { position: absolute; width: 92px; z-index: 3; user-select: none; -webkit-tap-highlight-color: transparent; transition: transform .7s ease-out, opacity .35s; pointer-events: none; }
+  .raider.ready { pointer-events: auto; cursor: pointer; }
   .raider.rise { transform: translateY(130%); }
   .raider .rbody { width: 84px; height: 84px; display: block; image-rendering: pixelated; animation: skbob .38s infinite alternate ease-in-out; }
   @keyframes skbob { from { transform: translateY(0) rotate(-2deg); } to { transform: translateY(-4px) rotate(2deg); } }
-  .raider .placard { position: absolute; top: -42px; left: 20px; min-width: 66px; max-width: 150px;
-    background: #e8e2c4; color: #241744; border: 3px solid #241744; border-radius: 8px; padding: 5px 8px;
-    font-size: 14px; font-weight: 700; text-align: center; line-height: 1.25; transform: rotate(-4deg); box-shadow: 0 4px 0 rgba(0, 0, 0, .35); }
-  .raider .placard .hanzi { font-size: 26px; display: block; }
-  .raider:hover .placard { border-color: #ff8c2b; background: #fff7dd; }
+  .raider .placard { position: absolute; top: -48px; left: 16px; min-width: 64px; max-width: 118px;
+    background: #e8e2c4; color: #241744; border: 3px solid #241744; border-radius: 8px; padding: 6px 8px;
+    font-size: 13px; font-weight: 700; text-align: center; line-height: 1.25; transform: rotate(-4deg);
+    box-shadow: 0 4px 0 rgba(0, 0, 0, .35); opacity: 0; transition: opacity .45s, transform .15s; }
+  .raider.alt .placard { top: -90px; }
+  .raider.ready .placard { opacity: 1; }
+  .raider .placard::after { content: ""; position: absolute; left: 50%; bottom: -18px; width: 3px; height: 18px; margin-left: -2px; background: #241744; }
+  .raider.alt .placard::after { height: 60px; bottom: -60px; }
+  .raider .placard .chip { position: absolute; top: -9px; left: 50%; width: 12px; height: 12px; margin-left: -6px; border: 2px solid #241744; border-radius: 4px; background: #e64533; }
+  .raider .placard .hanzi { font-size: 24px; display: block; }
+  .raider.ready:hover .placard { border-color: #ff8c2b; background: #fff7dd; transform: rotate(-4deg) scale(1.07); }
   .raider.wrong .placard { border-color: var(--blood); background: #ffd9d2; animation: skwob .4s; }
   @keyframes skwob { 25% { transform: rotate(-9deg); } 75% { transform: rotate(7deg); } }
+  @media (max-width: 560px) {
+    .raider .placard { font-size: 12px; padding: 5px 6px; min-width: 54px; max-width: 96px; }
+    .raider .placard .hanzi { font-size: 20px; }
+  }
   .raider.gone { opacity: 0; pointer-events: none; }
   .raider.dust { pointer-events: none; animation: crumble .7s ease-in forwards; }
   @keyframes crumble { to { transform: translateY(30px) rotate(84deg); opacity: 0; } }
@@ -170,23 +181,29 @@
     box.innerHTML = "";
     raiders = [];
     var order = shuffle(current.opts.slice());
+    var speed = Math.max(0.045, (W + 60) / (TRAVEL * 1000));
+    var interval = Math.max(2000, 90 / speed);
     order.forEach(function (opt, i) {
       var el = document.createElement("div");
-      el.className = "raider rise";
-      el.innerHTML = '<div class="placard">' +
+      el.className = "raider rise" + (i % 2 ? " alt" : "");
+      el.innerHTML = '<div class="placard"><i class="chip"></i>' +
         (isGlyphOpt(opt) ? "<span class='hanzi'>" + opt + "</span>" : opt) +
         '</div><img class="rbody" src="../shared/characters/skeleton.svg" alt="">';
       var img = el.querySelector(".rbody");
-      img.style.filter = "hue-rotate(" + HUES[i % 4] + "deg)";
+      var hue = "hue-rotate(" + HUES[i % 4] + "deg)";
+      img.style.filter = hue;
+      el.querySelector(".chip").style.filter = hue;
       img.style.animationDelay = (Math.random() * 0.3).toFixed(2) + "s";
-      var x = 6 + i * 16 + Math.random() * 12;
-      el.style.left = x + "px";
-      el.style.bottom = (50 + (i % 2) * 14) + "px";
+      var sz = 76 + Math.floor(Math.random() * 10);
+      img.style.width = sz + "px";
+      img.style.height = sz + "px";
+      el.style.left = "6px";
+      el.style.bottom = (48 + (i % 2) * 10) + "px";
       box.appendChild(el);
       var r = {
-        opt: opt, el: el, x: x, t: 0,
-        delay: i * 650 + Math.random() * 250,
-        speed: (W + 40) / (TRAVEL * 1000 * (0.92 + Math.random() * 0.2)),
+        opt: opt, el: el, t: 0, dist: 0, shown: false,
+        speed: speed * (0.95 + Math.random() * 0.1),
+        delay: i * interval + Math.random() * 150,
       };
       el.onclick = function (ev) { onRaider(r, ev); };
       (function (node, d) {
@@ -205,10 +222,15 @@
     for (var i = raiders.length - 1; i >= 0; i--) {
       var r = raiders[i];
       r.t += dt;
+      if (!r.shown && r.t > r.delay + 1000) {
+        r.shown = true;
+        r.el.classList.add("ready");
+      }
       if (r.t < r.delay + 700) continue;
-      r.x += r.speed * dt;
-      r.el.style.left = r.x + "px";
-      if (r.x >= stop) reachHouse(r, i);
+      r.dist += r.speed * dt;
+      var x = 6 + r.dist;
+      r.el.style.left = x + "px";
+      if (x >= stop) reachHouse(r, i);
     }
     raf = requestAnimationFrame(tick);
   }
@@ -242,7 +264,7 @@
   }
 
   function onRaider(r, ev) {
-    if (waveDone || r.el.classList.contains("gone")) return;
+    if (waveDone || !r.shown || r.el.classList.contains("gone")) return;
     if (r.opt === current.ans) {
       waveDone = true;
       cancelAnimationFrame(raf);
