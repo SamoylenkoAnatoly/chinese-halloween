@@ -32,6 +32,7 @@
     state.words = state.words || {};
     state.tones = !!state.tones;
     state.story = !!state.story;
+    state.secrets = state.secrets || {};
     return state;
   }
   QM.progress = {
@@ -43,6 +44,13 @@
     markTones: function () { var s = load(); s.tones = true; save(s); },
     story: function () { return load().story; },
     markStory: function () { var s = load(); s.story = true; save(s); },
+    secret: function (k) { return !!load().secrets[k]; },
+    markSecret: function (k) { var s = load(); s.secrets[k] = true; save(s); },
+    secretCount: function () {
+      var s = load(), n = 0;
+      Object.keys(s.secrets).forEach(function (k) { if (s.secrets[k]) n++; });
+      return n;
+    },
     litCount: function () {
       var s = load(), n = 0;
       Object.keys(s.lit).forEach(function (k) { if (s.lit[k]) n++; });
@@ -235,4 +243,82 @@
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
     });
   };
+
+  /* ---------- светлячки-хранители: секреты двора ---------- */
+  var SECRETS = [
+    "Первые «джек-фонари» делали из репы — тыква пришла позже, из Америки.",
+    "«Сладость или гадость» (trick-or-treat): без угощения ждали безобидной шалости.",
+    "Летучие мыши кружат у фонарей ради насекомых, которые сами слетаются на свет.",
+    "Паутина при равном весе прочнее стали — тоньше волоса и вдвое эластичнее нейлона.",
+    "Чёрный кот на корабле издревле считался знаком удачи — наоборот, хороший примета!",
+    "Костюмы надевали, чтобы злые духи приняли человека за своего и не тронули.",
+    "Рекордная тыква весила больше тонны — тяжелее маленького автомобиля.",
+    "Совы поворачивают голову почти на 270 градусов — вот кто хранитель ночи.",
+    "Луна светит отражённым солнечным светом — как огромное ночное зеркало.",
+    "С точки зрения ботаники тыква — ягода, а не овощ.",
+    "Паук не липнет к собственной паутине: на его лапках особая смазка.",
+    "Свеча в тыкве «Джек» напоминает о фонаре из старой ирландской легенды.",
+    "Некоторые дворы на Хэллуин украшают тысячами светящихся тыкв — это рекорды!",
+    "В традиционном китайском календаре полночь — «час крысы» (цзы-ши).",
+    "В легендах привидения прохладные, как сквозняк, — отсюда и «духи холода».",
+    "Летучая мышь — единственный зверь, который умеет по-настоящему летать.",
+    "Слово «Хэллуин» — от All Hallows' Eve, «Канун Дня всех святых».",
+    "У новорождённого почти 300 костей, а у взрослого — 206: часть срастается.",
+    "Маленькие паучата путешествуют на шёлковых ниточках, как на воздушных змеях.",
+    "Кошки видят в темноте примерно в шесть раз лучше человека.",
+    "Полная луна всегда встаёт точно на закате — потому сумерки казались волшебными.",
+    "Тыквенный фонарь на подоконнике «указывал» добрым духам дорогу к дому.",
+    "Летучие мыши съедают до тысячи комаров за час — настоящие ночные хранители.",
+    "Самая длинная паутина, найденная в пещере, была размером с теннисный корт.",
+    "Кости — живая ткань: наш скелет почти полностью обновляется раз в десять лет.",
+  ];
+  var SECRET_CHARS = ["kostik", "koko", "lumi", "echo"];
+  var SECRET_BONUS = [
+    "Мяу-ха! Все 25 секретов двора собраны!",
+    "Ты знаешь эту ночь лучше моего гримуара. Настоящий хранитель Двора Тихой Луны — горжусь тобой!",
+  ];
+
+  function secretHash(str) {
+    var h = 0;
+    for (var i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
+    return h;
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    var strip = document.querySelector(".ground-strip");
+    var L = window.LESSON;
+    if (!strip || !L || !L.target || typeof L.num !== "number") return;
+    var h = secretHash(L.target);
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "ground-secret" + (QM.progress.secret(L.target) ? " found" : "");
+    btn.title = "Светлячок-хранитель";
+    btn.setAttribute("aria-label", "Секрет двора");
+    btn.style.left = (5 + (h % 87)) + "%";
+    btn.style.top = (40 + ((h >>> 7) % 71)) + "px";
+    btn.innerHTML = '<img alt="" src="' + QM.BASE + "shared/characters/firefly.svg" + '">';
+    btn.addEventListener("click", function () {
+      var fact = SECRETS[(L.num - 1) % SECRETS.length];
+      var who = SECRET_CHARS[L.num % SECRET_CHARS.length];
+      if (!btn.classList.contains("found")) {
+        var r = btn.getBoundingClientRect();
+        QM.sfx.ghost();
+        QM.halloweenBurst(r.left + r.width / 2, r.top);
+        btn.classList.add("found");
+        QM.progress.markSecret(L.target);
+        if (QM.progress.secretCount() === 25) {
+          setTimeout(function () {
+            QM.halloweenBurst(window.innerWidth / 2, window.innerHeight / 3);
+            QM.sfx.finish();
+            QM.say("koko", SECRET_BONUS);
+          }, 900);
+        } else {
+          QM.say(who, fact);
+        }
+      } else {
+        QM.say(who, fact);
+      }
+    });
+    strip.appendChild(btn);
+  });
 })();

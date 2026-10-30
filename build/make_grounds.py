@@ -664,6 +664,20 @@ def m_pumpkin_half(cv, x, y):
     cv.px(x - 2, y + 10, 18, 3, "soil2")
 
 
+# ---------------------------------------------------------------- пролог (история)
+def t_prologue(cv, x):
+    pumpkin(cv, x)
+    pumpkin_small(cv, x + 20)
+    candles(cv, x + 30)
+
+
+THEME_PROLOGUE = {
+    "s": (t_prologue, 42),
+    "u": (m_ghost, 20),
+    "dots": [("pump", 3), ("gold", 3), ("petal", 4)],
+}
+
+
 MAJORS = {
     "skeleton": (m_skeleton, 87, 35),
     "crypt": (m_crypt, 92, 24),
@@ -770,7 +784,10 @@ def main():
         n2 = compose_underground(ch, theme)
         total += 1
         print(ch, g["meaning"], "| поверхность:", n1, "rect | подземелье:", n2, "rect")
-    print("ИТОГО уроков:", total, "| файлов:", total * 2)
+    n1 = compose_surface("prologue", THEME_PROLOGUE)
+    n2 = compose_underground("prologue", THEME_PROLOGUE)
+    print("prologue | поверхность:", n1, "rect | подземелье:", n2, "rect")
+    print("ИТОГО уроков:", total, "| файлов:", total * 2 + 2)
 
 
 if __name__ == "__main__":
