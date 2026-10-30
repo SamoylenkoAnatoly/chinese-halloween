@@ -122,7 +122,7 @@ def page_url(base, path):
     return base.rstrip("/") + "/" + (p + "/" if p else "")
 
 
-def frame_step(base, path, h, accent=KOKO, subtitle=None, v="9"):
+def frame_step(base, path, h, accent=KOKO, subtitle=None, v="17"):
     b = base.rstrip("/")
     url = page_url(base, path) + "?v=" + v
     pill = ""
