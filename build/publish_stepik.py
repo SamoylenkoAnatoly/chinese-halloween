@@ -172,7 +172,7 @@ def glyph_lesson_steps(lesson, base):
     meaning_round = g[1]
     pinyin_round = g[2]
     s1 = frame_step(base, lesson["url"], 1500, KOKO,
-                    "Фонарик %d · фазы 1–2 · Туман и Голос Коко" % num)
+                    "Фонарик %d · все 4 фазы · от Тумана до Сладости" % num)
     s2 = choice_step(
         "<p style='margin:0 0 8px;font-size:15px;color:%s;'>Какой %s означает "
         "<b style='color:%s;'>«%s»</b>?</p>%s"
@@ -182,9 +182,7 @@ def glyph_lesson_steps(lesson, base):
         "<p style='margin:0 0 8px;'>%s</p><p style='margin:0 0 10px;font-size:15px;color:%s;'>"
         "Выбери правильное чтение:</p>%s" % (big_char(han, 56), DIM, audio_html(audio_url)),
         pinyin_round["opts"], pinyin_round["ans"], PUMPKIN)
-    s4 = frame_step(base, lesson["url"], 1500, POISON,
-                    "Фонарик %d · фазы 3–4 · Мел и камень · Сладость или гадость" % num)
-    return [s1, s2, s3, s4]
+    return [s1, s2, s3]
 
 
 def story_lesson_steps(lesson, base, model):
@@ -276,8 +274,6 @@ def build_lesson(lesson, base, model):
 
 
 def lesson_title(lesson):
-    if lesson["kind"] in ("glyph", "word"):
-        return "%d. %s" % (lesson["num"], lesson["title"])
     return lesson["title"]
 
 
