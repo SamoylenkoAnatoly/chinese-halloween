@@ -8,6 +8,43 @@
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../shared/spooky.css?v=14">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>🎃</text></svg>">
+<style>
+  .siege-field { position: relative; height: 300px; margin-top: 16px; border: 3px solid var(--line); border-radius: 12px; overflow: hidden; background: linear-gradient(#1e1440, #120b24 72%); }
+  .siege-field::before { content: ""; position: absolute; inset: 0; pointer-events: none; background-image:
+    radial-gradient(2px 2px at 30px 40px, #6f6790 50%, transparent 51%),
+    radial-gradient(2px 2px at 120px 26px, #8f86ad 50%, transparent 51%),
+    radial-gradient(1px 1px at 210px 60px, #6f6790 50%, transparent 51%),
+    radial-gradient(2px 2px at 300px 34px, #8f86ad 50%, transparent 51%),
+    radial-gradient(1px 1px at 380px 70px, #6f6790 50%, transparent 51%),
+    radial-gradient(2px 2px at 460px 44px, #8f86ad 50%, transparent 51%); }
+  .siege-ground { position: absolute; left: 0; right: 0; bottom: 0; height: 60px; border-top: 4px solid #3a2a5e;
+    background: repeating-linear-gradient(90deg, #241744 0 14px, #2c1f4e 14px 16px, #241744 16px 30px, #1c1338 30px 44px); }
+  .siege-ground::after { content: ""; position: absolute; top: -9px; left: 0; right: 0; height: 8px; opacity: .6;
+    background: repeating-linear-gradient(90deg, transparent 0 18px, #86c232 18px 21px, transparent 21px 40px, #86c232 40px 42px, transparent 42px 62px); }
+  .siege-house { position: absolute; right: 8px; bottom: 52px; width: 140px; image-rendering: pixelated; z-index: 2; }
+  .siege-house.shake { animation: houseshake .5s; }
+  @keyframes houseshake { 20% { transform: translateX(-6px) rotate(-2deg); } 40% { transform: translateX(5px) rotate(2deg); } 60% { transform: translateX(-4px); } 80% { transform: translateX(3px); } }
+  .raider { position: absolute; width: 92px; z-index: 3; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; transition: transform .7s ease-out, opacity .35s; }
+  .raider.rise { transform: translateY(130%); }
+  .raider .rbody { width: 84px; height: 84px; display: block; image-rendering: pixelated; animation: skbob .38s infinite alternate ease-in-out; }
+  @keyframes skbob { from { transform: translateY(0) rotate(-2deg); } to { transform: translateY(-4px) rotate(2deg); } }
+  .raider .placard { position: absolute; top: -42px; left: 20px; min-width: 66px; max-width: 150px;
+    background: #e8e2c4; color: #241744; border: 3px solid #241744; border-radius: 8px; padding: 5px 8px;
+    font-size: 14px; font-weight: 700; text-align: center; line-height: 1.25; transform: rotate(-4deg); box-shadow: 0 4px 0 rgba(0, 0, 0, .35); }
+  .raider .placard .hanzi { font-size: 26px; display: block; }
+  .raider:hover .placard { border-color: #ff8c2b; background: #fff7dd; }
+  .raider.wrong .placard { border-color: var(--blood); background: #ffd9d2; animation: skwob .4s; }
+  @keyframes skwob { 25% { transform: rotate(-9deg); } 75% { transform: rotate(7deg); } }
+  .raider.gone { opacity: 0; pointer-events: none; }
+  .raider.dust { pointer-events: none; animation: crumble .7s ease-in forwards; }
+  @keyframes crumble { to { transform: translateY(30px) rotate(84deg); opacity: 0; } }
+  .banner { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 5; white-space: nowrap;
+    background: var(--panel); border: 3px solid var(--line); border-radius: 10px; padding: 8px 16px;
+    font-weight: 700; font-size: 16px; color: var(--ink); opacity: 0; transition: opacity .25s; pointer-events: none; }
+  .banner.show { opacity: 1; }
+  .banner.good { border-color: var(--poison); color: var(--poison); }
+  .banner.bad { border-color: var(--blood); color: var(--blood); }
+</style>
 </head>
 <body>
 <header class="topbar">
@@ -20,7 +57,7 @@
 
 <section class="hero">
   <h1>🍬 Осада домика</h1>
-  <p class="sub">Эхо раздаёт конфеты, гости идут волнами. Двенадцать волн, три костяных сердечка. Промах — теряешь сердце, таймер не ждёт.</p>
+  <p class="sub">Скелеты-мародёры вылезают из-под земли и несут ответы на табличках. Успей ткнуть в верного, пока табличконосец не добрался до домика. Двенадцать волн, три костяных сердечка.</p>
   <div class="progress-bar" style="max-width:560px;margin:0 auto">
     <span style="font-size:20px">☠️</span>
     <div class="track"><div class="fill" id="wave-fill" style="width:0%;background:#8a5fd6"></div></div>
@@ -31,19 +68,21 @@
 <div class="phase" style="padding-bottom:60px">
   <div class="game-scene" id="scene">
     <div class="guest-row">
-      <img class="guest-img" id="guest-img" src="../shared/characters/bat.svg" alt="">
-      <div class="say"><span class="q">Эхо:</span> <span id="wave-say">Волна первая. Готов?</span></div>
+      <img class="guest-img" id="guest-img" src="../shared/characters/echo.svg" alt="">
+      <div class="say"><span class="q">Эхо:</span> <span id="wave-say">Скелеты уже скребутся под землёй…</span></div>
     </div>
     <div class="prompt" id="prompt">Нажми «Начать осаду»</div>
-    <div class="candies" id="candies"></div>
-    <div class="progress-bar" style="max-width:420px;margin:18px auto 0" id="timer-row" hidden>
-      <div class="track" style="height:12px"><div class="fill" id="timer-fill" style="background:#86c232;width:100%"></div></div>
+    <div class="siege-field" id="field">
+      <img class="siege-house" id="house" src="../shared/characters/house.svg" alt="Домик с конфетами">
+      <div id="raiders"></div>
+      <div class="siege-ground"></div>
+      <div class="banner" id="wave-banner"></div>
     </div>
     <div style="text-align:center;margin-top:14px;font-size:22px;letter-spacing:4px" id="hearts">❤️❤️❤️</div>
   </div>
   <div style="text-align:center;margin-top:18px">
     <button class="btn" id="start-btn">⚔️ Начать осаду</button>
-    <button class="btn ghosty" id="retry-btn" style="display:none">🔁 Ещё волна</button>
+    <button class="btn ghosty" id="retry-btn" style="display:none">🔁 Ещё осада</button>
   </div>
 </div>
 
@@ -56,31 +95,43 @@
   "use strict";
   var QM = window.QM, D = window.QM_LESSONS;
   var ALL = D.glyphs.concat(D.words);
-  var WAVES = 12, TIME = 18;
-  var hearts = 3, wave = 0, score = 0, timer = null, current = null, locked = false;
+  var WAVES = 12, TRAVEL = 17;
+  var hearts = 3, wave = 0, score = 0, rounds = [], current = null;
+  var raiders = [], raf = 0, waveDone = true, lastTs = 0;
+  var HUES = [0, 70, 150, 220];
 
   var WAVE_SAY = [
-    "Волна первая — осведомители!",
-    "Дальше идут слушатели колокольни.",
-    "Волна третья — друзья тыквы.",
-    "Эти пришли за словами-парами!",
-    "Волна пятая. Я подмигиваю клычком.",
-    "Шестая волна: самая тихая, слушай внимательно.",
-    "Седьмая. Не спеши — tones помнишь?",
+    "Волна первая — скелеты на разведке!",
+    "Вторая волна: кости гремят громче.",
+    "Третья: эти выкопались у самой калитки.",
+    "Четвёртая волна — с табличками наизусть.",
+    "Пятая. Кто-то из них несёт не тот ответ…",
+    "Шестая волна: шагают, как на параде.",
+    "Седьмая. Слушай вопрос внимательно!",
     "Волна восемь: у них с собой мел!",
-    "Девятая волна: Костик подглядывает в ответах.",
+    "Девятая — Костик машет им вслед крышкой.",
     "Десятая! Люми уже греет фонарик.",
     "Одиннадцатая: почти парад.",
     "Финальная волна! Дальше — только конфеты.",
   ];
 
-  function buildWave(i) {
-    var item = ALL[(i * 2 + Math.floor(i / 3)) % ALL.length];
-    var kind = item.char ? item.game[i % 5].kind : item.game[(i + 2) % 5].kind;
-    var r = null;
-    for (var k = 0; k < item.game.length; k++) if (item.game[k].kind === kind) { r = item.game[k]; break; }
-    return r;
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
   }
+
+  function buildRounds() {
+    var pool = shuffle(ALL.slice());
+    rounds = [];
+    for (var i = 0; i < WAVES; i++) {
+      var item = pool[i % pool.length];
+      rounds.push(item.game[Math.floor(Math.random() * item.game.length)]);
+    }
+  }
+
   function isGlyphOpt(s) { return /[\u4e00-\u9fff]/.test(s); }
 
   function renderPrompt(r) {
@@ -100,100 +151,187 @@
     }
   }
 
-  function startTimer() {
-    var t0 = Date.now();
-    var row = document.getElementById("timer-row"), fill = document.getElementById("timer-fill");
-    row.hidden = false;
-    fill.style.width = "100%"; fill.style.background = "#86c232";
-    clearInterval(timer);
-    timer = setInterval(function () {
-      var left = TIME - (Date.now() - t0) / 1000;
-      if (left <= 0) { clearInterval(timer); hit(false, null); return; }
-      fill.style.width = (left / TIME * 100) + "%";
-      fill.style.background = left < 6 ? "#e64533" : "#86c232";
-    }, 100);
+  function renderHearts() {
+    document.getElementById("hearts").textContent =
+      "❤️".repeat(Math.max(hearts, 0)) + "🖤".repeat(3 - Math.max(hearts, 0));
   }
 
-  function renderWave() {
-    locked = false;
+  function banner(text, cls) {
+    var b = document.getElementById("wave-banner");
+    b.textContent = text;
+    b.className = "banner show " + (cls || "");
+    clearTimeout(b._t);
+    b._t = setTimeout(function () { b.className = "banner"; }, 1200);
+  }
+
+  function spawnRaiders() {
+    var box = document.getElementById("raiders");
+    var W = document.getElementById("field").clientWidth;
+    box.innerHTML = "";
+    raiders = [];
+    var order = shuffle(current.opts.slice());
+    order.forEach(function (opt, i) {
+      var el = document.createElement("div");
+      el.className = "raider rise";
+      el.innerHTML = '<div class="placard">' +
+        (isGlyphOpt(opt) ? "<span class='hanzi'>" + opt + "</span>" : opt) +
+        '</div><img class="rbody" src="../shared/characters/skeleton.svg" alt="">';
+      var img = el.querySelector(".rbody");
+      img.style.filter = "hue-rotate(" + HUES[i % 4] + "deg)";
+      img.style.animationDelay = (Math.random() * 0.3).toFixed(2) + "s";
+      var x = 6 + i * 16 + Math.random() * 12;
+      el.style.left = x + "px";
+      el.style.bottom = (50 + (i % 2) * 14) + "px";
+      box.appendChild(el);
+      var r = {
+        opt: opt, el: el, x: x, t: 0,
+        delay: i * 650 + Math.random() * 250,
+        speed: (W + 40) / (TRAVEL * 1000 * (0.92 + Math.random() * 0.2)),
+      };
+      el.onclick = function (ev) { onRaider(r, ev); };
+      (function (node, d) {
+        setTimeout(function () { node.classList.remove("rise"); }, 60 + d);
+      })(el, r.delay);
+      raiders.push(r);
+    });
+  }
+
+  function tick(ts) {
+    if (waveDone) return;
+    var dt = Math.min(ts - (lastTs || ts), 64);
+    lastTs = ts;
+    var W = document.getElementById("field").clientWidth;
+    var stop = W - 135;
+    for (var i = raiders.length - 1; i >= 0; i--) {
+      var r = raiders[i];
+      r.t += dt;
+      if (r.t < r.delay + 700) continue;
+      r.x += r.speed * dt;
+      r.el.style.left = r.x + "px";
+      if (r.x >= stop) reachHouse(r, i);
+    }
+    raf = requestAnimationFrame(tick);
+  }
+
+  function sweep() {
+    raiders.forEach(function (o) {
+      o.el.classList.add("gone");
+      (function (el) { setTimeout(function () { el.remove(); }, 400); })(o.el);
+    });
+    raiders = [];
+  }
+
+  function shakeHouse() {
+    var h = document.getElementById("house");
+    h.classList.remove("shake");
+    void h.offsetWidth;
+    h.classList.add("shake");
+  }
+
+  function reachHouse(r, i) {
+    raiders.splice(i, 1);
+    r.el.classList.add("gone");
+    (function (el) { setTimeout(function () { el.remove(); }, 400); })(r.el);
+    shakeHouse();
+    QM.sfx.flame();
+    if (loseHeart()) return;
+    if (r.opt === current.ans) {
+      banner("Верный ответ утащили в домик: " + current.ans, "bad");
+      endWave();
+    }
+  }
+
+  function onRaider(r, ev) {
+    if (waveDone || r.el.classList.contains("gone")) return;
+    if (r.opt === current.ans) {
+      waveDone = true;
+      cancelAnimationFrame(raf);
+      score++;
+      QM.sfx.good();
+      var rc = r.el.getBoundingClientRect();
+      QM.sparks(rc.left + rc.width / 2, rc.top + 30);
+      r.el.classList.remove("gone");
+      r.el.classList.add("dust");
+      (function (el) { setTimeout(function () { el.remove(); }, 750); })(r.el);
+      raiders = raiders.filter(function (o) { return o !== r; });
+      sweep();
+      banner("Волна отбита! 🍬", "good");
+      endWave();
+    } else {
+      QM.sfx.bad();
+      r.el.classList.add("wrong");
+      setTimeout(function () { r.el.classList.remove("wrong"); }, 450);
+      loseHeart();
+    }
+  }
+
+  function loseHeart() {
+    hearts--;
+    renderHearts();
+    if (hearts <= 0) { gameOver(); return true; }
+    return false;
+  }
+
+  function endWave() {
+    waveDone = true;
+    cancelAnimationFrame(raf);
+    sweep();
+    setTimeout(function () {
+      if (hearts <= 0) return;
+      wave++;
+      if (wave >= WAVES) return win();
+      startWave();
+    }, 1300);
+  }
+
+  function startWave() {
+    waveDone = false;
+    lastTs = 0;
     document.getElementById("wave-lbl").textContent = wave + " / " + WAVES;
     document.getElementById("wave-fill").style.width = (wave / WAVES * 100) + "%";
-    document.getElementById("hearts").textContent = "❤️".repeat(hearts) + "🖤".repeat(3 - hearts);
+    renderHearts();
     document.getElementById("wave-say").textContent = WAVE_SAY[wave] || "Держись!";
-    var guests = ["ghost", "pumpkin", "bat"];
-    var img = document.getElementById("guest-img");
-    img.src = "../shared/characters/" + guests[wave % 3] + ".svg";
-    img.className = "guest-img";
-    current = buildWave(wave);
+    current = rounds[wave];
     renderPrompt(current);
-    var box = document.getElementById("candies");
-    box.innerHTML = "";
-    current.opts.forEach(function (opt) {
-      var c = document.createElement("div");
-      c.className = "candy";
-      c.innerHTML = isGlyphOpt(opt) ? "<span class='hanzi'>" + opt + "</span>" : opt;
-      c.onclick = function () { if (!locked) hit(opt === current.ans, c); };
-      box.appendChild(c);
-    });
-    startTimer();
+    spawnRaiders();
+    raf = requestAnimationFrame(tick);
   }
 
-  function hit(good, candy) {
-    locked = true;
-    clearInterval(timer);
-    document.getElementById("timer-row").hidden = true;
-    var img = document.getElementById("guest-img");
-    if (good) {
-      score++;
-      if (candy) candy.classList.add("good");
-      img.classList.add("happy");
-      QM.sfx.good();
-    } else {
-      hearts--;
-      if (candy) candy.classList.add("bad");
-      img.classList.add("angry");
-      QM.sfx.bad();
-    }
-    document.getElementById("hearts").textContent = "❤️".repeat(Math.max(hearts, 0)) + "🖤".repeat(3 - Math.max(hearts, 0));
-    setTimeout(function () {
-      if (hearts <= 0) return end(false);
-      wave++;
-      if (wave >= WAVES) return end(true);
-      renderWave();
-    }, 850);
-  }
-
-  function end(win) {
-    var p = document.getElementById("prompt");
-    document.getElementById("candies").innerHTML = "";
-    if (win) {
-      QM.sfx.finish();
-      QM.sparks(window.innerWidth / 2, window.innerHeight / 2);
-      p.innerHTML = "<span style='font-size:24px;color:#ffd54f;font-weight:700'>Осада отбита! Конфет " + score + " из " + WAVES + ".</span>";
-      QM.say("kostik", "Никто не остался без сладости и без знаков! Могу предложить ещё заход — гости любят повторы.");
-    } else {
-      p.innerHTML = "<span style='font-size:24px;color:#e64533;font-weight:700'>Сердечки кончились. Гости унесли конфеты, но не знаки — придёт ещё раз!</span>";
-      QM.say("lumi", "Ничего-ничего... Гости возвращаются. Повтори пару уроков — и они уйдут ни с чем сладким, но с уважением.");
-    }
+  function gameOver() {
+    waveDone = true;
+    cancelAnimationFrame(raf);
+    sweep();
+    document.getElementById("prompt").innerHTML =
+      "<span style='font-size:24px;color:#e64533;font-weight:700'>Сердечки кончились. Скелеты унесли конфеты, но не знаки — придёт ещё раз!</span>";
+    QM.say("lumi", "Ничего-ничего... Скелеты вернулись в землю. Повтори пару уроков — и они уйдут ни с чем сладким, но с уважением.");
     document.getElementById("start-btn").style.display = "none";
     document.getElementById("retry-btn").style.display = "";
   }
 
-  document.getElementById("start-btn").onclick = function () {
-    QM.sfx.click();
-    hearts = 3; wave = 0; score = 0;
-    this.style.display = "none";
-    document.getElementById("retry-btn").style.display = "none";
-    renderWave();
-  };
-  document.getElementById("retry-btn").onclick = function () {
-    QM.sfx.click();
-    hearts = 3; wave = 0; score = 0;
-    this.style.display = "none";
-    renderWave();
-  };
+  function win() {
+    document.getElementById("prompt").innerHTML =
+      "<span style='font-size:24px;color:#ffd54f;font-weight:700'>Осада отбита! Конфет " + score + " из " + WAVES + ".</span>";
+    QM.sfx.finish();
+    QM.sparks(window.innerWidth / 2, window.innerHeight / 2);
+    QM.halloweenBurst(window.innerWidth / 2, window.innerHeight / 3);
+    QM.say("kostik", "Все кости разошлись по домам, никто не остался без сладости и без знаков! Могу предложить ещё заход — скелеты любят повторы.");
+    document.getElementById("start-btn").style.display = "none";
+    document.getElementById("retry-btn").style.display = "";
+  }
 
-  QM.say("echo", "Пи-и! Правила простые: верный ответ — конфета, таймер тикает. Три промаха — осада сорвётся!");
+  function begin() {
+    QM.sfx.click();
+    buildRounds();
+    hearts = 3; wave = 0; score = 0;
+    document.getElementById("start-btn").style.display = "none";
+    document.getElementById("retry-btn").style.display = "none";
+    startWave();
+  }
+
+  document.getElementById("start-btn").onclick = begin;
+  document.getElementById("retry-btn").onclick = begin;
+
+  QM.say("echo", "Пи-и! Из-под земли лезут скелеты с ответами на табличках. Ткни в верного, пока он не дошёл до домика. Три промаха — осада сорвётся!");
 })();
 </script>
 </body>
