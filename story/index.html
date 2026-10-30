@@ -101,7 +101,7 @@
   prevBtn.onclick = function () { if (i > 0) { i--; QM.sfx.click(); render(); } };
   nextBtn.onclick = function () {
     QM.sfx.click();
-    if (i === PANELS.length - 1) { location.href = "../tones/index.html"; return; }
+    if (i === PANELS.length - 1) { window.top.location.href = "https://stepik.org/lesson/2666228/?unit=2706122"; return; }
     i++; render();
   };
   render();

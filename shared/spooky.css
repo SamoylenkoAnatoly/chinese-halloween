@@ -210,8 +210,9 @@ a:hover { text-decoration: underline; }
   background: var(--panel); border: 3px solid var(--line); border-radius: var(--radius);
   padding: 22px; text-align: center;
 }
-#hanzi-target { width: 340px; height: 340px; margin: 0 auto; background: #e8e2c4; border: 4px solid var(--line); border-radius: 12px; }
-@media (max-width: 480px) { #hanzi-target { width: 260px; height: 260px; } }
+.writer-duo { display: flex; flex-direction: column; gap: 14px; align-items: center; }
+#hanzi-target, #hanzi-target2 { width: 340px; height: 340px; margin: 0; background: #e8e2c4; border: 4px solid var(--line); border-radius: 12px; }
+@media (max-width: 480px) { #hanzi-target, #hanzi-target2 { width: 260px; height: 260px; } }
 .writer-ctrl { display: flex; gap: 10px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
 .skulls { display: flex; gap: 10px; justify-content: center; margin-top: 14px; font-size: 22px; letter-spacing: 6px; }
 .writer-status { margin-top: 10px; color: var(--dim); font-size: 15px; min-height: 22px; }

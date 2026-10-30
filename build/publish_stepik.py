@@ -151,8 +151,7 @@ def frame_step(base, path, h, accent=KOKO, subtitle=None, v="9"):
 
 def choice_step(question_html, options, correct, accent=GOLD):
     opts = [{"text": o, "is_correct": o == correct,
-             "feedback": "Верно! Фонарик вспыхнул." if o == correct
-             else "Мимо. Загляни в урок ещё раз."}
+             "feedback": "Верно! Фонарик вспыхнул." if o == correct else ""}
             for o in options]
     return {"block": {"name": "choice",
                       "text": wrap('<div style="padding:14px;text-align:center;border:3px solid %s;'
@@ -190,7 +189,7 @@ def glyph_lesson_steps(lesson, base):
 
 def story_lesson_steps(lesson, base, model):
     return [frame_step(base, lesson["url"], 1800, KOKO,
-                       "История двора · 6 сцен", v="10")]
+                       "История двора · 6 сцен", v="16")]
 
 
 def tones_lesson_steps(lesson, base, model):
@@ -300,8 +299,10 @@ def post_lesson(api, lesson, base, model):
     try:
         step_ids = []
         for pos, block in enumerate(steps, 1):
-            sr = api.api("POST", "step-sources",
-                         {"stepSource": {"lesson": lesson_id, "position": pos, "block": block}})
+            sr = {"lesson": lesson_id, "position": pos, "block": block}
+            if block["name"] == "choice":
+                sr["cost"] = 1
+            sr = api.api("POST", "step-sources", {"stepSource": sr})
             step_ids.append(sr["step-sources"][0]["id"])
     except Exception:
         api.api("DELETE", "lessons/%d" % lesson_id)

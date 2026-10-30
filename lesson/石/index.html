@@ -7,7 +7,7 @@
 <title>石 · Двор Тихой Луны</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../shared/spooky.css?v=12">
+<link rel="stylesheet" href="../../shared/spooky.css?v=13">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>🎃</text></svg>">
 </head>
 <body class="with-ground">
@@ -75,9 +75,12 @@
   <h1>Мел и камень</h1>
   <div class="sub">Пиши как Костик: черта за чертой, мел не жалеем. Три раунда — и фонарь наш.</div>
   <div class="writer-wrap">
-    <img class="bone-hand hand-l" src="../../shared/characters/bone-hand-l.svg?v=12" alt="Костяная рука держит холст">
-    <div id="hanzi-target"></div>
-    <img class="bone-hand hand-r" src="../../shared/characters/bone-hand-r.svg?v=12" alt="">
+    <img class="bone-hand hand-l" src="../../shared/characters/bone-hand-l.svg?v=13" alt="Костяная рука держит холст">
+    <div class="writer-duo">
+      <div id="hanzi-target"></div>
+      <div id="hanzi-target2" style="display:none"></div>
+    </div>
+    <img class="bone-hand hand-r" src="../../shared/characters/bone-hand-r.svg?v=13" alt="">
     <div class="writer-status" id="writer-status">Обведи черты по костям — я смотрю, Костик</div>
     <div class="skulls" id="skulls"></div>
     <div class="writer-ctrl">
@@ -197,7 +200,8 @@
   }
 
   /* ---- фаза 3: hanzi-writer ---- */
-  var writer = null, round = 1, rounds = L.type === "word" ? 2 : 3;
+  var writer = null, buddy = null, curW = null, curId = "hanzi-target",
+      round = 1, rounds = L.type === "word" ? 2 : 3;
   var statusEl = document.getElementById("writer-status");
   var skullsEl = document.getElementById("skulls");
   var go4 = document.getElementById("go4");
@@ -208,27 +212,42 @@
     for (var i = 1; i <= rounds; i++) s += i < round ? "☠️" : "💀";
     skullsEl.textContent = s;
   }
-  function initWriter() {
-    writer = HanziWriter.create("hanzi-target", {
+  function makeCfg() {
+    return {
       width: 300, height: 300, padding: 10,
       strokeColor: "#4a3560", radicalColor: "#7a4310",
-      outlineColor: "#564c3d", drawingColor: "#3a2a5e",
+      outlineColor: "#2f2519", drawingColor: "#3a2a5e",
       highlightColor: "#a3560d", leniency: 1.4,
       charDataLoader: function (ch, onComplete) {
         var src = "https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/" + ch + ".json";
         fetch(src).then(function (r) { return r.json(); }).then(onComplete);
       },
-    });
+    };
+  }
+  function initWriter() {
+    writer = HanziWriter.create("hanzi-target", makeCfg());
+    if (L.type === "word") {
+      document.getElementById("hanzi-target2").style.display = "";
+      buddy = HanziWriter.create("hanzi-target2", makeCfg());
+    }
     startRound();
   }
   function startRound() {
     updateSkulls();
-    if (round > 1) { writer.hideOutline(); } else { writer.showOutline(); }
-    writer.setCharacter(chars[round - 1]);
+    var duo = !!buddy;
+    if (duo) {
+      writer.showOutline();
+      buddy.showOutline();
+      writer.setCharacter(chars[0]);
+      buddy.setCharacter(chars[1]);
+    } else if (round > 1) { writer.hideOutline(); } else { writer.showOutline(); }
+    curW = duo && round === 2 ? buddy : writer;
+    curId = duo && round === 2 ? "hanzi-target2" : "hanzi-target";
     statusEl.textContent = "Раунд " + round + " из " + rounds +
-      (round === 1 ? " — контур виден, просто веди мелом." :
-        round === 2 ? " — теперь по памяти! Контур скрыт." : " — финальный раунд, ты почти Костик!");
-    writer.quiz({
+      (duo ? " — оба знака на доске, обводи «" + chars[round - 1] + "»."
+        : round === 1 ? " — контур виден, просто веди мелом."
+        : round === 2 ? " — теперь по памяти! Контур скрыт." : " — финальный раунд, ты почти Костик!");
+    curW.quiz({
       onMistake: function (data) {
         statusEl.textContent = "Черта №" + (data.strokeNum + 1) + " уехала. Попробуй ещё раз — мел прощает.";
       },
@@ -244,11 +263,11 @@
           document.querySelectorAll(".bone-hand").forEach(function (h) {
             h.classList.remove("joy"); void h.offsetWidth; h.classList.add("joy");
           });
-          var rect = document.getElementById("hanzi-target").getBoundingClientRect();
+          var rect = document.getElementById(curId).getBoundingClientRect();
           QM.halloweenBurst(rect.left + rect.width / 2, rect.top + rect.height / 2);
           QM.sfx.flame();
           setTimeout(function () { QM.sfx.finish(); }, 450);
-          QM.say("kostik", "Ха! Три раунда — и ни одной кривой черты! Вот это рука мастера, я аж подпрыгнул. Жми «сладость или гадость»!");
+          QM.say("kostik", duo ? "Ха! Оба знака выбиты в камне — вот это рука мастера! Жми «сладость или гадость»!" : "Ха! Три раунда — и ни одной кривой черты! Вот это рука мастера, я аж подпрыгнул. Жми «сладость или гадость»!");
         } else {
           setTimeout(startRound, 700);
         }
@@ -260,7 +279,7 @@
     QM.say("kostik", "Правило костяной руки: черта слева направо, сверху вниз. Горизонталь первой, вертикаль следом.");
   }
   document.getElementById("show-strokes").onclick = function () {
-    QM.sfx.click(); writer.animateCharacter();
+    QM.sfx.click(); curW.animateCharacter();
   };
   document.getElementById("reset-writer").onclick = function () {
     QM.sfx.click(); startRound();
