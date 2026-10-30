@@ -23,22 +23,14 @@ from publish_stepik import DIM, GOLD, INK, KOKO, LINE, NIGHT, PANEL, POISON, PUM
 COURSE_ID = 303598
 INTERIOR = "https://samoylenkoanatoly.github.io/chinese-halloween/shared/interior"
 
-ROOMS = [
-    ("koko-room.svg", "Кабинет Магистра Коко — зелья и книги заклинаний"),
-    ("lumi-room.svg", "Чердак Люми — луна в круглом окне"),
-    ("echo-room.svg", "Кухонька Эхо — котёл и сырная полка"),
-    ("kostik-room.svg", "Гостиная Костика — кресло и чай"),
-]
-
 
 def img(name, alt):
-    return ('<img src="%s/%s?v=1" alt="%s" style="width:100%%;height:auto;margin-top:12px;">'
+    return ('<img src="%s/%s?v=1" alt="%s" style="width:100%%;height:auto;">'
             % (INTERIOR, name, alt))
 
 MARKERS = [
     "ДОБРО ПОЖАЛОВАТЬ ВО ДВОР ТИХОЙ ЛУНЫ",
     "Обитатели двора",
-    "Загляни внутрь домика",
     "Что ждёт внутри",
     "Как зажигается фонарик",
     "Программа праздника",
@@ -92,8 +84,10 @@ def han(chars, color=INK, size=17):
     return '<span style="font-size:%dpx;color:%s;">%s</span>' % (size, color, chars)
 
 
-def divider():
-    return '<p style="margin:12px 0;text-align:center;color:%s;">· 🦇 · ⚰️ · 🕷️ · 🕯️ ·</p>' % DIM
+def divider(kind):
+    name, alt = (("divider-a.svg", "Разделитель: свечи") if kind == "a"
+                 else ("divider-b.svg", "Разделитель: мыши и луна"))
+    return '<p style="margin:14px 0;text-align:center;">%s</p>' % img(name, alt)
 
 
 def h(text, color):
@@ -111,15 +105,15 @@ def card(emoji, name, role, border):
 
 def build_styled():
     inner = []
+    inner.append(img("border-top.svg", "Хэллоуинская рамка: свечи, мыши, тыквы и призрак"))
     inner.append(
-        '<p style="margin:0;text-align:center;font-size:21px;color:%s;">'
+        '<p style="margin:14px 0 0;text-align:center;font-size:21px;color:%s;">'
         '<b>🎃 ДОБРО ПОЖАЛОВАТЬ ВО ДВОР ТИХОЙ ЛУНЫ 🌙</b></p>'
         '<p style="margin:8px 0 0;text-align:center;font-size:14px;color:%s;">'
         'хэллоуин-интенсив китайского для начинающих</p>'
-        '<img src="%s/banner.svg?v=1" alt="Гостиная двора Тихой Луны: камин, книжный шкаф, '
-        'тыквы и летучие мыши" style="width:100%%;height:auto;margin-top:14px;">'
-        % (GOLD, DIM, INTERIOR))
-    inner.append(divider())
+        '<p style="margin:14px 0 0;">%s</p>'
+        % (GOLD, DIM, img("heroes.svg", "Обитатели двора: Магистр Коко, Костик, Люми и Эхо")))
+    inner.append(divider("a"))
     inner.append('<div style="padding:12px 14px;background-color:%s;border:3px solid %s;">%s</div>'
                  % (PANEL, LINE, ps.esc(load_summary())))
     inner.append(h("🕯️ Обитатели двора", PUMPKIN))
@@ -128,17 +122,6 @@ def build_styled():
         inner.append("<tr>")
         for emoji, name, role, border in row:
             inner.append(card(emoji, name, role, border))
-        inner.append("</tr>")
-    inner.append("</tbody></table>")
-    inner.append(h("🖼 Загляни внутрь домика", GOLD))
-    inner.append('<table style="width:100%;"><tbody>')
-    for row in (ROOMS[:2], ROOMS[2:]):
-        inner.append("<tr>")
-        for fname, caption in row:
-            inner.append('<td style="width:50%%;padding:8px 6px;border:3px solid %s;background-color:%s;'
-                         'text-align:center;">%s'
-                         '<p style="margin:6px 0 0;font-size:13px;color:%s;">%s</p></td>'
-                         % (LINE, PANEL, img(fname, caption), DIM, caption))
         inner.append("</tr>")
     inner.append("</tbody></table>")
     inner.append(h("🍬 Что ждёт внутри", GOLD))
@@ -156,12 +139,14 @@ def build_styled():
         shown = han(tail) if is_han else '<span style="color:%s;">%s</span>' % (DIM, tail)
         inner.append('<p style="margin:7px 0;font-size:15px;color:%s;">%s <b>%s</b> — %s</p>'
                      % (INK, emoji, title, shown))
-    inner.append(divider())
+    inner.append(divider("b"))
     inner.append('<p style="margin:10px 0;text-align:center;font-size:14px;color:%s;">%s</p>'
                  % (DIM, FOR_WHOM))
     inner.append('<div style="padding:14px 10px;text-align:center;background-color:%s;'
                  'border:4px solid %s;"><p style="margin:0;font-size:17px;color:%s;">'
                  '<b>%s</b></p></div>' % (PANEL, GOLD, GOLD, FINALE))
+    inner.append('<p style="margin:16px 0 0;">%s</p>'
+                 % img("border-bottom.svg", "Хэллоуинская рамка: тыквы, свечи и череп"))
     return ('<div style="padding:20px 22px;background-color:%s;border:4px solid %s;color:%s;">%s</div>'
             % (NIGHT, KOKO, INK, "".join(inner)))
 

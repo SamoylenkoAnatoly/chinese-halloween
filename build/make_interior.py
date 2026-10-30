@@ -2,8 +2,10 @@
 """Пиксельные интерьеры домика «Двора Тихой Луны» для описания курса.
 
 Баннер-гостиная 96x40 + четыре комнаты 40x40 (по одной на обитателя),
-рендер в shared/interior/<name>.svg (стиль make_meanings: Grid, crispEdges).
+групповой портрет героев 96x52 (из спрайтов shared/characters) и пиксельная
+хэллоуинская рамка (border-top/border-bottom, разделители).
 """
+import re
 from pathlib import Path
 
 import make_characters as mc
@@ -59,6 +61,43 @@ def candle(g, x, y):
     g.px(x, y - 2, "F")
     g.px(x + 1, y - 2, "F")
     g.px(x, y - 1, "Y")
+
+
+def load_sprite(fname):
+    src = (ROOT / "shared" / "characters" / fname).read_text(encoding="utf-8")
+    px = {}
+    for fill, d in re.findall(r'<path fill="([^"]+)" d="([^"]+)"/>', src):
+        for x, y in re.findall(r"M(\d+) (\d+)h1v1h-1z", d):
+            px[(int(x), int(y))] = fill
+    return px
+
+
+def stamp(g, sprite, ox, oy, pal):
+    rev = {v: k for k, v in pal.items()}
+    for (x, y), col in sorted(sprite.items()):
+        if col not in rev:
+            key = "z%d" % len(pal)
+            pal[key] = col
+            rev[col] = key
+        g.px(x + ox, y + oy, rev[col])
+
+
+def pumpkin(g, cx, cy):
+    g.ellipse(cx, cy, 3, 2, "O")
+    g.px(cx, cy - 3, "G")
+    g.px(cx - 1, cy - 1, "K")
+    g.px(cx + 1, cy - 1, "K")
+    g.px(cx - 1, cy + 1, "K")
+    g.px(cx, cy + 1, "K")
+    g.px(cx + 1, cy + 1, "K")
+
+
+def tomb(g, x, y):
+    g.rect(x, y + 2, 6, 6, "U")
+    g.ellipse(x + 3, y + 2, 3, 2, "U")
+    g.rect(x + 1, y + 3, 4, 4, "e")
+    g.px(x + 3, y + 4, "U")
+    g.px(x + 2, y + 5, "U")
 
 
 # ------------------------------------------------------------------ кабинет Коко
@@ -502,12 +541,165 @@ def art_banner():
     return g, PI, "Гостиная двора Тихой Луны — камин, книжный шкаф и тыквы"
 
 
+# ------------------------------------------------------------------ групповой портрет
+def art_heroes():
+    pal = dict(PI)
+    g = Grid(96, 52)
+    g.rect(0, 0, 96, 44, "N")
+    for x, y in [(5, 5), (25, 3), (45, 6), (60, 3), (70, 7), (90, 4),
+                 (12, 10), (38, 10), (55, 9), (85, 12)]:
+        g.px(x, y, "I")
+    g.ellipse(20, 12, 5, 5, "S")
+    g.px(18, 11, "s")
+    g.px(21, 13, "s")
+    g.hline(0, 40, 96, "U")
+    for x in range(4, 96, 12):
+        g.vline(x, 35, 5, "U")
+        g.px(x, 34, "U")
+    g.rect(0, 44, 96, 8, "E")
+    g.hline(0, 44, 96, "e")
+    for i, x in enumerate(range(10, 96, 14)):
+        g.vline(x, 45 + (i % 2), 7 - (i % 2), "e")
+    tomb(g, 22, 33)
+    tomb(g, 66, 33)
+    stamp(g, load_sprite("wizard.svg"), 4, 16, pal)
+    stamp(g, load_sprite("kostik.svg"), 33, 13, pal)
+    stamp(g, load_sprite("lumi.svg"), 64, 4, pal)
+    g.rect(40, 2, 6, 8, "B")
+    g.px(41, 1, "B")
+    g.px(44, 1, "B")
+    g.rect(32, 3, 8, 2, "B")
+    g.rect(33, 5, 7, 2, "B")
+    g.rect(34, 7, 6, 2, "B")
+    g.rect(46, 3, 8, 2, "B")
+    g.rect(46, 5, 7, 2, "B")
+    g.rect(46, 7, 6, 2, "B")
+    g.px(41, 4, "Y")
+    g.px(44, 4, "Y")
+    g.px(42, 8, "I")
+    g.px(43, 8, "I")
+    bat(g, 12, 6)
+    pumpkin(g, 10, 47)
+    pumpkin(g, 30, 48)
+    pumpkin(g, 47, 47)
+    pumpkin(g, 78, 48)
+    pumpkin(g, 90, 47)
+    candle(g, 36, 45)
+    candle(g, 60, 45)
+    g.px(36, 43, "I")
+    g.px(61, 43, "I")
+    return g, pal, "Обитатели двора: Магистр Коко, Костик, Люми и Эхо"
+
+
+# ------------------------------------------------------------------ рамка сверху
+def art_border_top():
+    g = Grid(96, 9)
+    for d in range(5):
+        g.px(1 + d, 1 + d, "s")
+        g.px(3 + d, 1 + d, "s")
+        g.px(94 - d, 1 + d, "s")
+        g.px(92 - d, 1 + d, "s")
+    g.hline(3, 1, 90, "U")
+    for x in (8, 48, 88):
+        g.rect(x, 2, 2, 3, "C")
+        g.px(x + 1, 2, "c")
+        g.px(x, 0, "F")
+        g.px(x + 1, 0, "F")
+    for x in (20, 74):
+        g.vline(x, 2, 2, "r")
+        g.rect(x - 1, 4, 2, 2, "B")
+        g.px(x - 3, 4, "B")
+        g.px(x + 2, 4, "B")
+        g.px(x - 2, 3, "B")
+        g.px(x + 1, 3, "B")
+        g.px(x - 1, 6, "B")
+        g.px(x, 6, "B")
+    for x in (32, 62):
+        g.vline(x, 2, 2, "r")
+        g.ellipse(x, 6, 2, 2, "O")
+        g.px(x, 4, "G")
+        g.px(x - 1, 6, "K")
+        g.px(x + 1, 6, "K")
+    g.vline(44, 2, 1, "r")
+    g.rect(42, 3, 5, 4, "Q")
+    g.px(42, 7, "Q")
+    g.px(44, 7, "Q")
+    g.px(46, 7, "Q")
+    g.px(43, 5, "K")
+    g.px(45, 5, "K")
+    g.px(56, 3, "Y")
+    g.px(58, 5, "Y")
+    g.px(57, 4, "I")
+    return g, PI, "Хэллоуинская рамка: свечи, мыши, тыквы и призрак"
+
+
+# ------------------------------------------------------------------ рамка снизу
+def art_border_bottom():
+    g = Grid(96, 9)
+    g.rect(0, 6, 96, 3, "E")
+    g.hline(0, 6, 96, "e")
+    pumpkin(g, 8, 4)
+    pumpkin(g, 30, 4)
+    pumpkin(g, 52, 4)
+    pumpkin(g, 74, 4)
+    candle(g, 20, 3)
+    candle(g, 64, 3)
+    candle(g, 88, 3)
+    g.rect(38, 2, 5, 4, "U")
+    g.ellipse(40, 2, 2, 1, "U")
+    g.rect(39, 3, 3, 2, "e")
+    g.rect(15, 4, 2, 2, "B")
+    g.px(13, 5, "B")
+    g.px(17, 5, "B")
+    g.px(15, 3, "B")
+    g.px(16, 3, "B")
+    g.rect(46, 3, 4, 3, "S")
+    g.px(47, 4, "K")
+    g.px(49, 4, "K")
+    g.px(47, 6, "K")
+    g.px(48, 6, "K")
+    return g, PI, "Хэллоуинская рамка: тыквы, свечи и череп"
+
+
+# ------------------------------------------------------------------ разделители
+def art_divider_a():
+    g = Grid(96, 5)
+    for x in (24, 48, 72):
+        candle(g, x, 2)
+        g.px(x - 4, 1, "Y")
+        g.px(x + 4, 1, "Y")
+    for x0 in (30, 54, 78):
+        for x in range(x0, x0 + 14, 3):
+            g.px(x, 3, "U")
+    return g, PI, "Разделитель: свечи"
+
+
+def art_divider_b():
+    g = Grid(96, 5)
+    g.ellipse(8, 2, 2, 2, "S")
+    g.px(7, 2, "s")
+    for x in (32, 56, 80):
+        bat(g, x, 1)
+    for x0 in (14, 40, 66):
+        for x in range(x0, x0 + 14, 3):
+            g.px(x, 2, "U")
+    g.px(26, 4, "Y")
+    g.px(50, 4, "Y")
+    g.px(74, 4, "Y")
+    return g, PI, "Разделитель: мыши и луна"
+
+
 ART = [
     (art_banner, "banner.svg"),
     (art_koko_room, "koko-room.svg"),
     (art_lumi_room, "lumi-room.svg"),
     (art_echo_room, "echo-room.svg"),
     (art_kostik_room, "kostik-room.svg"),
+    (art_heroes, "heroes.svg"),
+    (art_border_top, "border-top.svg"),
+    (art_border_bottom, "border-bottom.svg"),
+    (art_divider_a, "divider-a.svg"),
+    (art_divider_b, "divider-b.svg"),
 ]
 
 if __name__ == "__main__":
