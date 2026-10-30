@@ -3,8 +3,8 @@
 
 Генерирует build/covers/NN <имя>.png — квадрат 720x720, пиксель-арт в стиле курса:
 модель рисуется 240x240 и увеличивается x3 (nearest). На каждой обложке — крупная
-тыква с вырезанным светящимся номером урока (позиция в курсе). Детерминизм:
-random.Random("cover:"+title)."""
+тыква с вырезанным светящимся номером урока в формате Stepik «раздел.урок» (1.1…6.3).
+Детерминизм: random.Random("cover:"+title)."""
 import json
 import random
 import sys
@@ -54,6 +54,7 @@ DIGITS = {
     "7": ["11111", "00001", "00010", "00100", "01000", "01000", "01000"],
     "8": ["01110", "10001", "10001", "01110", "10001", "10001", "01110"],
     "9": ["01110", "10001", "10001", "01111", "00001", "00010", "01100"],
+    ".": ["00000", "00000", "00000", "00000", "00000", "01100", "01100"],
 }
 
 
@@ -115,9 +116,9 @@ def big_pumpkin(d):
     d.rectangle([cx + 1, 74, cx + 8, 75], fill="#2c5a14")
 
 
-def number(d, pos):
-    s = 11
-    text = str(pos)
+def number(d, label):
+    text = str(label)
+    s = 11 if len(text) == 1 else 7
     cols = 5 * len(text) + (len(text) - 1)
     x0 = (SIDE - cols * s) // 2
     y0 = 92 + (112 - 7 * s) // 2
@@ -140,14 +141,14 @@ def number(d, pos):
                     d.rectangle([px, py, px + s - 1, py + 2], fill="#fff3b0")
 
 
-def render(title, pos):
+def render(title, pos, label):
     rng = random.Random("cover:" + title)
     img = Image.new("RGB", (SIDE, SIDE))
     d = ImageDraw.Draw(img)
     sky(d, rng)
     ground(d)
     big_pumpkin(d)
-    number(d, pos)
+    number(d, label)
     for x in (14, SIDE - 14 - 16):
         cv = Canvas()
         pumpkin_small(cv, 0)
@@ -164,7 +165,8 @@ def main():
             by_title[l["title"]] = l
     made = 0
     pos = 0
-    for sname, s in man["sections"].items():
+    for snum, (sname, s) in enumerate(man["sections"].items(), start=1):
+        lpos = 0
         for ltitle, le in s["lessons"].items():
             lid = le.get("lesson_id")
             if not lid:
@@ -179,12 +181,14 @@ def main():
             if not kind:
                 print("ПРОПУСК (нет темы):", ltitle)
                 continue
+            lpos += 1
             pos += 1
-            img = render(ltitle, pos)
+            label = "%d.%d" % (snum, lpos)
+            img = render(ltitle, pos, label)
             name = "%02d %s.png" % (pos, human_name(ltitle, kind, target))
             img.save(OUT / name, "PNG", optimize=True)
             made += 1
-            print(name, "| lesson", lid, "|", ltitle)
+            print(name, "| lesson", lid, "| номер", label, "|", ltitle)
     print("ИТОГО обложек:", made)
 
 
