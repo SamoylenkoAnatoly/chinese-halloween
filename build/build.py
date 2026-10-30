@@ -484,10 +484,10 @@ LESSON_JS = r"""
     };
   }
   function initWriter() {
-    writer = HanziWriter.create("hanzi-target", makeCfg());
+    writer = HanziWriter.create("hanzi-target", chars[0], makeCfg());
     if (L.type === "word") {
       document.getElementById("hanzi-target2").style.display = "";
-      buddy = HanziWriter.create("hanzi-target2", makeCfg());
+      buddy = HanziWriter.create("hanzi-target2", chars[1], makeCfg());
     }
     startRound();
   }
