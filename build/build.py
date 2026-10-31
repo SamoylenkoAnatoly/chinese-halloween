@@ -649,7 +649,7 @@ def main():
         if not f.exists():
             print("НЕТ АУДИО:", item["audio"]); ok = False
     for t in (1, 2, 3, 4):
-        if not (audio_dir / ("ma%d.mp3" % t)).exists():
+        if not (audio_dir / ("wu%d.mp3" % t)).exists():
             print("НЕТ АУДИО тона:", t); ok = False
     chars_dir = ROOT / "shared" / "characters"
     for f in ["wizard.svg", "kostik.svg", "lumi.svg", "echo.svg", "ghost.svg",

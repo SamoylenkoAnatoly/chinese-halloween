@@ -192,14 +192,14 @@ def story_lesson_steps(lesson, base, model):
 
 def tones_lesson_steps(lesson, base, model):
     t = model["tones"]
-    tone_names = {1: "1-й тон — высокий ровный (мā)", 2: "2-й тон — вверх (мá)",
-                  3: "3-й тон — вниз и обратно (мǎ)", 4: "4-й тон — резко вниз (мà)"}
+    tone_names = {1: "1-й тон — высокий ровный (wū 呜)", 2: "2-й тон — вверх (wú 无)",
+                  3: "3-й тон — вниз и обратно (wǔ 五)", 4: "4-й тон — резко вниз (wù 雾)"}
     steps = [frame_step(base, lesson["url"], 1800, KOKO,
-                        "Четыре чиха Коко · слушай и повторяй")]
+                        "Призрачный вой «У-у-у» · слог wu в 4 тонах")]
     for i, q in enumerate(t["quiz"], 1):
         au = base + "/audio/" + quote(q["audio"])
         steps.append(choice_step(
-            "<p style='margin:0 0 10px;font-size:15px;color:%s;'>Укол колокольни %d/6: какой тон ты услышал?</p>%s"
+            "<p style='margin:0 0 10px;font-size:15px;color:%s;'>Укол колокольни %d/6: как призрак протянул слог wu?</p>%s"
             % (DIM, i, audio_html(au)),
             [tone_names[n] for n in (1, 2, 3, 4)], tone_names[q["answer"]], KOKO))
     return steps

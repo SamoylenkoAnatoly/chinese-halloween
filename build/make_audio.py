@@ -3,7 +3,7 @@
 
 Запуск: python build/make_audio.py
 Создаёт audio/<имя>.mp3 для всех записей data.py, удаляет mp3,
-которые больше не нужны (кроме тональных ma1..ma4).
+которые больше не нужны (кроме тональных wu1..wu4).
 """
 import asyncio
 import os
@@ -17,7 +17,7 @@ from data import GLYPHS, WORDS
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 AUDIO_DIR = os.path.join(ROOT, "audio")
 VOICE = "zh-CN-XiaoxiaoNeural"
-KEEP_EXTRA = {"ma1.mp3", "ma2.mp3", "ma3.mp3", "ma4.mp3"}
+KEEP_EXTRA = {"wu1.mp3", "wu2.mp3", "wu3.mp3", "wu4.mp3"}
 
 
 def items():
