@@ -34,9 +34,12 @@ HAN = "font-family:'Noto Sans SC','Microsoft YaHei',sans-serif;"
 
 
 def get_token():
-    tok = open(TOKEN_PATH, encoding="utf-8").read().strip()
+    try:
+        tok = open(TOKEN_PATH, encoding="utf-8").read().strip()
+    except OSError:
+        tok = ""
     if tok:
-        status = curl("GET", "courses/303598", None, tok)[0]
+        status = curl("GET", "step-sources/11866126", None, tok)[0]
         if 200 <= status < 300:
             return tok
     creds = json.load(open(CLIENT_PATH, encoding="utf-8"))
@@ -52,6 +55,27 @@ def get_token():
     return tok
 
 
+CSRF_JAR = os.path.join(tempfile.gettempdir(), "rufp", "sj_cookies.txt")
+_CSRF = None
+
+
+def csrf_token():
+    global _CSRF
+    if _CSRF:
+        return _CSRF
+    subprocess.run(["curl.exe", "-s", "-A", UA, "-c", CSRF_JAR,
+                    "--max-time", "30", API + "courses/303598"],
+                   capture_output=True, text=True)
+    try:
+        for ln in open(CSRF_JAR, encoding="utf-8", errors="replace"):
+            if "csrftoken" in ln:
+                _CSRF = ln.rstrip("\n").split("\t")[-1]
+                return _CSRF
+    except OSError:
+        pass
+    return ""
+
+
 def curl(method, path, payload, token, attempts=4):
     args = ["curl.exe", "-s", "-w", "\n%{http_code}", "--max-time", "90",
             "-A", UA, "-H", "Authorization: Bearer " + token]
@@ -63,7 +87,11 @@ def curl(method, path, payload, token, attempts=4):
         args += ["-H", "Content-Type: application/json; charset=utf-8",
                  "--data-binary", "@" + body_file]
     if method != "GET":
-        args += ["-X", method]
+        args += ["-X", method,
+                 "-b", CSRF_JAR,
+                 "-H", "Referer: https://stepik.org/",
+                 "-H", "Origin: https://stepik.org",
+                 "-H", "X-CSRFToken: " + csrf_token()]
     url = path if path.startswith("http") else API + path
     last = (0, "")
     for i in range(1, attempts + 1):
@@ -122,7 +150,7 @@ def page_url(base, path):
     return base.rstrip("/") + "/" + (p + "/" if p else "")
 
 
-def frame_step(base, path, h, accent=KOKO, subtitle=None, v="23"):
+def frame_step(base, path, h, accent=KOKO, subtitle=None, v="24"):
     b = base.rstrip("/")
     url = page_url(base, path) + "?v=" + v
     pill = ""
@@ -187,7 +215,7 @@ def glyph_lesson_steps(lesson, base):
 
 def story_lesson_steps(lesson, base, model):
     return [frame_step(base, lesson["url"], 1800, KOKO,
-                       "История двора · 6 сцен", v="23")]
+                       "История двора · 6 сцен", v="24")]
 
 
 def tones_lesson_steps(lesson, base, model):
