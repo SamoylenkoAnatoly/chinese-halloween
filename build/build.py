@@ -439,14 +439,15 @@ LESSON_JS = r"""
   ];
   var tonesBox = document.getElementById("tone-btns");
   var toneNames = { 1: "рОВНО", 2: "ВВЕРХ", 3: "НЫРОК", 4: "ВНИЗ" };
+  var tonePy = { 1: "wū 呜", 2: "wú 无", 3: "wǔ 五", 4: "wù 雾" };
   [1, 2, 3, 4].forEach(function (t) {
     var b = document.createElement("button");
     b.className = "tone-btn";
     b.style.background = QM.TONE_COLORS[t];
-    b.innerHTML = '<span class="n">' + t + '-й тон · ' + toneNames[t] + '</span>mā ' + t;
+    b.innerHTML = '<span class="n">' + t + '-й тон · ' + toneNames[t] + '</span>' + tonePy[t] + ' ' + t;
     b.onclick = function () {
       QM.sfx.click();
-      QM.playAudio("ma" + t + ".mp3");
+      QM.playAudio("wu" + t + ".mp3");
       QM.drawTone("tone-line", t);
     };
     tonesBox.appendChild(b);
